@@ -31,3 +31,4 @@ test-results
 .vscode-test
 playwright/.auth
 .mcp.json
+.vscode/launch.json

@@ -117,3 +117,5 @@ tags
 httpd/
 
 frontend/
+.codeview/report.json
+.codeview/state.json
