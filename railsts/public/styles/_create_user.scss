@@ -1,0 +1,33 @@
+#timeZoneDropDown { margin-bottom: 12px !important; }
+
+#create_user,
+#create_group {
+  margin: auto;
+  position: absolute;
+  left: 0;
+  top: 10em;
+  right: 0;
+}
+
+.start_date { margin: 0 0 12px 0; }
+
+.errorMsg {
+  background-color: #FFDDD0;
+  color: #FF4300;
+  border-color: #FF4300;
+}
+
+.successMsg {
+  background-color: #85B2FF;
+  color: #393F6E;
+  border-color: #393F6E;
+}
+
+.userCreated,
+.groupCreated {
+  position: relative !important;
+  left: -5%;
+}
+
+
+

@@ -1,0 +1,57 @@
+<div class="ac-select-wrapper" ng-keydown="keyHandler($event)" tabindex="999" ac-focus="wrapperFocus">
+    <div ng-class="{'ac-select-main':true, 'ac-select-main-closed':!popupVisible, 'ac-select-main-open':popupVisible}" ng-click="mainClick()"
+      ng-style="{'minWidth': settings.minWidth }">
+        <table class="ac-select-table" ng-click="togglePopup($event)">
+            <tr>
+                <td class="ac-select-display">
+                    <div class="ac-select-text-wrapper" ng-show="settings.comboMode">
+                        <div id="dates-relative-box">
+                            <label for="dates-relative">relative</label>
+                            <input type="checkbox" ng-model="datesRelative" id="dates-relative" ng-disabled="datesRelativeDisabled">
+                            <div id="dates-relative-box-triangle"></div>
+                        </div>
+                        <input type="text" class="ac-select-text" ng-model="comboText" ac-focus="comboFocus" 
+                            placeholder="{{placeholderText}}" ng-keydown="keyHandler($event)" />
+                    </div>
+                    <span ng-hide="settings.comboMode">{{confirmedItem.text}}</span>
+                </td>
+                <td class="ac-select-image">
+                  <div class="dropdown"></div>
+                </td>
+            </tr>
+            <!--Row to get the control width right, using the original select or the longest item text. Hidden at runtime.-->
+            <tr class="ac-select-widener">
+                <td class="ac-select-longest">{{longestText}}</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <div class="ac-select-popup" ng-show="popupVisible" ng-style="{'minWidth': settings.minWidth }">
+        <div class="ac-select-no-items" ng-if="items.length==0">{{settings.noItemsText}}</div>
+        <div class="ac-select-list">
+            <ul>
+                <li id="{{item.id}}" ng-model="selectedItem" ng-repeat="item in items | filter: search" 
+                    ng-class="getItemClass($index)" ng-click="itemClick($index)">
+                    {{item.text}}
+                </li>
+            </ul>
+            <div class="ac-select-loading" ng-show="showLoadingMessage" ng-style="{ height: settings.itemHeight + 'px'}">Loading...</div>
+        </div>
+        <div class="ac-select-load-more" ng-show="paging && items.length >= settings.itemsInView">
+            Items 1 to {{items.length}} of {{matchingItemTotal}} 
+            <span ng-show="items.length < matchingItemTotal" ng-click="loadMore()">Load more...</span>
+        </div>
+        <div class="ac-select-search-wrapper">
+            <table>
+                <tr>
+                    <td>
+                      <quick-datepicker ng-model="fromDatePerformed"  label-format='yyyy/MM/dd' disable-timepicker='true'></quick-datepicker>
+                    </td>  
+                    <td>
+                      <quick-datepicker ng-model="toDatePerformed"  label-format='yyyy/MM/dd' disable-timepicker='true'></quick-datepicker>
+                    </td>  
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

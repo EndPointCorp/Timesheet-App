@@ -1,0 +1,6 @@
+body {
+  background: white;
+  font-size: 11pt !important; }
+
+body.mailer ts-help {
+  display: none; }

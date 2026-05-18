@@ -1,0 +1,31 @@
+
+<div style="background-color: white;" class="report_summary">
+  <div><span><b>Report For:</b></div>
+  <div>
+    <span class="title">Type:</span>
+    <span class="value">
+      <%= type %>
+    </span>
+  </div>
+  <div>
+    <span class="title">From:</span>
+    <span class="value">
+      <%= params[:start] %>
+    </span>
+  </div>
+  <div>
+    <span class="title">To:</span>
+    <span class="value">
+      <%= params[:end] %>
+    </span>
+  </div>
+  <% if !params[:root].nil? %>
+    <div>
+      <span class="title">Work Chart:</span>
+      <span class="value">
+        <%= ChartLabel.find(params[:root]).labels.join(" - ") %>
+      </span>
+    </div>
+  <% end %>
+</div>
+

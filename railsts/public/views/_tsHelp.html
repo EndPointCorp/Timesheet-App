@@ -1,0 +1,12 @@
+<div ng-mouseover="showTip = true" ng-mouseleave="showTip = false" class="help-tip">
+  <div class="help-tip-closed" ng-show="!showTip">
+    <span class="icon">&nbsp;</span>
+  </div>
+  <div class="help-tip-opened" ng-show="showTip">
+    <span class="icon">&nbsp;</span>
+    <span class="title">{{ title }}</span>
+    <div>
+      <div ng-transclude></div>
+    </div>
+  </div>
+</div>

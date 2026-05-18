@@ -1,0 +1,196 @@
+<div class="row reports-view">
+  <form name="form" action="#reports" class="custom report-controls">
+    <div class="row no-print">
+      <div class="twelve columns report-header">
+        <header class="padded">
+          <div class="row collapse">
+            <div class="eight columns">
+              <dl class="sub-nav buttons reports">
+                <dd ng-repeat="reportType in reportTypes" ng-class="{active : isSelectedReport(reportType)}">
+                  <a ng-click="selectType(reportType)">{{reportType.label}}</a>
+                </dd>
+              </dl>
+            </div>
+            <div class="four columns">
+              <div id="report-presets">
+                <span class="greyed smaller">Presets:</span>
+                <select ng-model="currentPreset" name="presets" ng-options="preset.name for preset in presets | orderBy: 'name' track by preset.id"
+                        ng-class="{'preset-set': currentPreset}">
+                  <option value=""></option>
+                </select>
+                <button class="button alert no-text" type="button" ng-click="removePreset()" ng-if="currentPreset">
+                  <img src="/images/delete-vivid.png">
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row collapse">
+            <div class="five columns">
+              <table>
+                <tbody>
+                  <tr>
+                    <td style="padding-top: 5px;">
+                      <ts-help title="Date Range">
+                        select start date and end date to fetch report</b>
+                      </ts-help>
+                    </td>
+                    <td>
+                      <select class="date-range-picker stateList" ac-model="selectedDate" ac-key="id" ac-options="s.name for s in getAllDateRanges()"
+                          combo-value="comboValue" ac-settings="{ comboMode:true, noItemsText:'No matches found', minWidth: '300px'}"
+                          dates-relative="datesRelative" dates-relative-disabled="datesRelativeDisabled"></select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="five columns">
+              <quick-search chart="selectedChart" show-dead="showDeadCharts" include-nonleafs="true" focus='true'></quick-search>
+            </div>
+            <div class="two columns">
+              <quick-pick chart="selectedChart"></quick-pick>
+            </div>
+          </div>
+          <div class="row collapse">
+            <div class="five columns">
+              <table>
+                <tbody>
+                  <tr>
+                    <td style="width:22px;padding-top: 5px;">
+                      <ts-help title="Users">
+                        Start typing first letter of users to choose roles. Empty list will have reportable users by default
+                      </ts-help>
+                    </td>
+                    <td>
+                      <multi-pick ng-model="roletags" display-property="name"
+                          add-on-enter="{{addOnEnter}}"
+                          add-on-blur="true"
+                          placeholder="People ( leave empty to include all )"
+                          remove-tag-symbol="{{removeTagSymbol}}"
+                          max-length="15"
+                          add-from-autocomplete-only="true"
+                          search-string="searchString"
+                          is-show-all="isShowAll"
+                          show-all="showAll">
+                          <auto-complete source="loadTags($query)"
+                              debounce-delay="0"
+                              min-length="1"
+                              max-results-to-show="30">
+                          </auto-complete>
+                      </multi-pick>
+                      <div class="help-show-all">
+                        <ts-help title="Show all roles">
+                          Checking this option <strong>only</strong> allows you to search
+                          through all the users in the system - including inactive.
+                          <br /><br />
+                          It <strong>does not</strong> mean that the report will include
+                          the time billed by all the users. If you want that effect - just
+                          leave the field empty, it will not narrow the scope of the report
+                          to any user, making it include all the timesheet entries.
+                        </ts-help>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                      <div id="report-sub-kind-container">
+                        <select ng-model="reportSubKind" name="reportSubKind">
+                          <option value="continuous">Periods: Continuous</option>
+                          <option value="weekly">Periods: Weekly</option>
+                          <option value="monthly">Periods: Monthly</option>
+                          <option value="quarterly">Periods: Quarterly</option>
+                          <option value="yearly">Periods: Yearly</option>
+                        </select>
+                      </div>
+                      <div class="">
+                        <label>
+                          <input type="checkbox" id="display_full" ng-model="display_full" ng-disabled="reportSubKind != 'continuous'">
+                          Display full descriptions
+                        </label>
+                      </div>
+                      <div class="">
+                        <label>
+                          <input type="checkbox" ng-model="openInNewWindow" >
+                          Open in new window
+                        </label>
+                      </div>
+                      <div class="">
+                        <label>
+                          <input type="checkbox" ng-model="showHoursInTheBank" >
+                          Show hours in the bank
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="five columns">
+              <charts-multi-select chart="selectedChart" show-dead="showDeadCharts" allow-select="all"></charts-multi-select>
+            </div>
+            <div class="two columns">
+              <div class="report-options">
+                <charts-visibility-switcher show-status="showDeadStatus" >Show all:</charts-visibility-switcher>
+                <span class="greyed smaller pdf-switcher">
+                  <span class='pdf-switcher-span'>PDF: <ts-switcher class="pdf-switcher-module" ng-model='switchStatus' ng-click='generatePdf()'></ts-switcher></span>
+                </span>
+                <a href ng-disabled="notValid" ng-click="generateReport()" class="button" >Generate</a>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    </div>
+    <warning-box></warning-box>
+    <div class="row report-warning" ng-if="isPartial">
+      <div class="warning-message">
+        <div ng-bind-html="renderHtml(warningMessage)"></div>
+      </div>
+    </div>
+    <div class="row report-warning" ng-if="hasNotApprovedEntries && displayReport">
+      <ts-help title="Not approved entries">
+        Not approved entries are greyed out on the list of work entries.
+      </ts-help>
+      <div class="warning-message">
+        <div>This report includes work entries not yet approved by a manager.</div>
+      </div>
+    </div>
+    <div class="row" ng-show="displayReport">
+      <div class="twelve columns white-highlighted">
+        <section>
+          <iframe id="preview-pane" ng-src="{{ pdfUrl }}" ng-show="showPdfIframe" iframe-onload="pdfLoaded()"></iframe>
+          <div class="twelve columns full_report" ng-show="!isPdfProcessing">
+          <div id="save-as-preset" ng-if="!currentPreset">
+            <span class="greyed smaller">Preset name:</span>
+            <input type="text" name="preset-name" id="preset-name" ng-model="$parent.namePresetName">
+            <button ng-click="savePreset();" class="button" type="button">Save</button>
+          </div>
+
+            <div class="report_web">
+              <div class="report_header">
+                <div ng-hide="isPdfProcessing">
+                <h1>Reports : {{reportTitle}}</h1>
+                <div style="background-color: white;" class="report_meta">
+                  <div><span><b>Selection Parameters</b></div>
+                  <div><span class="title">Start Date:</span><span class="date_range">{{startDate}}<span></div>
+                  <div><span class="title">End Date:</span><span class="date_range">{{endDate}}<span></div>
+                  <div><span  class="title">Roles:</span><span class="roles">{{reportRoles}}</span></div>
+                </div>
+                </div>
+              </div>
+              <div
+                ts-include-fresh="{{ reportUrl }}"
+                onload="reportFromUrlParams = false; displayReport = true;"
+                data-report-approved-check
+                data-has-not-approved-entries="$parent.hasNotApprovedEntries"></div>
+            </div>
+            <div class="report_print"></div>
+          </div>
+          <div class="clearfix">&nbsp;</div>
+        </section>
+      </div>
+    </div>
+  </form>
+</div>

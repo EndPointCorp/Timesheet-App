@@ -1,0 +1,4 @@
+info it worked if it ends with ok
+verbose cli [ 'nodejs', '/usr/bin/npm', 'install', 'brunch' ]
+info using npm@1.1.19
+info using node@v0.6.18

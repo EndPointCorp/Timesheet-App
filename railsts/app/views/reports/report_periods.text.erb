@@ -1,0 +1,15 @@
+<% report ||= @document %><%= render partial: 'reports/report_summary', locals: { report: report } %>
+
+<% report.all_items.first.each do |period, report_period| %>
+<% if report.period_type == 'monthly' %><%= Date::MONTHNAMES[period[0]] + ' ' + period[1].to_s %><% end %><% if report.period_type == 'weekly' %><%= period[0].ordinalize + ' week of ' + period[1].to_s %><% end %><% if report.period_type == 'quarterly' %><%= period[0].ordinalize + ' quarter of ' + period[1].to_s %><% end %>: <%= format_interval_string(report.total_time[period].to_human_s) %> hours
+Total fee in period: <%= number_to_currency(report.total_fee[period]) %>
+
+<% report_period.each do |report_item| %>
+  <%= ' ' * report_item[:level].to_i %><%= report_item[:name] %><% if report.report.name == 'Report::Standard' %> on <%= report_item[:date] %><% end %><% if !report_item[:fullname].nil? %> by <%= report_item[:fullname] %><% end %>: <%= format_interval_string(report_item[:total].to_human_s) %> hours<% if (report_item[:fee] || 0) > 0 %> ( <%= number_to_currency(report_item[:fee]) %> )<% end %>
+
+<% if report_item[:description].present? %><%= report_item[:description].lines.map { |l| (' ' * (report_item[:level].to_i + 4)) + l }.join %>
+<% end %>
+
+<% end %>
+
+<% end %>

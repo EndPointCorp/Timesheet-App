@@ -1,0 +1,12 @@
+<div style="background-color: white;" class="report_summary">
+  <h1>Reports : <%= type %></h1>
+  <div style="background-color: white;" class="report_meta">
+    <div><span><b>Selection Parameters</b></div>
+    <div><span class="title">Start Date:</span><span class="date_range"><%= params[:start_date] %><span></div>
+    <div><span class="title">End Date:</span><span class="date_range"><%= params[:end_date] %><span></div>
+    <% if !params[:root].nil? %>
+      <div><span  class="title">Work Chart:</span><span class="roles"><%= ChartLabel.find(params[:root]).labels.join(" - ") %></span></div>
+    <% end %>
+  </div>
+</div>
+

@@ -1,0 +1,11 @@
+<style>
+  <%= Diffy::CSS %>
+</style>
+
+<h3>
+  Your entry has just been updated by <%= @user.role.user_name %>.
+</h3>
+
+<p>Here is the diff of all changes for this entry:</p>
+
+<%= @diff.html_safe %>

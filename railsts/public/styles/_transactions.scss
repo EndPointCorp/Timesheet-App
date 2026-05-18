@@ -1,0 +1,215 @@
+@import "typography";
+
+transactions {
+  top: -15px;
+  position: relative;
+}
+
+.transaction-preview {
+  background: white;
+  min-height: 115px;
+  margin-bottom: 15px;
+
+  .active-indicator {
+    width: 12px;
+    height: 12px;
+    background: #D10606;
+    position: absolute;
+    margin-left: -18px;
+    margin-top: 14px;
+    border-radius: 100px;
+  }
+
+  .active-indicator.active {
+    background: #86C400;
+  }
+
+  .transaction-hours {
+    width: 87px;
+    height: 56px;
+    margin-left: 5px;
+    background-image: url(/images/transaction-hours-badge.png?v=1);
+    background-size: cover;
+    top: -6px;
+    position: relative;
+    color: white;
+    text-align: center;
+    padding-top: 10px;
+    float: left;
+
+    > div {
+      font-size: 19px;
+      font-family: $font-semi-bold;
+      font-weight: bold;
+      text-shadow: 0 -1px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .hours-label {
+      font-size: 12px;
+    }
+  }
+
+  .transaction-date-start {
+    background: #d6d6d6;
+    width: 116px;
+    float: left;
+    margin-left: -6px;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 25px;
+    font-family: $font-semi-bold;
+    font-weight: bold;
+    z-index: 1;
+    position: relative;
+  }
+
+  .dark-triangle {
+    float: left;
+    font-size: 14px !important;
+    width: 0px !important;
+    margin-right: 5px !important;
+    height: 0px !important;
+    border-style: solid !important;
+    border-width: 20px 0 20px 10px !important;
+    border-color: transparent transparent transparent #d6d6d6 !important;
+    z-index: 1;
+    position: relative;
+  }
+
+  .transaction-date-end {
+    background: #eee;
+    width: 116px;
+    float: left;
+    margin-left: -16px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-family: $font-semi-bold;
+    font-weight: bold;
+  }
+
+  .light-triangle {
+    float: left;
+    font-size: 14px !important;
+    width: 0px !important;
+    margin-right: 5px !important;
+    height: 0px !important;
+    border-style: solid !important;
+    border-width: 20px 0 20px 10px !important;
+    border-color: transparent transparent transparent #eee !important;
+  }
+
+  .transaction-mode {
+    line-height: 40px;
+    float: left;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-family: $font-semi-bold;
+    font-weight: bold;
+    width: 95px;
+    text-align: center;
+  }
+
+  .light-triangle-reflected {
+    float: left;
+    font-size: 14px !important;
+    width: 0px !important;
+    margin-left: 5px !important;
+    height: 0px !important;
+    border-style: solid !important;
+    border-width: 20px 10px 20px 0px !important;
+    border-color: transparent rgb(238, 238, 238) transparent transparent !important;
+    right: -1px;
+    position: relative;
+  }
+
+  .transaction-creator {
+    background: #eee;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    width: 204px;
+    right: -1px;
+    position: relative;
+
+    img.avatar {
+      border-radius: 100px;
+      margin-top: 5px;
+      float: left;
+    }
+
+    .name {
+      float: left;
+      width: 170px;
+      padding-left: 5px;
+      color: #868686;
+      overflow: hidden;
+      height: 40px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .transaction-body {
+    padding-top: 60px !important;
+    margin: 0px !important;
+    padding-bottom: 10px;
+
+    .edit-form {
+      padding: 10px;
+      padding-top: 0px;
+      margin-top: -10px;
+    }
+
+    .body-line {
+      line-height: 150%;
+    }
+
+    .body-label {
+      min-width: 90px;
+      display: inline-block;
+    }
+
+    .description {
+      padding-top: 4px;
+      line-height: 150%;
+    }
+
+    .no-description {
+      line-height: 30px;
+      font-style: italic;
+      color: #868686;
+      padding-bottom: 0px !important;
+    }
+  }
+
+}
+
+.cron-spec {
+  .greyed.smaller {
+    text-align: center;
+  }
+
+  select {
+    font-size: 12px !important;
+  }
+}
+
+.cron-spec.const {
+  .columns {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .columns:nth-child(odd) {
+    background: rgba(0,0,0,0.05);
+  }
+
+  .empty {
+    line-height: 30px;
+    font-style: italic;
+    color: #868686;
+    padding-bottom: 0px !important;
+  }
+}

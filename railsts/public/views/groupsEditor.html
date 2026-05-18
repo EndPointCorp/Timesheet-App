@@ -1,0 +1,56 @@
+<div class="row">
+  <header class="padded">
+    <div class="row roles-header">
+      <dl class="sub-nav buttons">
+        <dd class="">
+          <a href="/#/users-editor">
+            Users
+          </a>
+        </dd>
+        <dd class="active">
+          <a href="/#/groups-editor">
+            Groups
+          </a>
+        </dd>
+      </dl>
+    </div>
+  </header>
+  <section class="user-area">
+    <div class="row">
+      <div class="eight columns" id="main">
+        <div class="twelve columns">
+          <div class="six columns">
+            <a class="button roles-button" href="#/create_group">New Group</a>
+          </div>
+          <div class="six columns">
+            <input type="text" ng-model="searchGroup" placeholder="Search">
+          </div>
+        </div>
+        <div  class="twelve columns">
+          <group-details 
+            selected-button="selectedButton" 
+            group-details="groupsDetail" 
+            button-items="teamItems" 
+            group-items="groupItems" 
+            right-type-items="rightTypeItems" 
+            search-group="searchGroup" 
+            show-inactive-users="showAllUsers" 
+            filter-role="filterRole"
+            all-i-c-roles="allICRoles"
+            all-i-c-users="allICUsers">
+          </group-details>
+        </div>
+      </div>
+      <div class="four columns" id="side">
+        <teams selected-item="selectedSelector" title="'All Groups (with teams)'" general-items="selectorGroupsAndTeams">
+          <span class="right-align">
+              <ts-help title="Filter by Groups">
+                Lists all the groups to select a particular group to filter the list
+              </ts-help>
+          </span>
+        </teams>
+      </div>
+      </div>
+    </div>
+  </section>
+</div>

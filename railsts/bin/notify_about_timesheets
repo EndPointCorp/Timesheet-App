@@ -1,0 +1,4 @@
+#!/bin/bash -l
+
+cd $( dirname "${BASH_SOURCE[0]}" )/.. || exit 1
+bundle exec rake mail:send

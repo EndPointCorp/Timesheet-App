@@ -1,0 +1,174 @@
+multi-pick *, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+multi-pick .host {
+  position: relative;
+}
+multi-pick .host:active {
+  outline: none;
+}
+
+multi-pick .tags {
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  overflow: hidden;
+  word-wrap: break-word;
+  cursor: text;
+  background-color: white;
+/*  border: 1px solid darkgray;
+  box-shadow: 1px 1px 1px 0 lightgray inset;
+  height: 30px;
+*/
+  border: 1px solid #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0 0px;
+}
+multi-pick .tags.focused {
+  outline: none;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+/*  -webkit-box-shadow: 0 0 3px 1px rgba(5, 139, 242, 0.6);
+  -moz-box-shadow: 0 0 3px 1px rgba(5, 139, 242, 0.6);
+  box-shadow: 0 0 3px 1px rgba(5, 139, 242, 0.6);
+*/
+}
+multi-pick .tags .tag-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+multi-pick .tags .tag-item {
+  margin: 2px;
+  padding: 0 10px;
+  display: inline-block;
+  float: left;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  height: 23px;
+  line-height: 22px;
+  border-radius: 20px;
+  background: -webkit-linear-gradient(top, #005cbb 0%, #005cbb 47%, #005cbb 100%);
+  background: linear-gradient(to bottom, #005cbb 0%, #005cbb 47%, #005cbb 100%);
+  color: #FFF;
+  font-weight: bold;
+}
+multi-pick .tags .tag-item.selected {
+  background: -webkit-linear-gradient(top, #FFF 0%, #EEE 45%, #EEE 100%);
+  background: linear-gradient(to bottom, #FFF 0%, #EEE 45%, #EEE 100%);
+}
+multi-pick .tags .tag-item .remove-button {
+  margin: 0 0 0 5px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  vertical-align: middle;
+  font: bold 16px Arial, sans-serif;
+  color: #FFF; 
+}
+multi-pick .tags .tag-item .remove-button:active {
+  color: red;
+}
+multi-pick .tags .input {
+  border: 0;
+  outline: none;
+  margin: 2px;
+  padding: 0;
+  float: left;
+  height: 23px;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+multi-pick .tags .input.invalid-tag {
+  color: red;
+}
+multi-pick .tags .input::-ms-clear {
+  display: none;
+}
+multi-pick.ng-invalid .tags {
+  -webkit-box-shadow: 0 0 3px 1px rgba(255, 0, 0, 0.6);
+  -moz-box-shadow: 0 0 3px 1px rgba(255, 0, 0, 0.6);
+  box-shadow: 0 0 3px 1px rgba(255, 0, 0, 0.6);
+}
+
+multi-pick .autocomplete {
+  margin-top: 5px;
+  position: absolute;
+  padding: 5px 0;
+  z-index: 999;
+  width: 100%;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+multi-pick .autocomplete .suggestion-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+multi-pick .autocomplete .suggestion-item {
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: 16px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: black;
+  background-color: white;
+}
+multi-pick .autocomplete .suggestion-item.selected {
+  color: white;
+  background-color: #005cbb;
+}
+multi-pick .autocomplete .suggestion-item.selected em {
+  color: white;
+  background-color: #005cbb;
+}
+multi-pick .autocomplete .suggestion-item em {
+  font: normal bold 16px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: black;
+  background-color: white;
+}
+
+multi-pick .show-all {
+  height: 27px;
+  position: absolute;
+  right: 0px;
+  width: 70px;
+  margin-top: -32px;
+  margin-right: 7px;
+  line-height: 32px;
+  padding-left: 5px;
+  color: #666;
+  font-size: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+multi-pick .show-all label {
+  float: right;
+  font-size: 11px;
+  margin-right: 4px;
+  margin-top: -4px;
+}
+
+multi-pick .show-all-triangle {
+  position: absolute;
+  width: 0px;
+  margin-right: 12px;
+  height: 0px;
+  border-style: solid;
+  border-width: 14px 10px 14px 0px;
+  border-color: transparent rgba(0, 0, 0, 0.2) transparent transparent;
+  right: 65px;
+  margin-top: -30px;
+}
+
+multi-pick .show-all input {
+  float: left;
+  margin-right: 0px;
+  margin-top: 8px;
+}

@@ -1,0 +1,200 @@
+<div class="reviews">
+  <div id="header-mask"></div>
+  <header class="row" style="visibility: visible;">
+  </header>
+  <section>
+    <warning-box></warning-box>
+    <div class="row">
+      <div class="nine columns" id="main">
+        <div id="reviews-entries" ng-class="{'with-header': entries.length}" data-reviews-top-header>
+          <table cellspacing="0" class="work_day_table">
+            <colgroup><col><col><col><col>
+            </colgroup>
+            <tbody ng-if="isFetchingEntries">
+              <tr>
+                <td>
+                  <p class="entries-message">Loading entries...</p>
+                </td>
+              </tr>
+            </tbody>
+            <tbody
+            infinite-scroll="enlargeWindow()"
+            ng-if="!isFetchingEntries">
+              <tr ng-hide="entries.length">
+                <td>
+                  <p class="entries-message">No entries to review, thanks!</p>
+                </td>
+              </tr>
+              <tr
+                ng-repeat="entry in entries | byRole:roletags | byTeam:selectedTeam:users | byRejected:onlyRejectedStatus | byPeriod:selectedPeriod | limitTo:windowSize track by $index"
+                ng-click="$parent.selectedEntry = entry"
+                ng-if="!entry.hidden"
+                ng-class="{'header-row': entry.isHeader, 'active': entry.activeHeader}"
+                class="review-entry"
+                ng-switch="entry.isHeader">
+                <td colspan="4" ng-if="entry.isHeader === true" class="user-day-header">
+                  <div
+                    class="reviews-header"
+                    fsm-sticky-header
+                    data-scroll-stop="65"
+                    data-index="entry.index">
+                      <div class="reviews-header-date">
+                        <div class="reviews-header-date-day">{{ entry.dayPerformed }}</div>
+                        <div class="reviews-header-date-month">{{ entry.monthPerformed }}</div>
+                      </div>
+                      <div class="reviews-header-name">
+                        {{ entry.owner.name }}
+                      </div>
+                      <div class="reviews-counter">
+                        <span class="reviews-counter-tri">&nbsp;</span>
+                          <ng-pluralize
+                            count="entry.index"
+                            when="{'one': '1 entry to review', 'other': '{} entries to review'}">
+                          </ng-pluralize>
+                      </div>
+                  </div>
+                </td>
+
+                <td ng-if="entry.isHeader === false">
+                  <span ng-repeat="label in entry.initChartLabels" class="day-chart-part">{{ label }}</span>
+                  <span style="display: none;">
+                  </span>
+                  <b class="day-chart-last-part">{{ entry.lastChartLabel }}</b>
+                </td>
+                <td ng-if="entry.isHeader === false">
+                  <div>{{ entry.total.toFixed(2) }}</div>
+                  <div class="entry_fee" ng-show="entry.total_fees > 0">${{ entry.total_fees.toFixed(2) }}</div>
+                </td>
+                <td ng-if="entry.isHeader === false">
+                  <div ng-repeat="comment in entry.comments | orderBy:'created_at':true" class="entry-rejection-comment">
+                    <span class="entry-rejection-comment-author">{{comment.username}}: </span>
+                    {{comment.body}}
+                    <span class="entry-rejection-comment-date"> ({{comment.created_at}})</span>
+                  </div>
+                  <!-- setting ng style inline as a hack to force repaint and layout in webkit: -->
+                  <div ng-show="entry.editing != true" class="entry-description" ng-style="{width: 'auto'}"><span class="kind-info">{{entry.kind_code_display}}</span></br>{{ entry.description }}</div>
+                  <div class="rejection-comment-box" ng-if="entry.rejecting">
+                    <textarea class="mousetrap ng-pristine ng-valid ng-touched" placeholder="Rejection comment..." ng-model="entry.rejectionComment"></textarea>
+                    <div class="twelve columns panel">
+                      <div class="four columns">
+                      </div>
+                      <div class="eight columns">
+                        <div class="six columns">
+                          <button class="button alert" type="submit" ng-click="cancelRejection(entry)">
+                            <span class="icon-cancel-circled"></span>
+                            Cancel
+                          </button>
+                        </div>
+                        <div class="six columns">
+                          <button class="button save" type="submit" ng-click="rejectEntry(entry, $index)" ng-disabled="!entry.rejectionComment" disabled="disabled">
+                            <span class="icon-ok-circled"></span>
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <entry
+                    data-entry="entry"
+                    data-cancel-callback="cancelEditing"
+                    data-save-callback="saveEntry"
+                    ng-if="entry.editing">
+                  </entry>
+                </td>
+                <td ng-if="entry.isHeader === false">
+                  <div class="buttons">
+                    <a href="" class="accept" ng-click="acceptEntry(entry, $index)">
+                      <span class="icon-ok-circled2"></span>
+                    </a>
+                    <a href="" class="reject" ng-if="!entry.own" ng-click="openRejectBox(entry)">
+                      <span class="icon-cancel-circled"></span>
+                    <a href="" class="edit" ng-click="openEditBox(entry)">
+                      <span class="icon-pencil-1"></span>
+                    </a>
+                    <br>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="three columns filters-side">
+        <div class="row undo-last">
+          <div class="ten columns">
+            <div class="row">
+              <button class="button alert undo" type="submit" ng-click="undoLast()">
+                <span class="icon-ccw"></span>
+                Undo last action
+              </button>
+            </div>
+          </div>
+          <div class="two columns">
+            <ts-help title="Undo last approval or denial">
+              Allows you to quickly undo the effects of your last approval
+              or denial or an entry.<br />
+              Please note that it's only possible if the reviewer who got ownership over
+              the approval of an entry did not take any action on it yet.
+            </ts-help>
+          </div>
+        </div>
+        <div class="row clear-old">
+          <button class="button" ng-show="!showAcceptOlder" type="submit" ng-click="showAcceptOlder = true">
+            Show batch actions
+          </button>
+          <div class="buttoner" ng-show="showAcceptOlder">
+            <span class="buttoner-title ng-binding">
+              Batch accept old entries before
+            </span>
+            <quick-datepicker ng-model="acceptOlderThan"  label-format='yyyy/MM/dd' disable-timepicker='true'></quick-datepicker>
+            <button class="button primary" ng-disabled="acceptOlderThan === null || acceptOlderThan === undefined || acceptOlderThan === ''" type="submit" ng-click="acceptOld()">
+              Accept old entries
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="rejected-label">
+            Show rejected only:
+          </div>
+          <div class="rejected-switch">
+            <ts-switcher ng-model='onlyRejectedStatus'></ts-switcher>
+          </div>
+        </div>
+
+        <div class="row">
+          <multi-pick
+              ng-model="roletags"
+              display-property="name"
+              add-on-enter="{{addOnEnter}}"
+              add-on-blur="true"
+              placeholder="Search through users"
+              remove-tag-symbol="{{removeTagSymbol}}"
+              max-length="15"
+              add-from-autocomplete-only="true"
+              search-string="searchString"
+              is-show-all="true"
+              show-all="showAll">
+              <auto-complete source="loadTags($query)"
+                  debounce-delay="0"
+                  min-length="1"
+                  max-results-to-show="30">
+              </auto-complete>
+          </multi-pick>
+        </div>
+
+        <div class="row" ng-show="periods.length">
+          <buttoner selected-item="selectedPeriod" general-items="periods" title="'Periods'"></buttoner>
+        </div>
+
+        <div class="row" ng-show="teamItems.length">
+          <buttoner selected-item="selectedTeam" label-attribute="display_label" general-items="teamItems" title="'Teams'"></buttoner>
+        </div>
+
+        <div class="row" ng-show="projects.length">
+          <buttoner selected-item="selectedProject" label-attribute="label" general-items="projects" title="'Projects'"></buttoner>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

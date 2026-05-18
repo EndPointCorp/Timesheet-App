@@ -1,0 +1,4 @@
+<% if report.missed_users.any? %>
+**Warning**: The report is **Incomplete**. The work entries of the following user(s) have not been included: <%= report.missed_users.join(', ') %>
+<% end %>Total time logged for time period: <%= format_interval_string(report.total_time.to_human_s) %> hours
+Total fee: +<%= number_to_currency(report.total_fee || 0) %>

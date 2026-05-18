@@ -1,0 +1,17 @@
+.cfp-hotkeys-container {
+  @supports ( -webkit-backdrop-filter: blur(100px) ) {
+    -webkit-backdrop-filter: blur(20px);
+    background: none !important;
+  }
+
+  border-spacing: 200px;
+
+  table {
+    background-color: rgba(255, 255, 255, .4);
+
+    tbody tr:nth-child(even) {
+      background: none !important;
+    }
+  }
+
+}

@@ -1,0 +1,91 @@
+<div ng-init="descriptionFocused = false" class="entry-form">
+  <section>
+    <warning-box class="switch-user-warning-without-header"></warning-box>
+    <div class="three columns">&nbsp;</div>
+    <div class="six columns highlighted without-header entry-area" whole-height>
+      <form class="simple_form edit_work_entry">
+        <div class="row collapse complex-input" style="width: 100%; min-width: 100%">
+          <div class="eight columns">
+            <quick-search chart="chart" focus="searchFocused" show-hidden="showHiddenCharts"></quick-search>
+          </div>
+          <div class="four columns">
+            <quick-pick chart="chart"></quick-pick>
+          </div>
+          <div class="eight columns">
+            <charts-multi-select chart="chart" show-hidden="showHiddenCharts"></charts-multi-select>
+          </div>
+          <div class="four columns">
+            <charts-visibility-switcher show-status="showHiddenStatus">Show hidden:</charts-visibility-switcher>
+          </div>
+          <div class="eight columns hours-indicator"  ng-show="projects != null">
+            <table cellpadding="0" cellspacing="0" class="hours-in-the-bank">
+              <tbody>
+                <tr ng-repeat="project in projects" ng-class='{"hours-good": (project.hoursLeft > 16), "hours-close": (project.hoursLeft > 0 && project.hoursLeft <= 16), "hours-none": (project.hoursLeft <= 0)}'>
+                  <td class="hours-chart">
+                    <div class='hours-chart-label' ng-repeat='label in project.budgetChartLabels'>
+                      <span ng-show='($first || $middle) && !$last'>{{ label }}&nbsp;-&nbsp;</span>
+                      <b ng-show='$last'>{{ label }}</b>
+                    </div>
+                  </td>
+                  <td class="hours-triangle"><div>&nbsp;</div></td>
+                  <td class="hours-left">
+                    {{ project.hoursLeft.toFixed(2) }}
+                    <div class="hours-mode {{ project.mode }}">
+                      {{ project.modeSymbol }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="eight columns hours-indicator" ng-show="hoursWaiting">
+            <div class="message panel">Waiting for the server to compute hours in the bank</div>
+          </div>
+          <div class="twelve columns input-row">
+            <div class="four columns">
+              <quick-datepicker ng-model="datePerformed"  label-format='EEEE, yyyy-MM-dd' disable-timepicker='true'></quick-datepicker>
+            </div>
+            <div class="four columns padded-offset">
+              <input type="text" ng-model="fee_string" class="currency" ts-focus="feeFocused" ng-blur="feeFocused = false">
+            </div>
+            <div class="four columns padded-offset">
+              <button class="button alert no-text" type="submit" ng-click="cancel($event)">
+                <span class="icon-trash"></span>
+              </button>
+              <button class="button save no-text" type="submit" ng-click="tryPersist()" ng-disabled="notValid">
+                <span class="icon-ok-circled"></span>
+              </button>
+            </div>
+          </div>
+          <durations-editor chart="chart" durations="durations"></durations-editor>
+          <div class="twelve columns">
+            <textarea msd-elastic
+                      ng-blur="descriptionFocused = false"
+                      ts-focus="descriptionFocused == true"
+                      placeholder="Description"
+                      ng-model="description"
+                      >
+            </textarea>
+          </div>
+          <div class="twelve columns panel" style="background: none; border: none">
+            <div class="six columns">
+            </div>
+            <div class="six columns">
+              <div class="six columns">
+                <button class="button alert" type="submit" ng-click="cancel($event)">
+                  <span class="icon-cancel-circled"></span>
+                  Cancel
+              </div>
+              <div class="six columns">
+                <button class="button save" type="submit" ng-click="tryPersist()" ng-disabled="notValid">
+                  <span class="icon-ok-circled"></span>
+                  Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="three columns">&nbsp;</div>
+  </section>
+</div>

@@ -1,0 +1,13 @@
+<div class="row" ng-show="shouldReload">
+  <div class="reloader">
+    <h5>New version of the TimesheetApp</h5>
+    <p>
+      The page will get reloaded. If you're in the middle of entering time
+      the form will preserve all entered data.
+    </p>
+    <p>
+      Auto reloading in <b>{{ reloadIn }}</b> seconds.
+    </p>
+    <button class="button" ng-click="reload()">Reload Now</button>
+  </div>
+</div>

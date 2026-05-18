@@ -1,0 +1,70 @@
+<div class="transaction-preview">
+  <div class="transaction-header">
+
+    <div class="transaction-hours">
+      <div class="hours-value">{{ transaction.hours }}</div>
+      <div class="hours-label">HOURS</div>
+    </div>
+
+    <div class="transaction-date-start">
+      <div ng-class="{ 'active-indicator': true, 'active': transaction.is_active }"></div>
+      <span>{{ transaction.date }}</span>
+    </div>
+    <div class="dark-triangle"></div>
+
+    <div class="transaction-date-end">{{ endDate() }}</div>
+    <div class="light-triangle"></div>
+
+    <div class="transaction-mode">
+      {{ modeString() }}
+    </div>
+
+    <div class="light-triangle-reflected"></div>
+    <div class="transaction-creator">
+      <div class="name">{{ transaction.author_name }}</div>
+    </div>
+  </div>
+
+  <div class="transaction-body row">
+    <div ng-show="editing" class="edit-form">
+      <transaction-form on-cancel="editing = false"
+                        on-save="onUpdate()"
+                        transaction="transaction"
+                        ></transaction-form>
+    </div>
+    <div class="eleven columns" ng-show="!editing">
+      <div class="row input-row">
+        <div class="three columns text-line greyed smaller">
+          Recur Monthly:
+        </div>
+        <div class="nine columns">
+          <cron-spec edit="false" ng-model="transaction.recur_at"></cron-spec>
+        </div>
+      </div>
+
+      <div class="row input-row" ng-show="transaction.recur_at">
+        <div class="three columns text-line greyed smaller">
+          Recur Mode:
+        </div>
+        <div class="nine columns description">
+          {{ recurModeString() }}
+        </div>
+      </div>
+
+      <div class="row input-row">
+        <div class="three columns text-line greyed smaller">
+            Description:
+        </div>
+        <div ng-class="{ 'nine': true, 'columns': true, 'description': true, 'no-description': !hasDescription()}">
+          {{ descriptionString() }}
+        </div>
+      </div>
+    </div>
+
+    <div class="one column" ng-show="!editing">
+      <a href="" ng-click="edit()"><img src="/images/pencil.png"></a>
+      <a href="" ng-click="delete()"><img src="/images/delete-darkgray.png"></a>
+    </div>
+  </div>
+
+</div>

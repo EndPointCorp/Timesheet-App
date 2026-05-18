@@ -1,0 +1,58 @@
+<div ng-show="currentAniversaryYear">
+  <table cellpadding="0" cellspacing="0" class="pto-totals">
+    <thead>
+      <tr>
+        <th>
+          <ts-help title="Sick & vacation totals">
+            Those values are counted <b>since your aniversary date</b>
+          </ts-help>
+          <span class="aniversary-date">
+            {{ anniversary }}
+          </span>
+        </th>
+        <th></th>
+        <th>Sick</th>
+        <th>Vacation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pto-year">{{ currentAniversaryYear }} - {{ currentAniversaryYear + 1 }}</td>
+        <td class="pto-triangle"><div>&nbsp;</div></td>
+        <td>{{ sicks }}</td>
+        <td>{{ vacations }}</td>
+      </tr>
+      <tr>
+        <td class="pto-year">{{ lastAniversaryYear }} - {{ lastAniversaryYear + 1 }}</td>
+        <td class="pto-triangle"><div>&nbsp;</div></td>
+        <td>{{ last_sicks }}</td>
+        <td>{{ last_vacations }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table cellpadding="0" cellspacing="0" class="pto-totals holidays">
+    <thead>
+      <tr>
+        <th>
+          <ts-help title="Holiday totals">
+            This value is counted from <b>the start of the calendar year</b>
+          </ts-help>
+        </th>
+        <th></th>
+        <th>Holiday</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="pto-year">{{ currentYear }}</td>
+        <td class="pto-triangle"><div>&nbsp;</div></td>
+        <td>{{ holidays }}</td>
+      </tr>
+      <tr>
+        <td class="pto-year">{{ lastYear }}</td>
+        <td class="pto-triangle"><div>&nbsp;</div></td>
+        <td>{{ last_holidays }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

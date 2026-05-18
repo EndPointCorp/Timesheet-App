@@ -1,0 +1,39 @@
+#!/usr/bin/env rake
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
+require File.expand_path('../config/application', __FILE__)
+
+TimesheetApp::Application.load_tasks
+# do not drop database - instead, migrate it to state 0
+Rake.application.instance_variable_get('@tasks').delete('db:test:purge')
+Rake.application.instance_variable_get('@tasks').delete('db:test:prepare')
+namespace :db do
+  namespace :test do
+    task :purge => [:environment] do
+
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
+      sql = ActiveRecord::Base.connection.execute %(select 'drop table if exists "' || tablename || '" cascade;' 
+                                               from pg_tables
+                                              where schemaname = 'public')
+      ActiveRecord::Base.connection.execute sql.to_a.map { |i| i["?column?"] }.join("\n")
+      sql_seqs = ActiveRecord::Base.connection.execute %(SELECT 'drop sequence if exists "' || relname || '" cascade;' 
+                                              FROM pg_class c WHERE c.relkind = 'S';)
+      
+      ActiveRecord::Base.connection.execute sql_seqs.to_a.map { |i| i["?column?"] }.join("\n")
+      sql_types = ActiveRecord::Base.connection.execute %(select 'drop type if exists "' || typname || '" cascade;' 
+                                                          from pg_type 
+                                                          where typowner = (select usesysid 
+                                                              from pg_user where usename = 'timesheet') )
+      ActiveRecord::Base.connection.execute sql_types.to_a.map { |i| i["?column?"] }.join("\n")
+      ActiveRecord::Base.connection.execute "DROP SCHEMA IF EXISTS clean;"
+      ActiveRecord::Base.connection.execute "DROP LANGUAGE IF EXISTS plpgsql CASCADE;"
+    end
+
+    task :prepare => [:environment, :purge] do
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
+      ActiveRecord::Migration.verbose = false
+      ActiveRecord::Migrator.migrate("db/migrate/")
+    end
+  end
+end

@@ -1,0 +1,60 @@
+<div>
+  <section>
+    <warning-box class="switch-user-warning-without-header"></warning-box>
+    <div class="twelve columns create_user">
+      <div class="four columns"></div>
+      <div id="msg" class="four columns panel create_user" ng-class="msgClass"size="30" ng-show="showMsg">{{msg}}</div>
+      <div class="four columns"></div>
+    </div>
+    <div class="twelve columns"> 
+      <div class="four columns"></div>
+      <div class="four columns panel create_user" id="create_user">
+        <form>
+          <div>
+            <input size="30" class="mousetrap" placeholder="Name" type="text" ng-model="name" ts-focus="fieldFocused">
+          </div>
+          <div>
+            <input size="30" class="mousetrap" placeholder="Email" type="text" ng-model="usermail">
+          </div>
+          <div>
+            <select id="timeZoneDropDown" ng-model="selectedTimeZooe">
+              <option ng-repeat="timeZone in timeZones" value="{{ timeZone  }}" ng-selected="selectedTimeZone == timeZone">{{timeZone}}</option>
+            </select>
+          </div>
+          <div>
+            <input size="30" class="mousetrap" placeholder="Password" type="password" ng-model="password">
+          </div>
+          <div>
+            <input size="30" class="mousetrap" placeholder="Password Confirmation" type="password" ng-model="passwordConfirmation">
+          </div>
+          <div class="start_date">
+
+          </div>
+          <div class="start_date">
+              <multi-pick ng-model="userTeams" display-property="name"
+                  add-on-enter="{{addOnEnter}}"
+                  add-on-blur="true"
+                  placeholder="Type to search through teams"
+                  remove-tag-symbol="{{removeTagSymbol}}"
+                  max-length="15"
+                  add-from-autocomplete-only="true"
+                  search-string="searchString"
+                  show-all="showAll"
+                  is-show-all="false"
+                  show-all-visible="false">
+                  <auto-complete source="loadTeams($query)"
+                      debounce-delay="0"
+                      min-length="1"
+                      max-results-to-show="30">
+                  </auto-complete>
+              </multi-pick>
+          </div>
+          <div>
+            <a href="" class="button login" ng-click="createUser()">Create User</a>
+          </div>
+        </form>
+      </div>
+      <div class="four columns"></div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,40 @@
+$brunch: #D2DDF0;
+
+@import "typography";
+@import 'mixins';
+@import 'foundation';
+@import 'jquery.ui';
+@import 'libnotify';
+@import 'chosen';
+@import 'ts_quick_date';
+@import 'base';
+@import 'ts_switcher';
+@import 'ts_help';
+@import 'dashboard';
+@import 'reviews';
+@import 'create_user';
+@import 'spinner';
+@import 'select_button';
+@import 'roles';
+@import 'users_groups_details';
+@import 'dir_pagination';
+@import 'transactions';
+@import 'mailers';
+@import 'hotkeys';
+
+  @media only screen and (max-width: 940px) {
+    .top-bar section > ul li.toggle-topbar a:not(.button) {
+      padding-left: 0px !important;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid white;
+      border-bottom: 0px solid transparent;
+      top: 18px !important;
+      bottom: 0px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      height: 0 !important;
+      padding: 0px !important;
+    }
+  }
+

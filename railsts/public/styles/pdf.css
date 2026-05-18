@@ -1,0 +1,11 @@
+#preview-pane {position: relative; height: 1410px; width: 100%; float: right; border: none;}
+
+.pdf-switcher {float: left; line-height: 30px; margin-left: 0; margin-right: 10px; margin-top: 12px; margin-bottom: 10px; height: 30px; width: 118px;}
+
+.pdf-switcher-module {float: right; position: relative;}
+
+.pdf-switcher-span {margin-left: 0;}
+
+.pdfClass {width: 100%; top: 4px; position: absolute;}
+
+.full_report {background: white;}

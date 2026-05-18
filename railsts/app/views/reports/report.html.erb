@@ -1,0 +1,100 @@
+<% report ||= @document %>
+
+<div style="background-color: white;" class="report_summary">
+  <div><span><b>Summary</b></div>
+  <% if action_name == 'billing' %>
+    <div>
+      <span class="title main-detail">Billable time:</span>
+      <span class="value main-detail ng-binding"><%= format_interval_string(report.billable_time.to_human_s) %> hours</span>
+    </div>
+    <% if report.billable_details.length > 1 %>
+      <% report.billable_details.each do |detail| %>
+        <% if detail[1] > 0 %>
+          <div>
+            <span class="title detail"><%= detail[0]%></span>
+            <span class="value detail ng-binding"><%= format_interval_string(detail[1].to_human_s) %> hours</span>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+    <div>
+      <span class="title main-detail">Non Billable time:</span>
+      <span class="value main-detail ng-binding"><%= format_interval_string(report.non_billable_time.to_human_s) %> hours</span>
+    </div>
+    <% if report.nonbillable_details.length > 1 %>
+      <% report.nonbillable_details.each do |detail| %>
+        <% if detail[1] > 0 %>
+          <div>
+            <span class="title detail"><%= detail[0]%></span>
+            <span class="value detail ng-binding"><%= format_interval_string(detail[1].to_human_s) %> hours</span>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <div>
+    <span class="title main-detail">Total time:</span>
+    <span class="value main-detail ng-binding"><%= format_interval_string(report.total_time.to_human_s) %> hours</span>
+  </div>
+  <div>
+    <span class="title main-detail">Total fee:</span>
+    <span class="value main-detail ng-binding">+<%= number_to_currency(report.total_fee) %></span>
+  </div>
+  <%= render partial: 'reports/report_hours_in_the_bank', locals: { report: report } %>
+</div>
+
+<% if report.missed_users.any? %>
+  <div class="row report-warning">
+    <b>Warning</b>: The report is <b>Incomplete</b>.
+    The work entries of the following user(s) have not
+    been included: <b><%= report.missed_users.join(', ') %></b>
+  </div>
+<% end %>
+
+<div class="report_content">
+  <table>
+    <% report.all_items.first.each do |report_item| %>
+      <tr class="<%= "level-#{report_item[:level]} heading #{report_item[:approved] == false && effective_user.is_new_features_tester? ? 'not-approved' : ''}" %>">
+        <td><%= report_item[:name] %></td>
+        <% if report.report.name == 'Report::Standard' %>
+          <td><%= report_item[:date] %></td>
+        <% end %>
+        <td><%= report_item[:fullname] %></td>
+        <td class="total"><%= format_interval_string(report_item[:total].to_human_s) %>
+        <% if (report_item[:fee] || 0) > 0 %>
+          <td class="fee"><%= number_to_currency(report_item[:fee]) %></td>
+        <% end %>
+      </tr>
+      <tr class="<%= "level-#{report_item[:level]} separator #{'light' if report_item[:description].present?} #{report_item[:approved] == false && effective_user.is_new_features_tester? ? 'not-approved' : ''}" %>">
+        <td colspan="<%= report.report.name == 'Report::Standard' ? '5' : '4' %>"><hr /></td>
+      </tr>
+      <% if report_item[:description].present? %>
+        <tr class="<%= "level-#{report_item[:level]} data #{report_item[:approved] == false && effective_user.is_new_features_tester? ? 'not-approved' : ''}" %>">
+          <% if report_item[:approved] == false && effective_user.is_new_features_tester? %>
+            <td colspan="<%= report.report.name == 'Report::Standard' ? '3' : '2' %>" class="verbatim"><%= report_item[:description] %></td>
+            <td>
+              <ts-help title="Not approved entry">
+                <div>Entry is not yet approved by a manager.</div>
+              </ts-help>
+            </td>
+          <% else %>
+            <td colspan="<%= report.report.name == 'Report::Standard' ? '4' : '3' %>" class="verbatim"><%= report_item[:description] %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    <% end %>
+  </table>
+</div>
+
+<% if report.all_items.first.count > 0 %>
+  <div class="summary_footer">
+    <div>
+      <span>Total time:</span>
+      <span><%= format_interval_string(report.total_time.to_human_s) %> hours</span>
+    </div>
+    <div>
+      <span>Total fee:</span>
+      <span>+<%= number_to_currency(report.total_fee) %></span>
+    </div>
+  </div>
+<% end %>

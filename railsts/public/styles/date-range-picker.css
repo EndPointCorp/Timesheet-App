@@ -1,0 +1,228 @@
+﻿.ac-select-wrapper {
+    position: relative;
+}
+
+.ac-select-wrapper, .ac-select-wrapper input, .ac-select-wrapper select {
+    font-family: Arial;
+    font-size: 12px;
+    background-color: white;
+    border: none;
+    text-align: center;
+}
+
+.ac-select-main {
+    vertical-align: middle;
+    margin-right: -1px;
+    height: 30px;
+    overflow: hidden;
+    border: 1px solid #c0c0c0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.ac-select-main-closed {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.ac-select-main-open {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.ac-select-table {
+    padding-left: 2px;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    width: 100%;
+    /*min-width: 150px;*/
+}
+
+.ac-select-display {
+    padding-left: 3px;
+    vertical-align: middle;
+}
+
+.ac-select-table td {
+    white-space: nowrap;
+    padding: 0px;
+}
+
+.ac-select-widener td {
+    /*visibility: hidden;*/
+    padding: 0px;
+}
+
+td.ac-select-longest {
+    padding-right:4px;
+}
+
+td.ac-select-image .dropdown {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #000;
+    margin: 12px -5px 0px 4px;
+}
+
+div.ac-select-popup {
+    position: absolute;
+    border-left: 1px solid #c0c0c0;
+    border-right: 1px solid #c0c0c0;
+    border-bottom: 1px solid #c0c0c0;
+    z-index: 101;
+    background-color: #333;
+    padding-top: 2px;
+    padding-left:2px;
+    width: 100%;
+    color: white;
+}
+
+div.ac-select-list {
+    overflow: auto;
+    margin-bottom: 1px;
+}
+
+div.ac-select-no-items {
+    padding-left: 3px;
+}
+
+.ac-select-text-wrapper {
+    padding: 0 0px;
+}
+
+.ac-select-text {
+    width: 100%;
+    padding-left: 2px;
+    margin-left: -2px;
+    border-width: 0px;
+}
+
+
+.ac-select-search-wrapper {
+    padding: 0 6px;
+    padding-bottom: 2px;
+    margin-left: -2px;
+    padding-left: 6px;
+}
+
+.ac-select-search-wrapper table {
+    width: 100%;
+    margin: 0px;
+}
+
+.ac-select-search-wrapper table tbody tr td {
+    padding: 0px;
+    background-color: #333;
+}
+
+.ac-select-search-wrapper table tbody tr td input {
+    padding: 0px 12px;
+}
+
+.ac-select-search {
+    padding-left: 2px;
+    width: 100%;
+    margin-left: -3px;
+}
+
+td.ac-select-add {
+    cursor: pointer;
+    width: 20px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ac-select-add div {
+    border: 1px solid transparent;
+    margin: 4px;
+    width: 16px;
+    line-height: 16px;
+}
+
+.ac-select-add div:hover {
+    border: 1px solid #d0d0d0;
+    /*background-color: #f0f0f0;*/
+}
+
+.ac-select-disabled {
+    color: #c0c0c0;
+    cursor: pointer;
+}
+
+.ac-select-highlight {
+    color: #d97a23;
+}
+
+.ac-select-popup ul {
+    cursor: pointer;
+    padding: 3px 0px 3px 0px;
+    margin: 0;
+    text-align: left;
+    list-style: none;
+    width: 100%;
+}
+
+.ac-select-popup li {
+    padding-left: 3px;
+    margin-right: 3px;
+    margin-left: 3px;
+    white-space: nowrap;
+    border-bottom: 1px solid #ccc;
+}
+
+.ac-select-popup li:hover {
+    color: #d97a23;   
+}
+
+.ac-select-load-more {
+    color: #808080;
+    width: 97%;
+    margin: 3px 6px 3px 6px;
+    line-height: 18px;
+    border-top: 1px solid #d0d0d0;
+}
+
+.ac-select-loading {
+    padding-left: 6px;
+    color: #808080;
+}
+
+.ac-select-load-more span {
+    cursor: pointer;
+    padding-left: 12px;
+}
+
+#dates-relative-box {
+    position: absolute;
+    background-color: #ccc;
+    padding-left: 0px;
+    height: 30px;
+    width: 68px;
+    left: 0px;
+    top: 0;
+    z-index: 777;
+    border-radius: 5px 0 0 5px;
+}
+
+#dates-relative-box label {
+  font-size: 11px;
+  float: left;
+  margin-top: 5px;
+  margin-left: 8px;
+}
+
+#dates-relative-box input { margin-top: 8px; }
+
+#dates-relative-box #dates-relative-box-triangle {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 14px 0 14px 10px;
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.2);
+  top: 1px;
+  left: 68px;
+}

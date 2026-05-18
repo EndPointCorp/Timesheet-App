@@ -1,0 +1,28 @@
+module ChartsHelper
+
+  def create_proper_chart
+    FactoryGirl.create(:duration_kind, code: 'billable_standard') unless DurationKind.where(code: 'billable_standard').count == 1
+    FactoryGirl.create(:work_chart, id: 1) if WorkChart.where(id: 1).count == 0
+    FactoryGirl.create :work_chart, parent_id: 1
+  end
+
+  def new_chart_params
+
+    {
+      work_chart: {
+        display_label: 'Some new client . com',
+        branch_order:  0,
+        status:  'active',
+        parent_id:  WorkChart.last
+      }
+    }
+  end
+
+  def setup_basic_charts
+    insert_basic_charts
+    @clients, @acme, @acme_general, @acme_ios, @acme_ios_devel, @acme_ios_design, @acme_rust, @acme_rust_devel =
+      WorkChart.where("id >= 2").order("id asc").to_a
+    @administration_project = FactoryGirl.create :work_chart, :parent => @clients, :display_label => 'Administration'
+  end
+
+end

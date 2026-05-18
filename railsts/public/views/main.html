@@ -1,0 +1,33 @@
+<div ng-class="{isUserView: isUserView}">
+  <header class="row" style="visibility: visible;">
+    <date-switcher
+      date="date"
+      mode="months"
+      is-user-view="isUserView"
+      possible-users="possibleUsers"
+      calendar-user="calendarUser">
+  </header>
+  <section>
+    <warning-box></warning-box>
+    <div class="row">
+      <div class="eight columns" id="main">
+        <calendar
+          date="date"
+          is-user-view="isUserView"
+          calendar-user="calendarUser"></calendar>
+        <calendar-month-totals
+          date="date"
+          is-user-view="isUserView"
+          calendar-user="calendarUser"></calendar-month-totals>
+      </div>
+      <div class="four columns" id="side">
+        <reviewing-counter ng-if="currentUser.is_new_features_tester && !isUserView"></reviewing-counter>
+        <pto-totals 
+          date="date"
+          is-user-view="isUserView"
+          calendar-user="calendarUser"></pto-totals>
+        <hours-in-the-bank-indicator ng-if="currentUser.is_new_features_tester && !isUserView"></hours-in-the-bank-indicator>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,70 @@
+--- !ruby/object:ChartNotifierConfig
+chart_id: 4478
+mode: :from_selected
+with_description: false
+recipients:
+- timesheet-jon@slurrypond.epinfra.net
+condition: !ruby/object:ChartNotifierConfig::Condition
+  hour: 6
+  week_days:
+  - 1
+  - 2
+  - 4
+  - 3
+  - 5
+  threshold: !ruby/object:ChartNotifierConfig::Condition::Threshold
+    mode: :last_day
+    value: 0
+report_type: :break
+
+
+--- !ruby/object:ChartNotifierConfig
+chart_id: 4478
+mode: :from_selected
+with_description: false
+recipients:
+- timesheet-jon@slurrypond.epinfra.net
+condition: !ruby/object:ChartNotifierConfig::Condition
+  hour: 6
+  week_days:
+  - 5
+  threshold: !ruby/object:ChartNotifierConfig::Condition::Threshold
+    mode: :last_week
+    value: 0
+report_type: :break
+
+
+--- !ruby/object:ChartNotifierConfig
+chart_id: 4936
+mode: :from_selected
+with_description: false
+recipients:
+- timesheet-jon@slurrypond.epinfra.net
+condition: !ruby/object:ChartNotifierConfig::Condition
+  hour: 6
+  week_days:
+  - 1
+  - 2
+  - 4
+  - 3
+  - 5
+  threshold: !ruby/object:ChartNotifierConfig::Condition::Threshold
+    mode: :last_day
+    value: 0
+report_type: :break
+
+
+--- !ruby/object:ChartNotifierConfig
+chart_id: 4936
+mode: :from_selected
+with_description: false
+recipients:
+- timesheet-jon@slurrypond.epinfra.net
+condition: !ruby/object:ChartNotifierConfig::Condition
+  hour: 6
+  week_days:
+  - 5
+  threshold: !ruby/object:ChartNotifierConfig::Condition::Threshold
+    mode: :last_week
+    value: 0
+report_type: :break

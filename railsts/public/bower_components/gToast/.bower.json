@@ -1,0 +1,41 @@
+{
+  "name": "gToast",
+  "version": "0.1.2",
+  "homepage": "https://github.com/nohros/gToast",
+  "description": "Gmail like toaster for angularjs",
+  "authors": [
+    "Neylor Ohmaly <nohros.ceo@gmail.com>"
+  ],
+  "main": [
+    "src/gToast.js",
+    "sass/gtoast.scss",
+    "sass/_toast.scss",
+    "sass/_theme.scss"
+  ],
+  "keywords": [
+    "angularjs",
+    "gToast"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.9"
+  },
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.2",
+    "commit": "a83dcd1d67e9d880b87ecf500b321c04d434efb0"
+  },
+  "_source": "git://github.com/nohros/gToast.git",
+  "_target": "~0.1.2",
+  "_originalSource": "gToast",
+  "_direct": true
+}

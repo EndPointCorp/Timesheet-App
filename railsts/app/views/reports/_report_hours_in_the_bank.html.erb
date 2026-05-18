@@ -1,0 +1,14 @@
+<% if report.params[:show_hours_in_the_bank] == 'true' %>
+  <div><span><b><br />Hours in the bank</b></div>
+  <% report.budgets.each do |budget| %>
+    <div>
+      <span class="title main-detail">
+        <%= (budget.labels - ["End Point Corp.", "Clients"]).join(" - ") %>
+        ( <%= budget.kind_code.humanize %> )
+      </span>
+      <span class="value main-detail ng-binding">
+        +<%= number_with_precision(Interval.new(budget.hours_left).minutes / 60.0, precision: 2) %>
+      </span>
+    </div>
+  <% end %>
+<% end %>

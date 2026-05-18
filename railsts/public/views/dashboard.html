@@ -1,0 +1,75 @@
+<div>
+  <header class="row">
+  </header>
+  <section>
+    <warning-box></warning-box>
+    <div class="row">
+      <div class="eight columns" id="main">
+        <table cellspacing="0" class="team-hours">
+          <thead>
+            <th><a href="" ng-click="previous()" class="left">
+              <span class="icon-left"></span>
+            </a></th>
+            <th colspan="8">{{ fromString }} - {{ toString }}</th>
+            <th><a href="" ng-click="next()" class="right">
+              <span class="icon-right"></span>
+            </a></th>
+          </thead>
+          <tbody> 
+            <tr>
+              <td>&nbsp;</td>
+              <td ng-repeat="day in weekDays">{{ day }}</td>
+              <td>Total</td>
+              <td>Actions</td>
+            </tr>
+          </tbody> 
+          <tbody ng-repeat="team in selectedTeamTotals">
+            <tr>
+              <th colspan="10" ng-hide="team.name==''">
+                {{team.name}} 
+              </th>
+            </tr>
+            <tr>
+              <th></th>
+              <th ng-repeat="date in dates">{{ date.getMonth() + 1 }}/{{ date.getDate() }}</th>
+              <th></th>
+              <th></th>
+            </tr>
+            <tr class="cursor-pointer" ng-repeat="member in team.users">
+              <td>{{ member.name }}</td>
+              <td ng-repeat="day in member.days" ng-class="{ 'total-ok': hoursOk(day), 'total-little': hoursLittle(day)}">
+                <a class="dashboard-report-link" ng-href="{{ openReportDayLink(member.code, $event, day) }}">
+                  <div>
+                    <div>{{ (day.billable + day.nonbillable + day.pto).toFixed(2) }}</div> 
+                    <div class="sub">{{ day.billable.toFixed(2) }}</div> 
+                    <div class="sub">{{ day.nonbillable.toFixed(2) }}</div>
+                    <div class="sub">{{ day.pto.toFixed(2) }}</div>
+                  </div>
+                </a>
+              </td>
+              <td ng-class="{ 'total-ok': weekOk(member), 'total-little': weekLittle(member)}">
+                <div>
+                  <div>{{ (member.total_billable + member.total_nonbillable + member.total_pto).toFixed(2) }}</div>
+                  <div class="sub">{{ member.total_billable.toFixed(2) }}</div>
+                  <div class="sub">{{ member.total_nonbillable.toFixed(2) }}</div>
+                  <div class="sub">{{ member.total_pto.toFixed(2) }}</div>
+                </div>
+              </td>
+              <td>
+                <a class="dashboard-action-link" ng-href="{{ reportLink(member.code, $event) }}" title="Open the report tool">
+                  <span class="icon-doc-text"></span>
+                </a>
+                <a class="dashboard-action-link" ng-href="{{ calendarLink(member.code) }}" title="Open the calendar">
+                  <span class="icon-calendar-1"></span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="four columns" id="side">
+        <buttoner selected-item="selectedTeam" general-items="teams" title="'Teams'" label-attribute="display_label"></buttoner>
+      </div>
+    </div>
+  </section>
+</div>

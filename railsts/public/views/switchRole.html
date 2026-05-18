@@ -1,0 +1,19 @@
+<div>
+  <section>
+    <warning-box class="switch-user-warning-without-header"></warning-box>
+    <div class="three columns">&nbsp;</div>
+    <div class="six columns highlighted without-header entry-area" whole-height>
+      <div>
+        <div class="show-all">
+          <input id="show-all" type="checkbox" ng-model="showAll"> 
+          <label for="show-all">show all</label>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+        <ul class="assume-users-list">
+          <li ng-repeat="role in roles" ng-click="switchTo(role)">{{ role.name }}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="three columns">&nbsp;</div>
+  </section>
+</div>

@@ -1,0 +1,9 @@
+<% report ||= @document %><%= render partial: 'reports/report_summary', locals: { report: report } %>
+
+<% report.all_items.first.each do |report_item| %>
+  <%= ' ' * report_item[:level].to_i %><%= report_item[:name] %><% if report.report.name == 'Report::Standard' %> on <%= report_item[:date] %><% end %><% if !report_item[:fullname].nil? %> by <%= report_item[:fullname] %><% end %>: <%= format_interval_string(report_item[:total].to_human_s) %> hours<% if (report_item[:fee] || 0) > 0 %> ( <%= number_to_currency(report_item[:fee]) %> )<% end %>
+
+<% if report_item[:description].present? %><%= report_item[:description].lines.map { |l| (' ' * (report_item[:level].to_i + 4)) + l }.join %>
+<% end %>
+
+<% end %>

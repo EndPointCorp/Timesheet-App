@@ -1,0 +1,54 @@
+@import "typography";
+
+.select-buttons  dd {
+  margin-left:0px;
+}
+
+dl.select-buttons {
+  margin:0px;
+}
+
+
+.select-buttons  dd a {  
+    cursor: pointer;
+    color: #707274;
+    font-size: 12px;
+    border-radius: 4px;
+    background-color: #F1F1F1;
+    padding: 2px 20px;
+    display: block;
+    min-width: 100px;
+    text-align: center;
+    float: left;
+    margin: 4px 4px;
+    font-family: $font-semi-bold;
+}
+  
+.select-buttons dd a:visited { color: #002A80; }
+
+.select-buttons dd.active a {
+    cursor: pointer;
+    color: white;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+    background-color: #006DCC !important;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#08C), to(#04C)) !important;
+    background-image: -webkit-linear-gradient(top, #08C, #04C) !important;
+    background-image: -o-linear-gradient(top, #08C, #04C) !important;
+    background-image: linear-gradient(to bottom, #08C, #04C) !important;
+    background-image: -moz-linear-gradient(top, #08C, #04C) !important;
+    background-repeat: repeat-x !important;
+    border-color: #04C #04C #002A80 !important;
+    filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0) !important;
+    filter: progid:dximagetransform.microsoft.gradient(enabled=false) !important;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.8) !important;
+    border-radius: 4px;
+    font-size: 13px;
+    padding: 2px 20px;
+    display: block;
+    min-width: 100px;
+    text-align: center;
+    float: left;
+    font-family: $font-semi-bold;
+    margin: 4px 4px;
+}
+

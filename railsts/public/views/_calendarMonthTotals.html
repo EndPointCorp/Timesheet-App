@@ -1,0 +1,57 @@
+<table cellpadding="0" cellspacing="0" id="calendar-month-totals">
+  <thead>
+    <tr>
+      <th>
+        <ts-help title="Columns legend">
+          <div class="legend-block">
+            Available
+            <br />
+            The number of hours that should be worked.
+          </div>
+          <div class="legend-block">
+            Billable
+            <br />
+            The number of logged billable hours.
+          </div>
+          <div class="legend-block">
+            Nonbillable
+            <br />
+            The number of logged nonbillable hours.
+          </div>
+          <div class="legend-block">
+            PTO
+            <br />
+            The number of logged vacation, sick and comp time hours.
+          </div>
+          <div class="legend-block">
+            Total
+            <br />
+            The number of sum of logged hours.
+          </div>
+          <div class="legend-block">
+            Diff
+            <br />
+            The number of hours that still should be worked minus already logged hours.
+          </div>
+        </ts-help>
+      </th>
+      <th>Available</th>
+      <th>Billable </th>
+      <th>Nonbillable </th>
+      <th>PTO </th>
+      <th>Total</th>
+      <th>Diff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="month in months">
+      <td><a href="" ng-click="goTo(month)">{{ month.monthName }} {{ month.year }}</a></td>
+      <td>{{ month.availableTotal.toFixed(2) }}</td>
+      <td>{{ month.billableTotal.toFixed(2) }}</td>
+      <td>{{ month.nonbillableTotal.toFixed(2) }}</td>
+      <td>{{ month.ptoTotal.toFixed(2) }}</td>
+      <td ng-class="month.class">{{ month.overallTotal.toFixed(2) }}</td>
+      <td ng-class="month.class">{{ month.differenceTotal.toFixed(2) }}</td>
+    </tr>
+  </tbody>
+</table>

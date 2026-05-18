@@ -1,0 +1,25 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Python
+[*.py]
+indent_style = space
+indent_size = 4
+
+# Makefile uses tabs
+[Makefile]
+indent_style = tab
+tab_width = 4
+
+# Markdown - keep trailing spaces for line breaks
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2

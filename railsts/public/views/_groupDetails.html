@@ -1,0 +1,161 @@
+<div>
+  <div class="group-panel" dir-paginate="group in filteredGroupDetailsList | itemsPerPage:pageSize" current-page="currentPage" pagination-id="__groups">
+    <div class="static">
+    <div class="group-details-panel" ng-mouseover="setCurrentGroupId(group.id)">
+      <div class="name">
+        <span class="save-tools">
+          <span class="apply-changes-item" ng-show="group.changes.isChanged" ng-click="saveChanges(group.changes, group.id)">
+            <a href="" title="Save"><img class="rights-close-icon" src="images/ok_icon.png"></a>
+          </span>
+          <span class="apply-changes-item" ng-show="group.changes.isChanged" ng-click="cancelChanges(group.id)">
+            <a href="" title="Cancel"><img class="rights-close-icon" src="images/red_button_cancel.png"></a>
+          </span>
+        </span>
+        <span contenteditable="true" ng-model="group.label" strip-br="true" select-non-editable="true" ng-change="setName()" class="name">
+        </span>
+      </div>
+      <div class="row">
+        <div class="roles-left grey-title">Groups:</div>
+        <div class="roles-right">
+          <ul class="items-list">
+            <li class="items" ng-repeat="group in group.myroles | orderBy: 'label' track by group.id">
+              {{ ::group.label }}
+              <img ng-show="group.isDirect" class="close-icon" src="images/window-close.png" ng-click="removeGroup(group)">
+              <ts-help ng-show="!group.isDirect" title="Indirect Role">
+                Role inherited
+              </ts-help>
+            </li>
+          </ul>
+          <div class="add-item-wrapper">
+            <span class="add-item" ng-mouseover='showModal=true' ng-init='showModal=false'>
+              <a href=""><img class="plus-icon" src="images/grey-plus-icon.png"></a>
+              <modal-dialog class="ng-modal-dialog-postion" ng-mouseleave="showModal=false" show='showModal'>
+                <span class="add-icon">
+                  <a href=""><img class="plus-icon" src="images/plus_icon_white.png"></a>
+                </span>
+                <select-button selected-button="$parent.$parent.$parent.addGroup" button-items="$parent.$parent.$parent.groupItems" added-items="group.myroles" is-change="showModal"></select-button>
+              </modal-dialog>
+            </span>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        <br/>
+      </div>
+      <div class="dynamic" ng-if=custom>
+        <div class="grey-title">Rights granted:</div>
+        <div class="rights-items-list">
+           <div masonry load-images="false" reload-on-show="true" preserve-order="true">    
+            <div class="masonry-brick rights-items" ng-repeat="right in group.myrights | orderBy: 'label' track by right.id">
+              <div class="rights-header">
+                <div class="rights-title">{{ ::right.label }} </div>
+                <span class="rights-remove-item" ng-show="right.is_direct">
+                  <img class="rights-close-icon" src="images/red_button_cancel.png" ng-click="removeRight(right)">
+                </span>
+                <span class="right-align" ng-show="!right.is_direct">
+                    <ts-help title="Indirect Rights">
+                      Rights from roles of the user 
+                    </ts-help>
+                </span>
+                <span class="add-item add-item-small" ng-if="right.target_kind_code" ng-mouseover='showModal=true' ng-init='showModal=false'>
+                  <a href=""><img class="plus-icon-small" src="images/grey-plus-icon.png"></a>
+                  <modal-dialog class="ng-modal-dialog-postion" ng-mouseleave="showModal=false" show='showModal'>
+                    <span class="add-icon">
+                      <a href=""><img class="plus-icon" src="images/plus_icon_white.png"></a>
+                    </span>
+                    <div class="row collapse">
+                      <div class="eight columns target-view" ng-if="right.target_kind_code=='work_chart' || right.target_kind_code == 'site_mgmt_action' || right.target_kind_code == 'account'">
+                        <div>
+                          <quick-search chart="$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.selectedChart" include-nonleafs="true" include-level="dead"></quick-search>
+                        </div>
+                        <div>
+                          <charts-multi-select chart="$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.selectedChart" allow-select="all" include-level="dead"></charts-multi-select>
+                        </div>
+                        <div>
+                          <a class="slim-button add-workchart" ng-click="addWorkChart(right, chart)" href="">Add</a>
+                        </div>
+                      </div>
+                      <div class="eight columns target-view" ng-if="right.target_kind_code == 'role'">
+                        <div>
+                          <multi-pick ng-model="roletags" display-property="name"
+                              add-on-enter="{{addOnEnter}}"
+                              add-on-blur="true"
+                              placeholder="Type to search through roles"
+                              remove-tag-symbol="{{removeTagSymbol}}"
+                              max-length="50"
+                              add-from-autocomplete-only="true"
+                              search-string="searchString"
+                              is-show-all="isShowAll"
+                              show-all="showAll">
+                              <auto-complete source="loadRoles($query)"
+                                  debounce-delay="0"
+                                  min-length="1"
+                                  max-results-to-show="30">
+                              </auto-complete>
+                          </multi-pick>
+                        </div>
+                        <div>
+                          <a class="slim-button add-workchart" ng-click="addTargets(right, roletags)" href="">Add</a>
+                        </div>
+                      </div>
+                      <div class="eight columns target-view" ng-if="right.target_kind_code == 'user'">
+                        <div>
+                          <multi-pick ng-model="usertags" display-property="name"
+                              add-on-enter="{{addOnEnter}}"
+                              add-on-blur="true"
+                              placeholder="Type to search through users"
+                              remove-tag-symbol="{{removeTagSymbol}}"
+                              max-length="50"
+                              add-from-autocomplete-only="true"
+                              search-string="searchString"
+                              is-show-all="isShowAll"
+                              show-all="showAll">
+                              <auto-complete source="loadUsers($query)"
+                                  debounce-delay="0"
+                                  min-length="1"
+                                  max-results-to-show="30">
+                              </auto-complete>
+                          </multi-pick>
+                        </div>
+                        <div>
+                          <a class="slim-button add-workchart" ng-click="addTargets(right, usertags)" href="">Add</a>
+                        </div>
+                      </div>
+                    </div>
+                  </modal-dialog>
+                </span>
+              </div>
+              <div>
+                <div class="items-list" ng-repeat="target in right.targets | orderBy: 'label' track by target.id">
+                  <div class="rights-child-items">{{ ::target.label }}
+                    <img class="rights-child-close-icon" src="images/window-close.png" ng-click="removeTarget(right, target)">
+                  </div>
+                </div>            
+              </div>
+            </div>         
+          </div>
+          <span class="add-item" ng-mouseover='showRightTypeModal=true' ng-init='showRightTypeModal=false'>
+            <a href=""><img class="plus-icon" src="images/grey-plus-icon.png"></a>  
+            <modal-dialog class="ng-modal-dialog-postion" ng-mouseleave="showRightTypeModal=false" show='showRightTypeModal'>
+              <span class="add-icon">
+                <a href=""><img class="plus-icon" src="images/plus_icon_white.png"></a>
+              </span>
+              <select-button selected-button="$parent.$parent.$parent.$parent.addRightType" button-items="rightTypeItems" added-items="group.myrights" is-change="showRightTypeModal"></select-button>
+            </modal-dialog>
+          </span>
+        </div>    
+        <br/>
+      </div>
+    </div>
+    <br/>
+    </div>
+  
+    <div class="white-border" ng-click="custom=!custom">
+      <img ng-if=!custom class="down-arrow-icon" src="images/up-triangle.png">
+      <img ng-if=custom class="arrow-icon" src="images/up-triangle.png">
+    </div>  
+  </div>
+  <div class="text-center">
+    <dir-pagination-controls pagination-id="__groups" boundary-links="true" confirm-page-change="confirmChangeHandler()" on-page-change="pageGroupChangeHandler(newPageNumber)" template-url="views/_dirPagination.html"></dir-pagination-controls>
+  </div>
+  <p>{{ callGroupUpdate() }}</p>
+</div>

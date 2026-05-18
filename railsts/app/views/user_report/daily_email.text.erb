@@ -1,0 +1,22 @@
+<% if @begin_date == @end_date %>
+Time sheet report for <%= @name %> for <%= @begin_date.strftime("%Y-%m-%d") %>
+<% else %>
+Time sheet report for <%= @name %> from <%= @begin_date.strftime("%Y-%m-%d") %> to <%= @end_date.strftime("%Y-%m-%d") %>
+<% end %>
+
+Total time logged for time period: <%= @daily_total || "0 hours" %>
+
+<% @mentries.each do |entry| %>
+
+<%= entry[:wc_crumb] %>
+  <% entry[:durations].each_with_index do |duration, index| %>
+<%=duration.duration_kind.display_label%>: <%=entry.fetch(:time_total)[index] %>
+  <% end %>
+  <% if entry.fetch(:fee).first && entry.fetch(:fee).first > 0 %>
+Flat Fee: <%=number_to_currency(entry.fetch(:fee).first) %>
+  <% end %>
+
+    <%=entry.fetch(:descriptions).first.gsub("\n", "\n    ") %>
+
+<% end %>
+(end)
