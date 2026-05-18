@@ -1,0 +1,18 @@
+.warning-box {
+  background: #f8edd8;
+  border: 1px solid #e49400;
+  font-size: 13px;
+  color: #956100;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  padding: 8px 0px 8px 20px;
+  z-index: 90;
+  position: relative;
+}
+.warning-bold {
+  font-weight: bold;
+}
+
+.switched-user {
+  text-transform: capitalize;
+}

@@ -1,0 +1,22 @@
+.month {
+  width: 130;
+
+  color: #2ba6cb;
+  cursor: pointer;
+  text-align: left;
+}
+
+.month:hover {
+  color: #21819f;
+}
+
+.bottom-columns-text {
+  text-align: right;
+}
+.calendar-lower {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+}
+.column-header {
+  font-weight: bold;
+  text-align: end;
+}

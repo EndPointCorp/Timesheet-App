@@ -1,0 +1,38 @@
+.entry {
+  color: #333;
+  padding: 9px 10px;
+  vertical-align: top;
+  border: none;
+}
+
+.kind-info {
+  float: left;
+  font-family: "Lato Bold", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.entry-table-row {
+  width: 320px;
+  height: 36px;
+  display: flex;
+}
+
+.entry-table-column1 {
+  width: 214px;
+  color: #333;
+  padding: 9px 10px;
+  vertical-align: top;
+  border: none;
+  font-size: 13px;
+}
+
+.entry-table-column2 {
+  text-align: right;
+  width: 106px;
+  font-size: 13px;
+  color: #333;
+  padding: 9px 10px;
+  vertical-align: top;
+  border: none;
+}

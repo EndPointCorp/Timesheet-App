@@ -1,0 +1,155 @@
+.two-columns {
+  width: 16.6%;
+  text-align: center;
+  padding: 0 6px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  color: #999;
+}
+
+.eight-columns {
+  width: 66.6%;
+  line-height: 20px !important;
+  padding: 0px 6px;
+  float: left;
+  display: flex;
+  align-items: center;
+}
+
+.new-child-input {
+  background-color: white;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.75);
+  display: block;
+  font-size: 14px;
+  padding: 6px;
+  height: 30px;
+  width: 100%;
+  transition: all 0.15s linear;
+  outline: none;
+}
+
+.transaction-hours {
+  width: 87px;
+  height: 56px;
+  margin-left: 5px;
+  background-image: url("../../assets/images/transaction-hours-badge.png");
+  background-size: cover;
+  top: -6px;
+  position: relative;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding-top: 10px;
+  float: left;
+}
+
+.hours-value {
+  font-size: 19px;
+  font-family: "Lato Bold", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.8) !important;
+  line-height: 19px;
+}
+
+.hours-label {
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.transaction-creator {
+  background: #eee;
+  float: left;
+  height: 40px;
+  line-height: 40px;
+  width: 204px;
+  right: -1px;
+  position: relative;
+}
+
+.inputfield-name {
+  padding: 0 6px;
+  line-height: 30px;
+  width: 16.66667%;
+  color: #999;
+  font-size: 12px;
+}
+
+.transaction-mode {
+  line-height: 40px;
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-family: "Lato Bold", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  width: 95px;
+  text-align: center;
+}
+
+.transaction-date-end {
+  background: #eee;
+  width: 116px;
+  float: left;
+  margin-left: -16px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-family: "Lato Bold", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+
+.transaction-date-start {
+  background: #d6d6d6;
+  width: 116px;
+  float: left;
+  margin-left: -6px;
+  height: 40px;
+  line-height: 40px;
+  padding-left: 25px;
+  font-family: "Lato Bold", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+}
+
+.active-indicator {
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  margin-left: -18px;
+  margin-top: 14px;
+  border-radius: 100px;
+}
+
+.workchart-select {
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  padding-left: 10px;
+}
+.MuiFormControl:focus-visible {
+  outline: none;
+}
+.workchart-select:focus-visible {
+  outline: none;
+}
+
+.select-dropdown-transaction {
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  width: 100%;
+  padding-left: 10px;
+}
+
+.select-dropdown-transaction:focus-visible {
+  outline: none;
+}

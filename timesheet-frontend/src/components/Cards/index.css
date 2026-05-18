@@ -1,0 +1,29 @@
+.smallText {
+  text-align: right;
+  font-size: 12px;
+  margin: 0;
+  line-height: 100%;
+  opacity: 0.3;
+  color: #333333;
+}
+.zeroHourIndicator {
+  background: url("../../assets/images/pink_triangle.png");
+  width: 16px;
+  height: 17px;
+  position: relative;
+  bottom: 10px;
+  left: -2px;
+}
+
+.reduntantEntriesIndicator {
+  background: url("../../assets/images/blue_band.png");
+  width: 30px;
+  height: 30px;
+  position: relative;
+  bottom: 40px;
+  left: -2px;
+}
+
+.day-card:hover {
+  cursor: pointer;
+}

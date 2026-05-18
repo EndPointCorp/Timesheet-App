@@ -1,0 +1,125 @@
+.row2 {
+  width: 1000px;
+  max-width: 100%;
+  min-width: 768px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  background: #eee;
+  padding-left: 20px;
+  position: relative;
+  height: 300px;
+}
+
+.date-option {
+  color: white;
+  float: left;
+  width: 30%;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: none !important;
+  margin: 0px 3px 0px 3px;
+  padding-left: 3px;
+  font-size: 14px;
+}
+
+.date-option:hover {
+  color: #d97a23;
+  cursor: pointer;
+}
+
+.quicks {
+  margin: 0;
+  list-style-type: none;
+  padding: 3px 10px;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.quicks:hover {
+  background-color: black;
+  cursor: pointer;
+}
+
+.quicks-header {
+  margin-bottom: 10px;
+  line-height: 2em;
+  display: block;
+  font-family: "Lato Black", Helvetica, Arial, sans-serif;
+}
+
+.checkboxText {
+  font-size: 14px;
+  color: #4d4d4d;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 3px;
+}
+.MuiMenuItem-root {
+  height: 20.66px;
+}
+.select-dropdown-menu {
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  width: 365px;
+  padding-left: 10px;
+}
+.MuiFormControl:focus-visible {
+  outline: none;
+}
+.select-dropdown-menu:focus-visible {
+  outline: none;
+}
+input:focus-visible {
+  outline: none;
+}
+.period-select {
+  margin-top: 8px;
+  margin-left: 20px;
+}
+.preset-select {
+  text-overflow: "";
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  width: 237px;
+  margin-top: -1 !important;
+  padding-left: 10px;
+  margin-right: 20px;
+}
+
+.time-zone-select {
+  text-overflow: "";
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  width: 100%;
+  padding-left: 10px;
+  margin-bottom: 12px;
+}
+
+.deleteButton {
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0.05, #fb5347),
+    color-stop(1, #c82014)
+  ) !important;
+}
+
+.reportsCheckbox {
+  vertical-align: middle;
+  margin-right: 8px;
+}

@@ -1,0 +1,140 @@
+.navButton {
+  border-right: solid black 1px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+.logo {
+  padding-right: 15px;
+  padding-left: 5px;
+}
+.logo a {
+  padding-right: 0px !important;
+}
+.logo a img {
+  margin-top: 10px;
+  margin-right: 0;
+}
+.navLink {
+  background-color: #222222 !important;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.navLink:hover {
+  background-color: #000000 !important;
+}
+.navLink a {
+  text-transform: capitalize;
+}
+.navLinkLogo {
+  background-color: #222222 !important;
+}
+
+.navLinkLogo:hover {
+  background-color: #000000 !important;
+  border-radius: 0px;
+}
+
+.navLinkText {
+  color: white;
+  text-decoration: none;
+  text-transform: none;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+.settingsLink a {
+  color: black;
+  text-decoration: none;
+
+}
+.settingsLink a:hover {
+  color: white !important;
+  background-color: #0098ff;
+  background-image: linear-gradient(to bottom, #0098ff, #04c) !important;
+}
+
+.settingsLink:hover, .settingsLink:hover .linkWidth{
+  color: white;
+}
+
+
+.emailText {
+  color: #888;
+  text-decoration: none;
+  text-transform: none;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+}
+.divider {
+  background-color: black;
+  width: 1px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.1);
+  z-index: 1;
+  height: 40px;
+}
+.drawerDivider {
+  background-color: black;
+  height: 1px;
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.navMenuItem:hover {
+  background-color: black;
+  cursor: pointer;
+}
+
+.MuiPaper-root.MuiDrawer-paper {
+  top: 46.12px;
+}
+
+.MuiBackdrop-root.MuiModal-backdrop {
+  background-color: transparent;
+}
+.linkWidth {
+  width: 100%;
+}
+.settings-menu {
+  display: none;
+}
+
+.dropbtn {
+  background-color: #222222;
+  color: white;
+  padding: 16px;
+  font-size: 13px;
+  border: none;
+  height: 41px;
+  border-radius: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  border-radius: 4px;
+}
+
+.dropdown-content a {
+  color: black;
+
+  text-decoration: none;
+  display: block;
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: black;
+}

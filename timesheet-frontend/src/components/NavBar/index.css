@@ -1,0 +1,60 @@
+.logo {
+  padding-right: 15px;
+  padding-left: 5px;
+}
+
+.logo a {
+  padding-right: 0px !important;
+}
+
+.logo a img {
+  margin-top: 10px;
+  margin-right: 0;
+  height: 26px;
+}
+
+.navLink {
+  background-color: #222222 !important;
+}
+
+.navLink:hover {
+  background-color: #000000 !important;
+}
+
+.navLink2:hover {
+  background-color: #333333 !important;
+}
+
+.navLinkText {
+  color: white;
+  text-decoration: none;
+  text-transform: none;
+}
+
+.emailText {
+  color: #888;
+  text-decoration: none;
+  text-transform: none;
+}
+.divider {
+  background-color: black;
+  width: 1px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+/* dividers */
+
+.css-1d7q5f8 {
+  height: 45px;
+}
+/* buttons  */
+
+.css-912k36 {
+  height: 40px;
+}
+
+.css-912k36:hover {
+  border-radius: 0px;
+  height: 45px;
+}

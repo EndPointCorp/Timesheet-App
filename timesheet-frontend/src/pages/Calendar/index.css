@@ -1,0 +1,94 @@
+.row3 {
+  width: 1000px;
+  max-width: 100%;
+  min-width: 768px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  background: #eee;
+  padding-left: 20px;
+  position: relative;
+  height: 50px;
+  z-index: -1;
+}
+
+.boxInsideRow {
+  height: 40px;
+  background: white;
+  width: 628px;
+  align-items: center;
+}
+
+.select {
+  width: 137.5px;
+  height: 40px;
+  text-align: center;
+}
+
+.first-column {
+  background-color: #ddd;
+  font-weight: bold;
+  width: 130px;
+  height: 40px;
+  text-align: center;
+}
+
+.triangle {
+  padding: 0px;
+  float: left;
+  width: 0px;
+  margin-right: 5px;
+  height: 0px;
+  border-style: solid;
+  border-width: 20px 0 20px 10px;
+  border-color: transparent transparent transparent #ddd;
+}
+
+p {
+  margin: 9.5px;
+}
+.MuiPickersYear-yearButton {
+  background-color: blue;
+}
+
+.select {
+  border: none;
+  text-align: left;
+  padding-left: 35px;
+  padding-right: 35px;
+  background-color: white;
+  font-family: "Roboto", Helvetica, Arial, sans-serif !important;
+  font-size: 14px !important;
+}
+
+.select-calender-user {
+  margin-left: 150px;
+}
+
+.user-calendar-drop {
+  width: 77px;
+}
+
+.input-label-calender-user {
+  top: -6px !important;
+  font-size: 14px !important;
+}
+
+.MuiFormControl:focus-visible {
+  outline: none;
+}
+.select:focus-visible {
+  outline: none;
+}
+
+.month-and-year {
+  width: 140px;
+  padding-left: 10;
+  color: #2ba6cb;
+  text-align: left;
+  font-weight: 500;
+}
+
+.month-and-year:hover {
+  cursor: pointer;
+  color: #2795b6;
+}

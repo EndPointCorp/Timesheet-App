@@ -1,0 +1,25 @@
+.switch-user-button:hover {
+  cursor: pointer;
+  background: linear-gradient(to bottom, #0098ff, #04c) !important;
+  color: white;
+  border: 1px solid #04c;
+}
+
+.switch-user-button {
+  background: linear-gradient(to bottom, #f4f4f4, #dddddd) !important;
+  border-radius: 6px;
+  border: 1px solid rgb(221, 221, 221);
+}
+
+.as-user {
+  font-style: italic;
+}
+
+.close-icon {
+  margin-top: 4px;
+}
+
+.showAllCheckbox {
+  vertical-align: middle;
+  margin-right: 8px;
+}

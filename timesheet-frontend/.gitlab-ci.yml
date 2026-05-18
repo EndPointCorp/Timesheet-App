@@ -1,0 +1,67 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  # HACK: temporary for now, just to get this going. lints should be resolved and then this
+  #       can be removed so future lint issues can properly block builds prompting fixes!
+  DISABLE_ESLINT_PLUGIN: true
+
+#cache:
+#  key:
+#    files:
+#      - package-lock.json
+#  paths:
+#    - node_modules/
+#    - .npm/
+
+build_frontend:
+  image: node:22.18.0-alpine
+  stage: build
+  before_script:
+    #- npm ci --cache .npm --prefer-offline --no-audit --no-fund --loglevel=error
+    - npm ci --prefer-offline --no-audit --no-fund --loglevel=error
+  script:
+    # build production-ready / optimized deployment artifacts
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 hour
+
+.deployment_frontend:
+  image: alpine
+  stage: deploy
+  dependencies:
+    - build_frontend
+  variables:
+    SSH_CONNECT: $DEPLOY_USER@$DEPLOY_HOST
+    GIT_STRATEGY: none   # do not git clone the repo for this stage, there should be no need
+  before_script:
+    - apk add rsync openssh-client
+    # setup ssh connectivity to the target deployment server
+    - eval `ssh-agent`
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - touch ~/.ssh/known_hosts
+    - touch ~/.ssh/private_key
+    - chmod 600 ~/.ssh/known_hosts
+    - chmod 600 ~/.ssh/private_key
+    - echo "IdentityFile ~/.ssh/private_key" > ~/.ssh/config
+    - echo "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/private_key
+    - echo "$DEPLOY_SSH_HOST_KEY" >> ~/.ssh/known_hosts
+  script:
+    # deploy artifacts
+    - rsync --delete --exclude=.env* -av ./build/ "${SSH_CONNECT}:${DEPLOY_DIR}"
+  after_script:
+    - echo "🎉  Deploy finished. "
+
+deploy_frontend_staging:
+  environment: staging
+  extends: .deployment_frontend
+  when: manual
+
+deploy_frontend_prod:
+  environment: production
+  extends: .deployment_frontend
+  when: manual

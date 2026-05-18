@@ -1,0 +1,67 @@
+{
+  "name": "timesheet",
+  "version": "0.2.0",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.12.3",
+    "@mui/x-date-pickers": "^6.3.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@types/node": "^16.18.25",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
+    "axios": "^1.4.0",
+    "dayjs": "^1.8.30",
+    "eslint-config-react-app": "^7.0.1",
+    "material-ui-popup-state": "^5.3.3",
+    "qs": "^6.11.1",
+    "react": "^18.2.0",
+    "react-date-picker": "^11.0.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.11.0",
+    "react-scripts": "5.0.1",
+    "sass": "^1.93.2",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.3.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "start:debug:mac": "react-scripts start & sleep 1 && open -a 'Google Chrome' http://localhost:3000 --args --remote-debugging-port=9222",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "e2e": "playwright test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "https://74.camp.timesheet.end-point-dev.com:9174/",
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@playwright/test": "^1.56.1",
+    "dotenv": "^16.4.5",
+    "prettier": "3.6.2"
+  }
+}

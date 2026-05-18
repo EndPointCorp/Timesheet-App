@@ -1,0 +1,98 @@
+.row3 {
+  width: 1000px;
+  max-width: 100%;
+  min-width: 768px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  background: #eee;
+  padding-left: 20px;
+  position: relative;
+  height: 50px;
+}
+
+.down-arrow-icon {
+  width: 21px;
+  height: 16px;
+  padding: 0px 0px 4px 0px;
+  margin-bottom: 2px;
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+}
+
+.up-arrow-icon {
+  width: 25px;
+  height: 14px;
+  padding: 4px 3px 0px;
+  margin-bottom: 3px;
+}
+
+.close-icon {
+  width: 15px;
+  height: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  float: right;
+}
+
+.rights-close-icon {
+  width: 17px;
+  height: 17px;
+  margin: 0px 0px 0px 6px;
+  cursor: pointer;
+}
+.groupButton {
+  color: #76736c;
+  font-weight: 500;
+}
+
+/* This placeholder changes are for password input in the roles editor, 
+so that the placeholder dots are the same color as the hidded password dots */
+input::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: rgba(0, 0, 0, 0.75);
+}
+input:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: rgba(0, 0, 0, 0.75);
+}
+input::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: rgba(0, 0, 0, 0.75);
+}
+input:-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.select-dropdown-menu {
+  font-size: 14px !important;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: inset 0 10px 12px rgba(255, 255, 255, 0.9);
+  height: 28px !important;
+  padding-left: 10px;
+}
+.MuiFormControl:focus-visible {
+  outline: none;
+}
+.select-dropdown-menu:focus-visible {
+  outline: none;
+}
+.time-zone-user-card {
+  text-overflow: "";
+  width: 85%;
+  padding-left: 10px;
+  margin-bottom: 12px;
+  margin-right: 8px;
+}
+.time-zone-text {
+  width: 15%;
+  color: #a2abb4;
+  font-size: 12px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
