@@ -149,7 +149,7 @@ class WorkEntry < ActiveRecord::Base
 
   def self.total_hours
     WorkEntry.joins(:work_entry_durations).
-      select("EXTRACT(epoch from SUM(work_entry_durations.duration)/3600) as total_hours").
+      select("EXTRACT(epoch from SUM(work_entry_durations.duration)/3600)::double precision as total_hours").
       group("work_entry_durations.id").
       map(&:total_hours).sum
   end
