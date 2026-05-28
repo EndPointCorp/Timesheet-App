@@ -35,5 +35,35 @@ namespace :db do
       ActiveRecord::Migration.verbose = false
       ActiveRecord::Migrator.migrate("db/migrate/")
     end
+
+    # Reproducible test-DB setup (see TEST_SUITE_NOTES.md). Drops & recreates the
+    # isolated test DB, loads db/structure.sql, and populates the materialized
+    # views the suite depends on. Loads schema through the pg connection rather
+    # than shelling out to psql: the web image has no psql binary, and this
+    # pg_dump-16 structure.sql uses \restrict meta-commands an older psql can't
+    # parse. Run via `make test-db`.
+    desc "Create the test DB, load db/structure.sql, and populate materialized views"
+    task :setup => :environment do
+      config = ActiveRecord::Base.configurations.fetch('test')
+      db = config.fetch('database')
+      # Guard against the dotenv footgun where the test env could resolve to the
+      # dev DB; this task drops its target, so refuse anything not clearly a test DB.
+      abort "Refusing: test database #{db.inspect} does not end in _test" unless db =~ /_test\z/
+
+      ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres'))
+      ActiveRecord::Base.connection.drop_database(db) rescue nil
+      ActiveRecord::Base.connection.create_database(db)
+
+      ActiveRecord::Base.establish_connection(config)
+      sql = File.read(Rails.root.join('db/structure.sql'))
+              .each_line.reject { |l| l =~ /\A\\(un)?restrict\b/ }.join
+      ActiveRecord::Base.connection.execute(sql)
+
+      # structure.sql sets search_path to empty for the session, so qualify names.
+      %w[chart_labels charts_search_specs project_summaries].each do |mv|
+        ActiveRecord::Base.connection.execute("REFRESH MATERIALIZED VIEW public.#{mv}")
+      end
+      puts "Prepared test database #{db} (schema loaded, materialized views populated)."
+    end
   end
 end

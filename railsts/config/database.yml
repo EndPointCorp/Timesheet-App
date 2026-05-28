@@ -14,7 +14,9 @@ development:
 
 test:
   <<: *default
-  database: <%= ENV.fetch('DATABASE_NAME') { 'timesheet' } %>
+  # Decoupled from DATABASE_NAME (which dotenv sets to the dev DB) so the test
+  # env can never point at dev data. Override with TEST_DATABASE_NAME if needed.
+  database: <%= ENV.fetch('TEST_DATABASE_NAME') { 'timesheet_test' } %>
 
 production:
   <<: *default

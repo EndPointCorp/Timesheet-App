@@ -70,6 +70,22 @@ docker compose exec db psql -U timesheet -d timesheet   # psql into db
 docker compose run --rm web bundle exec rails c        # rails console
 ```
 
+## Running the test suite
+
+Docker-only (host Ruby can't build the native gems). The suite runs against an
+isolated `timesheet_test` DB, so it never touches your dev data.
+
+```sh
+make test-db   # one-time: create timesheet_test, load schema, populate matviews
+make test      # run RSpec (142 examples)
+make coverage  # run with SimpleCov -> coverage/index.html
+```
+
+`make test-db` is idempotent — re-run it any time to reset the test DB. It loads
+`db/structure.sql` through the Rails `pg` connection (the `web` image has no
+`psql` binary) and then populates the `chart_labels`, `charts_search_specs`, and
+`project_summaries` materialized views, which the suite's truncation depends on.
+
 ## Reset the database
 
 ```sh
