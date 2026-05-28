@@ -61,9 +61,9 @@ describe "WorkCharts" do
   describe "POST /work_charts.json" do
     it "saves new work_chart in database" do
       FactoryGirl.create :work_chart_status, status: 'active'
-      FactoryGirl.create :work_chart, id: 1
-      _params = { display_label: 'NewClient', status: "active", parent_id: 1 }
-      post '/work_charts.json', params: {  work_chart: _params }
+      parent = FactoryGirl.create :work_chart
+      _params = { display_label: 'NewClient', status: "active", parent_id: parent.id }
+      post '/api/work_charts.json', params: {  work_chart: _params }
       response.status.should == 200
       WorkChart.count.should == 2
       WorkChart.all.map(&:display_label).should include('NewClient')
@@ -73,10 +73,10 @@ describe "WorkCharts" do
   describe "PUT /work_charts.json" do
     it "updates work_chart in database" do
       FactoryGirl.create :work_chart_status, status: 'active'
-      FactoryGirl.create :work_chart, id: 1
-      work_chart = FactoryGirl.create :work_chart, parent_id: 1
-      _params = { display_label: 'UpdatedClient', parent_id: 1, status: 'active' }
-      put "/work_charts/#{work_chart.id}.json", params: {  work_chart: _params }
+      parent = FactoryGirl.create :work_chart
+      work_chart = FactoryGirl.create :work_chart, parent_id: parent.id
+      _params = { display_label: 'UpdatedClient', parent_id: parent.id, status: 'active' }
+      put "/api/work_charts/#{work_chart.id}.json", params: {  work_chart: _params }
       response.status.should == 200
       WorkChart.count.should == 2
       WorkChart.all.map(&:display_label).should include('UpdatedClient')

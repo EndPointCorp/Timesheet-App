@@ -3,6 +3,10 @@ module ChartsHelper
   def create_proper_chart
     FactoryGirl.create(:duration_kind, code: 'billable_standard') unless DurationKind.where(code: 'billable_standard').count == 1
     FactoryGirl.create(:work_chart, id: 1) if WorkChart.where(id: 1).count == 0
+    # The explicit id:1 above doesn't advance work_chart_id_seq (it has no
+    # OWNED BY, so TRUNCATE RESTART IDENTITY can't reset it either), so on a
+    # fresh DB the next sequence-based create would collide on id=1.
+    reset_id_sequences([WorkChart])
     FactoryGirl.create :work_chart, parent_id: 1
   end
 

@@ -7,6 +7,9 @@ module EntriesHelper
     FactoryGirl.create(:work_entry_status)
     FactoryGirl.create(:work_chart_status, status: 'active')
     root = FactoryGirl.create(:work_chart, id: 1)
+    # Explicit id:1 doesn't advance work_chart_id_seq (no OWNED BY), so bump it
+    # before the sequence-based creates below or they collide on id=1 on a fresh DB.
+    reset_id_sequences([WorkChart])
     FactoryGirl.create_list(:work_chart, 2, parent_id: root.id)
   end
 
