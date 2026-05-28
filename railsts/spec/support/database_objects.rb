@@ -59,6 +59,31 @@ module DatabaseObjects
     end
     $arel_silence_type_casting_deprecation = false
     ActiveRecord::Base.connection.execute statements.join(";\n")
+
+    # The fixtures above insert rows with explicit ids via raw SQL, which does
+    # not advance each table's id sequence. Without this, the next
+    # FactoryGirl.create collides on the primary key (PG::UniqueViolation).
+    reset_id_sequences(tables.values)
+  end
+
+  def reset_id_sequences(types)
+    conn = ActiveRecord::Base.connection
+    types.each do |type|
+      # Skip natural/composite-key tables. Probing pg_get_serial_sequence for a
+      # missing `id` column raises and would abort the whole test transaction,
+      # so we gate on the model's cached column list instead of catching it.
+      next unless type.column_names.include?('id')
+      table = type.table_name
+      # The schema's id sequences are plain `CREATE SEQUENCE` + `DEFAULT
+      # nextval(...)` with no `OWNED BY`, so pg_get_serial_sequence returns
+      # NULL. Resolve by the conventional `<table>_id_seq` name instead.
+      # to_regclass returns NULL (no error) when absent, so the test
+      # transaction is never poisoned.
+      seq = conn.select_value("SELECT to_regclass('#{table}_id_seq')::text")
+      next unless seq
+      max = conn.select_value("SELECT MAX(id) FROM #{table}")
+      conn.execute("SELECT setval('#{seq}', #{max})") if max
+    end
   end
 
   def production_categories
@@ -390,52 +415,52 @@ module DatabaseObjects
 
   def real_groups
     [ {:code=>"ic_site_mgr", :description=>"Group role centered around IC site management interface", :display_label=>"IC Site Manager", :id=>1},
-      {:code=>"ic_site_mgr_developer", :description=>"", :display_label=>"IC Site Mgr: Developer", :id=>4},
-      {:code=>"director", :description=>"", :display_label=>"Directors", :id=>6},
-      {:code=>"operational", :description=>"", :display_label=>"Operational team grouping", :id=>7},
-      {:code=>"by_client", :description=>"", :display_label=>"Client-oriented team grouping", :id=>8},
-      {:code=>"by_focus", :description=>"", :display_label=>"Skill/technical team grouping", :id=>9},
-      {:code=>"staff", :description=>"", :display_label=>"General grouping for staff", :id=>10},
-      {:code=>"technical_staff", :description=>"", :display_label=>"Technically-oriented staff", :id=>11},
-      {:code=>"admin_staff", :description=>"", :display_label=>"Administrative staff", :id=>12},
-      {:code=>"hosting", :description=>"", :display_label=>"Hosting team", :id=>13},
-      {:code=>"sales", :description=>"", :display_label=>"Sales team", :id=>14},
-      {:code=>"interchange", :description=>"", :display_label=>"Interchange team", :id=>15},
-      {:code=>"rails", :description=>"", :display_label=>"Rails team", :id=>16},
-      {:code=>"spree", :description=>"", :display_label=>"Spree team", :id=>17},
-      {:code=>"postgres", :description=>"", :display_label=>"Postgres team", :id=>18},
-      {:code=>"openafs", :description=>"", :display_label=>"OpenAFS team", :id=>19},
-      {:code=>"timesheet", :description=>"", :display_label=>"Timesheet team", :id=>20},
-      {:code=>"camps", :description=>"", :display_label=>"Camps team", :id=>21},
-      {:code=>"mostly_harmless", :description=>"", :display_label=>"Mostly Harmless", :id=>22},
-      {:code=>"team_slipstick", :description=>"", :display_label=>"Team Slipstick", :id=>23},
-      {:code=>"team_42", :description=>"", :display_label=>"Team-42", :id=>24},
-      {:code=>"vogons", :description=>"", :display_label=>"Vogons", :id=>26},
-      {:code=>"magratheans", :description=>"", :display_label=>"Magratheans", :id=>88},
+      {:code=>"ic_site_mgr_developer", :description=>"(group role)", :display_label=>"IC Site Mgr: Developer", :id=>4},
+      {:code=>"director", :description=>"(group role)", :display_label=>"Directors", :id=>6},
+      {:code=>"operational", :description=>"(group role)", :display_label=>"Operational team grouping", :id=>7},
+      {:code=>"by_client", :description=>"(group role)", :display_label=>"Client-oriented team grouping", :id=>8},
+      {:code=>"by_focus", :description=>"(group role)", :display_label=>"Skill/technical team grouping", :id=>9},
+      {:code=>"staff", :description=>"(group role)", :display_label=>"General grouping for staff", :id=>10},
+      {:code=>"technical_staff", :description=>"(group role)", :display_label=>"Technically-oriented staff", :id=>11},
+      {:code=>"admin_staff", :description=>"(group role)", :display_label=>"Administrative staff", :id=>12},
+      {:code=>"hosting", :description=>"(group role)", :display_label=>"Hosting team", :id=>13},
+      {:code=>"sales", :description=>"(group role)", :display_label=>"Sales team", :id=>14},
+      {:code=>"interchange", :description=>"(group role)", :display_label=>"Interchange team", :id=>15},
+      {:code=>"rails", :description=>"(group role)", :display_label=>"Rails team", :id=>16},
+      {:code=>"spree", :description=>"(group role)", :display_label=>"Spree team", :id=>17},
+      {:code=>"postgres", :description=>"(group role)", :display_label=>"Postgres team", :id=>18},
+      {:code=>"openafs", :description=>"(group role)", :display_label=>"OpenAFS team", :id=>19},
+      {:code=>"timesheet", :description=>"(group role)", :display_label=>"Timesheet team", :id=>20},
+      {:code=>"camps", :description=>"(group role)", :display_label=>"Camps team", :id=>21},
+      {:code=>"mostly_harmless", :description=>"(group role)", :display_label=>"Mostly Harmless", :id=>22},
+      {:code=>"team_slipstick", :description=>"(group role)", :display_label=>"Team Slipstick", :id=>23},
+      {:code=>"team_42", :description=>"(group role)", :display_label=>"Team-42", :id=>24},
+      {:code=>"vogons", :description=>"(group role)", :display_label=>"Vogons", :id=>26},
+      {:code=>"magratheans", :description=>"(group role)", :display_label=>"Magratheans", :id=>88},
       {:code=>"user", :description=>"Group role to which all users are assigned by default", :display_label=>"User", :id=>0},
-      {:code=>"improbability", :description=>"", :display_label=>"Improbability", :id=>25},
-      {:code=>"biller", :description=>"", :display_label=>"\"Group\" role for roles that bill", :id=>80},
-      {:code=>"manager", :description=>"", :display_label=>"Base management role", :id=>81},
-      {:code=>"teams", :description=>"", :display_label=>"Base role for teams", :id=>82},
-      {:code=>"engineer", :description=>"", :display_label=>"Roles that do engineering", :id=>83},
-      {:code=>"officer", :description=>"", :display_label=>"Officers", :id=>84},
-      {:code=>"site_mgr_account_maintenance", :description=>"", :display_label=>"Site Manager: Account Maintenance", :id=>86},
-      {:code=>"non_management", :description=>"", :display_label=>"Non-Management", :id=>110},
-      {:code=>"perplexus", :description=>"", :display_label=>"Perplexus", :id=>111},
-      {:code=>"misc_team", :description=>"", :display_label=>"Misc. team", :id=>122},
-      {:code=>"lg_content", :description=>"", :display_label=>"LG Content Team", :id=>126},
-      {:code=>"team_rick", :description=>"", :display_label=>"Team Rick", :id=>136},
+      {:code=>"improbability", :description=>"(group role)", :display_label=>"Improbability", :id=>25},
+      {:code=>"biller", :description=>"(group role)", :display_label=>"\"Group\" role for roles that bill", :id=>80},
+      {:code=>"manager", :description=>"(group role)", :display_label=>"Base management role", :id=>81},
+      {:code=>"teams", :description=>"(group role)", :display_label=>"Base role for teams", :id=>82},
+      {:code=>"engineer", :description=>"(group role)", :display_label=>"Roles that do engineering", :id=>83},
+      {:code=>"officer", :description=>"(group role)", :display_label=>"Officers", :id=>84},
+      {:code=>"site_mgr_account_maintenance", :description=>"(group role)", :display_label=>"Site Manager: Account Maintenance", :id=>86},
+      {:code=>"non_management", :description=>"(group role)", :display_label=>"Non-Management", :id=>110},
+      {:code=>"perplexus", :description=>"(group role)", :display_label=>"Perplexus", :id=>111},
+      {:code=>"misc_team", :description=>"(group role)", :display_label=>"Misc. team", :id=>122},
+      {:code=>"lg_content", :description=>"(group role)", :display_label=>"LG Content Team", :id=>126},
+      {:code=>"team_rick", :description=>"(group role)", :display_label=>"Team Rick", :id=>136},
       {:code=>"cbre", :description=>"Team for CBRE Client", :display_label=>"CBRE Team", :id=>154},
-      {:code=>"lg_rnd_team", :description=>"", :display_label=>"LG R&D Team", :id=>168},
+      {:code=>"lg_rnd_team", :description=>"(group role)", :display_label=>"LG R&D Team", :id=>168},
       {:code=>"invoicer", :description=>"A user who is the last one in the chain of reviewers of entries and marks them as invoiced", :display_label=>"Invoicer", :id=>169},
-      {:code=>"dontpanic", :description=>"", :display_label=>"Don't Panic", :id=>170},
-      {:code=>"ben_timesheet_group", :description=>"", :display_label=>"Ben's timesheet group", :id=>171},
-      {:code=>"megadodo", :description=>"", :display_label=>"Megadodo", :id=>173},
-      {:code=>"lg_sales", :description=>"", :display_label=>"LG Sales Team", :id=>178},
-      {:code=>"team_josh", :description=>"", :display_label=>"Team Josh", :id=>179},
-      {:code=>"radians", :description=>"", :display_label=>"Radians", :id=>182},
-      {:code=>"tangents", :description=>"", :display_label=>"Tangents", :id=>183},
-      {:code=>"perusion", :description=>"", :display_label=>"Perusion", :id=>198},
+      {:code=>"dontpanic", :description=>"(group role)", :display_label=>"Don't Panic", :id=>170},
+      {:code=>"ben_timesheet_group", :description=>"(group role)", :display_label=>"Ben's timesheet group", :id=>171},
+      {:code=>"megadodo", :description=>"(group role)", :display_label=>"Megadodo", :id=>173},
+      {:code=>"lg_sales", :description=>"(group role)", :display_label=>"LG Sales Team", :id=>178},
+      {:code=>"team_josh", :description=>"(group role)", :display_label=>"Team Josh", :id=>179},
+      {:code=>"radians", :description=>"(group role)", :display_label=>"Radians", :id=>182},
+      {:code=>"tangents", :description=>"(group role)", :display_label=>"Tangents", :id=>183},
+      {:code=>"perusion", :description=>"(group role)", :display_label=>"Perusion", :id=>198},
       {:code=>"lg_installation_team", :description=>"LG installation team", :display_label=>"LG Installation Team", :id=>204}]
   end
 

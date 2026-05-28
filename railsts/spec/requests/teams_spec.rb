@@ -10,7 +10,7 @@ describe "Teams" do
     it "get a list of teams" do
       FactoryGirl.create(:role, code: "operational")
 
-      get '/team/teams.json'
+      get '/api/team/teams.json'
       response.should be_success
     end
   end

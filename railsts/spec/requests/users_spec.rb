@@ -16,7 +16,7 @@ describe "Users" do
 
       _params = { email: 'testy@tester.com', username: 'Testy',
         name: 'Testy', time_zone_code: 'US/Eastern', password: 'sweetkitties', start_date: '23-12-2014' }
-      post '/users.json', params: _params
+      post '/api/users.json', params: _params
       response.status.should == 200
       User.count.should == 2
       emails = User.all.map(&:email)
@@ -27,7 +27,7 @@ describe "Users" do
     it "refuses to save the new user when have insufficient permissions", focus: true do
       _params = { email: 'testy@tester.com', username: 'Testy',
         name: 'Testy', time_zone_code: 'US/Eastern', password: 'sweetkitties', start_date: '23-12-2014'}
-      post '/users.json', params: _params
+      post '/api/users.json', params: _params
       response.status.should == 401
       User.count.should == 1
     end
@@ -40,7 +40,7 @@ describe "Users" do
       user.role = role
       user.save!
       _params = { id: user.id, status_code: 'disabled' }
-      put "/users/#{user.id}/disable" , params: _params
+      put "/api/users/#{user.id}/disable" , params: _params
       response.status.should == 200
       User.where(status_code: 'disabled').count.should == 1
     end
@@ -53,7 +53,7 @@ describe "Users" do
       user.role = role
       user.save!
       users = User.order("username ASC")
-      get '/users/all_roles.json'
+      get '/api/users/all_roles.json'
       response.should be_success
       assigns(:all_roles).map(&:id).should eq(users.map(&:id))
     end
@@ -63,20 +63,20 @@ describe "Users" do
       role = FactoryGirl.create(:role)
       user.role = role
       user.save!
-      get '/users/all_roles.json'
+      get '/api/users/all_roles.json'
       response.should render_template :all_roles
     end
   end
 
   describe "GET /users/current.json" do
     it "checks current user" do
-      get '/users/current.json'
+      get '/api/users/current.json'
       response.should be_success
       assigns(:current_user).email.should eq(@user.email)
     end
 
     it "renders the #current view" do
-      get '/users/current.json'
+      get '/api/users/current.json'
       response.should render_template :current
     end
   end
@@ -84,7 +84,7 @@ describe "Users" do
   describe "GET /users/:id.json" do
     it "assigns the requested user to @user" do
       user = FactoryGirl.build(:user)
-      get "/users/#{user.id}"
+      get "/api/users/#{user.id}"
       response.should be_success
       assigns(:id).should eq(user.id)
     end
@@ -96,7 +96,7 @@ describe "Users" do
                                          password: "correct",
                                          password_confirmation: "correct")
       expect(@user.can_switch_roles).to be_falsey
-      post '/users/assume.json', params: {  email: switched_user.email }
+      post '/api/users/assume.json', params: {  email: switched_user.email }
       session[:assume_role_id].should be_nil
       logout_sucessfully
 
@@ -107,7 +107,7 @@ describe "Users" do
       grant_superuser
       login_sucessfully(super_user.email)
       expect(super_user.can_switch_roles).to be_truthy
-      post '/users/assume.json', params: {  email: switched_user.email }
+      post '/api/users/assume.json', params: {  email: switched_user.email }
       session[:assume_role_id].should eq(switched_user.role.id)
     end
 
@@ -121,9 +121,9 @@ describe "Users" do
                                          password: "correct",
                                          password_confirmation: "correct")
       expect(super_user.can_switch_roles).to be_truthy
-      post '/users/assume.json', params: {  email: switched_user.email }
+      post '/api/users/assume.json', params: {  email: switched_user.email }
       session[:assume_role_id].should eq(switched_user.role.id)
-      post '/users/assume.json', params: {  email: super_user.email }
+      post '/api/users/assume.json', params: {  email: super_user.email }
       session[:assume_role_id].should eq(super_user.role.id)
     end
 

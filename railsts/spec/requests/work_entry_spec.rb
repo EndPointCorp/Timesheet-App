@@ -20,7 +20,7 @@ describe "WorkEntry" do
       _params = { work_chart_id: 4, description: "Hello\rHello", date_performed: "2014/03/20",
         work_entry_durations_attributes: { '0' => {kind_code: 'nonbillable_pto', duration: 0}}, 
         work_entry_fees_attributes: { '0' => {fee: 0}} }
-      post '/work_entries.json', params: {  work_entry: _params }
+      post '/api/work_entries.json', params: {  work_entry: _params }
       response.status.should == 200
       result = JSON.parse(response.body)
       result['description'].should_not include("\r")
@@ -31,7 +31,7 @@ describe "WorkEntry" do
       _params = { work_chart_id: 4, description: "Hello\r\nHello", date_performed: "2014/03/20",
         work_entry_durations_attributes: { '0' => {kind_code: 'nonbillable_pto', duration: 0}}, 
         work_entry_fees_attributes: { '0' => {fee: 0}} }
-      post '/work_entries.json', params: {  work_entry: _params }
+      post '/api/work_entries.json', params: {  work_entry: _params }
       response.status.should == 200
       result = JSON.parse(response.body)
       result['description'].should_not include("\r\n")
@@ -49,14 +49,14 @@ describe "WorkEntry" do
     end
     it "validates mac line endings converted to UNIX in work entry" do
       _params = { id: @work_entry.id, work_chart_id: @work_entry.work_chart_id, description: "Hello\rHello", date_performed: "2014/03/20", work_entry_durations_attributes: { '0' => {id: @work_entry.work_entry_durations.first.id, kind_code: 'nonbillable_pto', duration: 0}}, work_entry_fees_attributes: { '0' => {fee: 0}}, role_id: @user.role_id }
-      put "/work_entries/#{@work_entry.id}.json", params: {  work_entry: _params }
+      put "/api/work_entries/#{@work_entry.id}.json", params: {  work_entry: _params }
       response.status.should == 200
       result = JSON.parse(response.body)
       result['description'].should_not include("\r")
     end
     it "validates windows line endings converted to UNIX in work entry" do
       _params = { id: @work_entry.id, work_chart_id: @work_entry.work_chart_id, description: "Hello\r\nHello", date_performed: "2014/03/20", work_entry_durations_attributes: { '0' => {id: @work_entry.work_entry_durations.first.id, kind_code: 'nonbillable_pto', duration: 0}}, work_entry_fees_attributes: { '0' => {fee: 0}} }
-      put "/work_entries/#{@work_entry.id}.json", params: {  work_entry: _params }
+      put "/api/work_entries/#{@work_entry.id}.json", params: {  work_entry: _params }
       response.status.should == 200
       result = JSON.parse(response.body)
       result['description'].should_not include("\r\n")

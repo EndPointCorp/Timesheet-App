@@ -87,6 +87,7 @@ FactoryGirl.define do
     last_modified { DateTime.now }
     code { generate :role_code }
     display_label { generate :role_display_label }
+    description { "Role description" }
 
     transient do
       email { generate :email }

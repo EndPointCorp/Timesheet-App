@@ -10,7 +10,7 @@ describe "Transactions" do
     it "get a list of transactions" do
       work_chart = FactoryGirl.create(:work_chart)
 
-      get '/transactions.json?work_chart_id=' + work_chart.id.to_s
+      get '/api/transactions.json?work_chart_id=' + work_chart.id.to_s
 
       response.should be_success
     end
@@ -22,7 +22,7 @@ describe "Transactions" do
 
       logout_sucessfully
 
-      get '/transactions.json?work_chart_id=' + work_chart.id.to_s
+      get '/api/transactions.json?work_chart_id=' + work_chart.id.to_s
 
       response.should_not be_success
     end

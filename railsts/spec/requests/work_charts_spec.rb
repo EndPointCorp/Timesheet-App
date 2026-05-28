@@ -27,7 +27,7 @@ describe "WorkCharts" do
 
   describe "GET /workcharts/quicks" do
     it "fetches most frequent & recent work charts used in last 3 months" do
-      get '/work_charts/quicks.json'
+      get '/api/work_charts/quicks.json'
       response.status.should == 200
     end
   end
@@ -35,7 +35,7 @@ describe "WorkCharts" do
   describe "GET /work_charts/show" do
     it "fetches a work_chart" do
       work_chart = FactoryGirl.create(:work_chart)
-      get "/work_charts/#{work_chart.id}.json"
+      get "/api/work_charts/#{work_chart.id}.json"
       response.should be_success
       assigns(:chart).should eq(work_chart)
     end
@@ -45,7 +45,7 @@ describe "WorkCharts" do
     it "fetches a work_chart" do
       parent_chart = FactoryGirl.create(:work_chart)
       child_chart  = FactoryGirl.create(:work_chart, parent_id: parent_chart.id)
-      get "/work_charts/#{parent_chart.id}/find_heirs"
+      get "/api/work_charts/#{parent_chart.id}/find_heirs"
       response.status.should == 200
       response.body.should eq "[\"#{child_chart.display_label}\"]"
     end
@@ -53,7 +53,7 @@ describe "WorkCharts" do
 
   describe "GET /work_charts.json" do
     it "gets list of work_charts" do
-      get '/work_charts.json'
+      get '/api/work_charts.json'
       response.should be_success
     end
   end
