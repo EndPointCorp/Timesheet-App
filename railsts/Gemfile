@@ -32,6 +32,9 @@ gem 'tzinfo-data', '~> 1.2017'
 gem 'dotenv-rails', :groups => [:development, :test]
 
 group :test do
+  gem 'simplecov', '~> 0.17.1', require: false
+  gem 'prawn', require: false        # pure-ruby PDF for `make coverage-pdf`
+  gem 'prawn-table', require: false
   gem "minitest"
   gem "capybara", ">= 2.0"
   gem 'cucumber-rails', :require => false

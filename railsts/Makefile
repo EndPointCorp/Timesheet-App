@@ -27,7 +27,7 @@ check_ruby_syntax:
 # Runs against an isolated test DB (timesheet_test, per config/database.yml) so
 # dev data is never touched. Run `make test-db` once after cloning (or to reset),
 # then `make test`. See the README.
-.PHONY: test test-db
+.PHONY: test test-db coverage coverage-pdf
 
 TEST_RUN = docker compose run --rm -e RAILS_ENV=test
 
@@ -40,3 +40,15 @@ test-db:
 
 test:
 	$(TEST_RUN) web bundle exec rspec
+
+# Opt-in SimpleCov coverage report. Writes coverage/index.html (gitignored).
+coverage:
+	$(TEST_RUN) -e COVERAGE=true web bundle exec rspec
+	@echo "Coverage report generated: open coverage/index.html in a browser"
+
+# One-page shareable PDF summary (headline %, by-area table, biggest gaps),
+# built from the last coverage run via Prawn (pure Ruby). Run `make
+# coverage` first so coverage/.resultset.json exists.
+coverage-pdf:
+	$(TEST_RUN) web bundle exec ruby script/coverage_summary.rb
+	@echo "PDF generated: coverage/coverage_summary.pdf"

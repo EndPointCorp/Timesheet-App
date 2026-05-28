@@ -1,3 +1,10 @@
+# Coverage is opt-in (COVERAGE=true) so normal test runs have no overhead.
+# Must start before any application code is loaded. See `make coverage`.
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start 'rails'
+end
+
 require 'rubygems'
 
 ENV["RAILS_ENV"] ||= 'test'
