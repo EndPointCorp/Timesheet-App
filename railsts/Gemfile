@@ -1,58 +1,35 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-ruby "2.4.10"
+ruby "3.3.6"
 
-gem 'rails', '5.0.1'
+gem "rails", "~> 8.1.3"
+gem "pg", "~> 1.1"
+gem "puma", ">= 5.0"
 
-gem 'rails-html-sanitizer', '~> 1.3.0'
-gem 'pg', '~> 0.19.0'
 gem "devise"
-gem 'activerecord-session_store'
-gem 'active_record_union'
-gem 'rabl'
-gem 'yajl-ruby'
-gem 'unicorn', '5.8.0'
-gem 'diffy'
-gem "sass", '~> 3.2'
-gem 'haddock'
-gem 'active_interaction', '~> 3.5.1'
-gem 'delayed_job_active_record'
-gem 'with_advisory_lock'
-gem 'css_parser'
-gem 'nokogiri'
-gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
-gem 'hirb'
-gem 'wirble'
-gem 'loofah', '~>2.19.1'
-gem 'rack-cors'
-gem 'webpacker'
-gem 'tzinfo-data', '~> 1.2017'
-
-gem 'dotenv-rails', :groups => [:development, :test]
-
-group :test do
-  gem 'simplecov', '~> 0.17.1', require: false
-  gem 'prawn', require: false        # pure-ruby PDF for `make coverage-pdf`
-  gem 'prawn-table', require: false
-  gem "minitest"
-  gem "capybara", ">= 2.0"
-  gem 'cucumber-rails', :require => false
-  gem 'headless'
-  gem 'capybara-screenshot'
-  gem "email_spec", ">= 1.2.1"
-  gem 'mocha', '~> 0.14', :require => 'mocha/api'
-  gem 'json_spec'
-  gem "factory_girl_rails", "~> 4.5"
-  gem 'shoulda-matchers'
-  gem 'rails-controller-testing'
-end
+gem "activerecord-session_store"
+gem "active_record_union"
+gem "rabl"
+gem "yajl-ruby", require: false        # JSON backend — 11 endpoints break without it
+gem "active_interaction"
+gem "delayed_job_active_record"        # ActiveJob queue adapter (config/application.rb)
+gem "with_advisory_lock"
+gem "nokogiri"
+gem "diffy"
+gem "haddock"
+gem "rack-cors"
+gem "wicked_pdf"
+gem "wkhtmltopdf-binary"
+gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 group :development, :test do
-  gem 'byebug'
+  gem "dotenv-rails"
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "shoulda-matchers"
+  gem "mocha", require: "mocha/api"
+  gem "json_spec"
+  gem "email_spec"
+  gem "capybara"
+  gem "rails-controller-testing"
 end
-
-gem "rspec-rails", "~> 3.5", :group => [:development, :test]
-
-gem "spring", group: :development
-gem 'spring-commands-rspec', :group => [:development, :test]
