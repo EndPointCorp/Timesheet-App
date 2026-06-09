@@ -5,7 +5,7 @@ module HoursInTheBankHelper
       date: date.to_date,
       mode: 'cumulative',
       kind: 'regular',
-      user_id: (User.first || FactoryGirl.create(:user) ).id,
+      user_id: (User.first || FactoryBot.create(:user) ).id,
       description: ''
   end
 end

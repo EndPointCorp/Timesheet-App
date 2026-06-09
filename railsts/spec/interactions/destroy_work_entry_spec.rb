@@ -6,13 +6,13 @@ describe WorkEntries::DestroyWorkEntry do
     create_real_groups
 
     @clients = create_proper_chart
-    @clients.update_attributes! display_label: 'Clients'
+    @clients.update! display_label: 'Clients'
     @perplexus = Role.where(code: "perplexus").first
     @manager = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{role: @perplexus.id}] }
     @user = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"]
     @user_cannot_update = create_correct_user "developer2@endpointdev.com"
-    @acme = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Acme'
-    @acme_general = FactoryGirl.create :work_chart, parent: @acme, display_label: 'General'
+    @acme = FactoryBot.create :work_chart, parent: @clients, display_label: 'Acme'
+    @acme_general = FactoryBot.create :work_chart, parent: @acme, display_label: 'General'
     @chart = @acme_general
     @entry = WorkEntries::CreateWorkEntry.run! work_chart_id: @chart.id, description: "YYy", fee: 0, user: @user,
       durations: [ { kind_code: 'billable_standard', duration: 10*60 } ],

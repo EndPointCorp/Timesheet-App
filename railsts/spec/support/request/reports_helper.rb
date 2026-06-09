@@ -14,7 +14,7 @@ module ReportsHelper
     deny_access_for      = options[:deny_access_for] ||= 1
     threshold            = -1*deny_access_for - 1
 
-    users = FactoryGirl.create_list :user, count
+    users = FactoryBot.create_list :user, count
     Role.any_instance.
       stubs(:has_right_to).
       with(RightType::SUPERUSER).

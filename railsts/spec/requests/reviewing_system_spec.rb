@@ -307,8 +307,8 @@ describe "ReviewingSystem" do
     end
 
     it "results in current approval belonging to noone after successfully accepting by a global reviewer if pm doesn't exist" do
-      @other = FactoryGirl.create :work_chart, parent: @clients, display_label: 'other'
-      @other_general = FactoryGirl.create :work_chart, parent: @other, display_label: 'General'
+      @other = FactoryBot.create :work_chart, parent: @clients, display_label: 'other'
+      @other_general = FactoryBot.create :work_chart, parent: @other, display_label: 'General'
       @director2 = create_correct_user "director2@endpointdev.com", roles: ["director", "perplexus"]
       entry = WorkEntries::CreateWorkEntry.run! work_chart_id: @other_general.id,
         user: @global_reviewer,

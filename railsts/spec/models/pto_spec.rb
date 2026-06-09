@@ -4,19 +4,19 @@ describe Pto do
 
   before(:each) do
     @today = DateTime.now
-    @root_chart = FactoryGirl.create :work_chart, id: 1, display_label: 'Top Node'
-    @endpoint = FactoryGirl.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root_chart.id
-    @vacation_chart = FactoryGirl.create(:work_chart, id: 3, display_label: "Vacation", parent_id: @endpoint.id)
-    @holiday_chart = FactoryGirl.create(:work_chart, id: 4, display_label: "Holiday", parent_id: @endpoint.id)
-    @sick_chart = FactoryGirl.create(:work_chart, id: 5, display_label: "Sick Time", parent_id: @endpoint.id)
-    @production_category = FactoryGirl.create(:production_category)
-    FactoryGirl.create :duration_kind, code: 'nonbillable_pto', production_category_id: @production_category.id, abbr_label: 'PTO', date_created: DateTime.now
+    @root_chart = FactoryBot.create :work_chart, id: 1, display_label: 'Top Node'
+    @endpoint = FactoryBot.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root_chart.id
+    @vacation_chart = FactoryBot.create(:work_chart, id: 3, display_label: "Vacation", parent_id: @endpoint.id)
+    @holiday_chart = FactoryBot.create(:work_chart, id: 4, display_label: "Holiday", parent_id: @endpoint.id)
+    @sick_chart = FactoryBot.create(:work_chart, id: 5, display_label: "Sick Time", parent_id: @endpoint.id)
+    @production_category = FactoryBot.create(:production_category)
+    FactoryBot.create :duration_kind, code: 'nonbillable_pto', production_category_id: @production_category.id, abbr_label: 'PTO', date_created: DateTime.now
   end
 
   it "returns valid ptos for End Pointer's who's start date is less than a year ago" do
     @locked_date = DateTime.parse('2014-06-05') #Started getting test failures in Jan 2015 :P
 
-    @newHire = FactoryGirl.create(:user, email: "newHire@endpointdev.com", start_date: @locked_date - 4.weeks)
+    @newHire = FactoryBot.create(:user, email: "newHire@endpointdev.com", start_date: @locked_date - 4.weeks)
     
     WorkEntries::CreateWorkEntry.run!(work_chart_id: @holiday_chart.id, description: "asdasdsd", fee: 0, user: @newHire, durations: [{kind_code: "nonbillable_pto", duration: 960}], date_performed: @locked_date - 1.week)
     WorkEntries::CreateWorkEntry.run!(work_chart_id: @vacation_chart.id, description: "asdasdsd", fee: 0, user: @newHire, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: @locked_date - 1.week) 
@@ -33,7 +33,7 @@ describe Pto do
 
   it "returns valid ptos for End Pointer's who's start date was more than a year ago, with anniversary today" do
     @locked_date = DateTime.parse('2014-06-05') #Started getting test failures in Jan 2015 :P
-    @oldHire = FactoryGirl.create(:user, email: "oldHire@endpointdev.com", start_date: @locked_date - 4.years)
+    @oldHire = FactoryBot.create(:user, email: "oldHire@endpointdev.com", start_date: @locked_date - 4.years)
     #this year
     @holiday = WorkEntries::CreateWorkEntry.run(work_chart_id: @holiday_chart.id, description: "asdasdsd", fee: 0, user: @oldHire, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: @locked_date).result
     @vacation = WorkEntries::CreateWorkEntry.run(work_chart_id: @vacation_chart.id, description: "asdasdsd", fee: 0, user: @oldHire, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: @locked_date).result
@@ -57,7 +57,7 @@ describe Pto do
   end
 
   it "returns valid ptos for End Pointer's who's start date was more than a year ago, whose anniversary didn't happen yet this year" do
-    @not_yet = FactoryGirl.create(:user, email: "tomorrow@endpointdev.com", start_date: DateTime.now - 4.years + 1.month)
+    @not_yet = FactoryBot.create(:user, email: "tomorrow@endpointdev.com", start_date: DateTime.now - 4.years + 1.month)
     #this year
     WorkEntries::CreateWorkEntry.run(work_chart_id: @holiday_chart.id, description: "asdasdsd", fee: 0, user: @not_yet, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: Date.today).result
     
@@ -81,7 +81,7 @@ describe Pto do
   end
 
   it "returns valid ptos for End Pointer's who's start date was more than a year ago, with anniversary that already happened this year" do
-    @already = FactoryGirl.create(:user, email: "tomorrow@endpointdev.com", start_date: DateTime.now - 4.years - 1.month)
+    @already = FactoryBot.create(:user, email: "tomorrow@endpointdev.com", start_date: DateTime.now - 4.years - 1.month)
     #this year
     @holiday = WorkEntries::CreateWorkEntry.run!(work_chart_id: @holiday_chart.id, description: "asdasdsd", fee: 0, user: @already, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: Date.today)
     WorkEntries::CreateWorkEntry.run!(work_chart_id: @vacation_chart.id, description: "asdasdsd", fee: 0, user: @already, durations: [{kind_code: "nonbillable_pto", duration: 1440}], date_performed: Date.today)
@@ -107,7 +107,7 @@ describe Pto do
   it "should calculate vacation time using aniversary year period" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -134,7 +134,7 @@ describe Pto do
   it "should not include out-of-anniversary-period time when calculating vacation time" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -161,7 +161,7 @@ describe Pto do
   it "should not include out-of-anniversary-period time and include in-anniversary-period time when calculating vacation time" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -199,7 +199,7 @@ describe Pto do
   it "should calculate sick time using aniversary year period" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -226,7 +226,7 @@ describe Pto do
   it "should not include out-of-anniversary-period time when calculating sick time" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -253,7 +253,7 @@ describe Pto do
   it "should not include out-of-anniversary-period time and include in-anniversary-period time when calculating sick time" do
     # Given - an employee that started working 2 years and one month ago...
     # (Their anniversary was 1 month ago from today)
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: (DateTime.now - 2.years - 1.month)
@@ -290,7 +290,7 @@ describe Pto do
 
   it "should not take calendar year into consideration when calculating vacation time" do
     # Given - an employee that started working on February 2016...
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: DateTime.new(2016, 2, 1)
@@ -322,7 +322,7 @@ describe Pto do
 
   it "should not take calendar year into consideration when calculating sick time" do
     # Given - an employee that started working on February 2016...
-    test_user = FactoryGirl.create(
+    test_user = FactoryBot.create(
       :user,
       email: "someone@endpointdev.com",
       start_date: DateTime.new(2016, 2, 1)

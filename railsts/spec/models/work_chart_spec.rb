@@ -14,14 +14,14 @@ describe WorkChart do
     it { should belong_to(:work_chart_status).with_foreign_key('status') }
   end
   it "has a valid work_chart factory" do
-    FactoryGirl.create(:work_chart).should be_valid
+    FactoryBot.create(:work_chart).should be_valid
   end
 
   it "activates a work chart" do
-    wcs = FactoryGirl.create(:work_chart_status, status: 'hidden')
-    wc = FactoryGirl.create(:work_chart, status: 'hidden')
+    wcs = FactoryBot.create(:work_chart_status, status: 'hidden')
+    wc = FactoryBot.create(:work_chart, status: 'hidden')
     wc.status.should eq(wcs.status)
-    wcs = FactoryGirl.create(:work_chart_status, status: 'active')
+    wcs = FactoryBot.create(:work_chart_status, status: 'active')
     wc.activate!
     wc_new = WorkChart.find_by_id wc.id
     wc_new.status.should eq(wcs.status)

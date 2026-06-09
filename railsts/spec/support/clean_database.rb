@@ -14,8 +14,8 @@ module CleanDatabase
   end
 
   def create_dictionaries
-    FactoryGirl.create(:right_type, code: 'billable')
-    FactoryGirl.create(:right_type, code: 'naggable')
+    FactoryBot.create(:right_type, code: 'billable')
+    FactoryBot.create(:right_type, code: 'naggable')
   end
 end
 

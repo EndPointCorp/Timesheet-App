@@ -31,20 +31,20 @@ describe "HoursInTheBank" do
 
   describe "GET /hours/summary" do
     before :each do
-      @foo = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Foo'
-      @foo_general = FactoryGirl.create :work_chart, parent: @foo, display_label: 'General'
-      @foo_ios = FactoryGirl.create :work_chart, parent: @foo, display_label: 'iOS'
-      @foo_ios_devel = FactoryGirl.create :work_chart, parent: @foo_ios, display_label: 'Devel'
-      @foo_ios_design = FactoryGirl.create :work_chart, parent: @foo_ios, display_label: 'Design'
-      @foo_rust = FactoryGirl.create :work_chart, parent: @foo, display_label: 'Rust'
-      @foo_rust_devel = FactoryGirl.create :work_chart, parent: @foo_rust, display_label: 'Devel'
-      @bar = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Bar'
-      @bar_general = FactoryGirl.create :work_chart, parent: @bar, display_label: 'General'
-      @bar_ios = FactoryGirl.create :work_chart, parent: @bar, display_label: 'iOS'
-      @bar_ios_devel = FactoryGirl.create :work_chart, parent: @bar_ios, display_label: 'Devel'
-      @bar_ios_design = FactoryGirl.create :work_chart, parent: @bar_ios, display_label: 'Design'
-      @bar_rust = FactoryGirl.create :work_chart, parent: @bar, display_label: 'Rust'
-      @bar_rust_devel = FactoryGirl.create :work_chart, parent: @bar_rust, display_label: 'Devel'
+      @foo = FactoryBot.create :work_chart, parent: @clients, display_label: 'Foo'
+      @foo_general = FactoryBot.create :work_chart, parent: @foo, display_label: 'General'
+      @foo_ios = FactoryBot.create :work_chart, parent: @foo, display_label: 'iOS'
+      @foo_ios_devel = FactoryBot.create :work_chart, parent: @foo_ios, display_label: 'Devel'
+      @foo_ios_design = FactoryBot.create :work_chart, parent: @foo_ios, display_label: 'Design'
+      @foo_rust = FactoryBot.create :work_chart, parent: @foo, display_label: 'Rust'
+      @foo_rust_devel = FactoryBot.create :work_chart, parent: @foo_rust, display_label: 'Devel'
+      @bar = FactoryBot.create :work_chart, parent: @clients, display_label: 'Bar'
+      @bar_general = FactoryBot.create :work_chart, parent: @bar, display_label: 'General'
+      @bar_ios = FactoryBot.create :work_chart, parent: @bar, display_label: 'iOS'
+      @bar_ios_devel = FactoryBot.create :work_chart, parent: @bar_ios, display_label: 'Devel'
+      @bar_ios_design = FactoryBot.create :work_chart, parent: @bar_ios, display_label: 'Design'
+      @bar_rust = FactoryBot.create :work_chart, parent: @bar, display_label: 'Rust'
+      @bar_rust_devel = FactoryBot.create :work_chart, parent: @bar_rust, display_label: 'Devel'
 
       buy_hours @bar_ios, 100, 2.months.ago
       buy_hours @foo, 100, 2.months.ago
@@ -358,9 +358,9 @@ describe "HoursInTheBank" do
 
   describe "GET /hours/:work_chart_id" do
     before(:each) do
-      @foo = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Foo'
-      @foo_rust = FactoryGirl.create :work_chart, parent: @foo, display_label: 'Rust'
-      @foo_rust_devel = FactoryGirl.create :work_chart, parent: @foo_rust, display_label: 'Devel'
+      @foo = FactoryBot.create :work_chart, parent: @clients, display_label: 'Foo'
+      @foo_rust = FactoryBot.create :work_chart, parent: @foo, display_label: 'Rust'
+      @foo_rust_devel = FactoryBot.create :work_chart, parent: @foo_rust, display_label: 'Devel'
     end
 
     it "returns the correct number for the chart with a budget" do

@@ -8,18 +8,18 @@ describe "Groups" do
 
   describe "GET /groups.json" do
     it "gets a list of groups" do
-      FactoryGirl.create(:role, display_label: 'Group of test', code: 'group1')
+      FactoryBot.create(:role, display_label: 'Group of test', code: 'group1')
       roles = Role.select("id, code, code AS value, display_label as label").where('code NOT LIKE ?', '%user%')
       get "/api/groups.json"
 
-      response.should be_success
+      response.should be_successful
       assigns(:groups_list).map(&:id).should eq(roles.map(&:id))
     end
   end
 
   describe "PUT /groups.json" do
     it "updates group data" do
-      role = FactoryGirl.create(:role, display_label: 'Group of gnus', code: 'group3')
+      role = FactoryBot.create(:role, display_label: 'Group of gnus', code: 'group3')
 
       group_entity = {
         isChanged: true,

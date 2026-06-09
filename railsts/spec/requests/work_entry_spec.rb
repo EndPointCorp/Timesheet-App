@@ -9,14 +9,14 @@ describe "WorkEntry" do
   end
   describe "POST work_entries" do
     before(:each) do
-      @root = FactoryGirl.create :work_chart, id: 1, display_label: 'Top node'
-      @endpoint = FactoryGirl.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
-      @client = FactoryGirl.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
-      @pto = FactoryGirl.create :work_chart, id: 4, display_label: 'Paid Time Off', parent_id: @endpoint.id
+      @root = FactoryBot.create :work_chart, id: 1, display_label: 'Top node'
+      @endpoint = FactoryBot.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
+      @client = FactoryBot.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
+      @pto = FactoryBot.create :work_chart, id: 4, display_label: 'Paid Time Off', parent_id: @endpoint.id
     end
     it "validates mac line endings converted to UNIX in work entry" do
-      FactoryGirl.create(:work_entry)
-      FactoryGirl.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.last.id, abbr_label: 'NBTO'
+      FactoryBot.create(:work_entry)
+      FactoryBot.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.last.id, abbr_label: 'NBTO'
       _params = { work_chart_id: 4, description: "Hello\rHello", date_performed: "2014/03/20",
         work_entry_durations_attributes: { '0' => {kind_code: 'nonbillable_pto', duration: 0}}, 
         work_entry_fees_attributes: { '0' => {fee: 0}} }
@@ -26,8 +26,8 @@ describe "WorkEntry" do
       result['description'].should_not include("\r")
     end
     it "validates windows line endings converted to UNIX in work entry" do
-      FactoryGirl.create(:work_entry)
-      FactoryGirl.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.last.id, abbr_label: 'NBTO'
+      FactoryBot.create(:work_entry)
+      FactoryBot.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.last.id, abbr_label: 'NBTO'
       _params = { work_chart_id: 4, description: "Hello\r\nHello", date_performed: "2014/03/20",
         work_entry_durations_attributes: { '0' => {kind_code: 'nonbillable_pto', duration: 0}}, 
         work_entry_fees_attributes: { '0' => {fee: 0}} }
@@ -39,12 +39,12 @@ describe "WorkEntry" do
   end
   describe "PUT work_entries" do
     before(:each) do
-      @root = FactoryGirl.create :work_chart, id: 1, display_label: 'Top node'
-      @endpoint = FactoryGirl.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
-      @client = FactoryGirl.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
-      @pto = FactoryGirl.create :work_chart, id: 4, display_label: 'Paid Time Off', parent_id: @endpoint.id
-      FactoryGirl.create(:work_entry)
-      FactoryGirl.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.count > 0 ? ProductionCategory.last.id : FactoryGirl.create(:production_category).id, abbr_label: 'NBTO'
+      @root = FactoryBot.create :work_chart, id: 1, display_label: 'Top node'
+      @endpoint = FactoryBot.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
+      @client = FactoryBot.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
+      @pto = FactoryBot.create :work_chart, id: 4, display_label: 'Paid Time Off', parent_id: @endpoint.id
+      FactoryBot.create(:work_entry)
+      FactoryBot.create :duration_kind, code: 'nonbillable_pto', production_category_id: ProductionCategory.count > 0 ? ProductionCategory.last.id : FactoryBot.create(:production_category).id, abbr_label: 'NBTO'
       @work_entry = WorkEntries::CreateWorkEntry.run(work_chart_id: @client.id, description: "Test work entry", fee: 0, user: @user, durations: [ {kind_code: 'nonbillable_pto', duration: 0} ], date_performed: 1.week.ago.to_date).result
     end
     it "validates mac line endings converted to UNIX in work entry" do

@@ -8,23 +8,23 @@ describe "Transactions" do
 
   describe "GET transactions.json" do
     it "get a list of transactions" do
-      work_chart = FactoryGirl.create(:work_chart)
+      work_chart = FactoryBot.create(:work_chart)
 
       get '/api/transactions.json?work_chart_id=' + work_chart.id.to_s
 
-      response.should be_success
+      response.should be_successful
     end
   end
 
   describe "GET transactions.json" do
     it "get a list of transactions without login" do
-      work_chart = FactoryGirl.create(:work_chart)
+      work_chart = FactoryBot.create(:work_chart)
 
       logout_sucessfully
 
       get '/api/transactions.json?work_chart_id=' + work_chart.id.to_s
 
-      response.should_not be_success
+      response.should_not be_successful
     end
   end
 end

@@ -7,15 +7,15 @@ describe WorkEntries::UpdateWorkEntry do
     create_real_right_types
     create_real_groups
 
-    FactoryGirl.create(:duration_kind, code: 'nonbillable_standard')
+    FactoryBot.create(:duration_kind, code: 'nonbillable_standard')
     @clients = create_proper_chart
-    @clients.update_attributes! display_label: 'Clients'
+    @clients.update! display_label: 'Clients'
     @perplexus = Role.where(code: "perplexus").first
     @manager = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{role: @perplexus.id}] }
     @user = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"]
     @user_cannot_update = create_correct_user "developer2@endpointdev.com"
-    @acme = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Acme'
-    @acme_general = FactoryGirl.create :work_chart, parent: @acme, display_label: 'General'
+    @acme = FactoryBot.create :work_chart, parent: @clients, display_label: 'Acme'
+    @acme_general = FactoryBot.create :work_chart, parent: @acme, display_label: 'General'
     @chart = @acme_general
     @manager_acme = create_correct_user "developer3@endpointdev.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
     buy_hours @chart, 11, 3.weeks.ago

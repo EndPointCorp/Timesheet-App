@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Transactions::RecurTransaction do
   describe "Recurring transactions" do
-    let(:not_recurring_transaction) { FactoryGirl.create :transaction }
-    let(:recurring_transaction) { FactoryGirl.create :monthly_recurring_transaction, mode: 'zero-out' }
-    let(:recurring_transaction_cumulative) { FactoryGirl.create :monthly_recurring_transaction, mode: 'cumulative' }
+    let(:not_recurring_transaction) { FactoryBot.create :transaction }
+    let(:recurring_transaction) { FactoryBot.create :monthly_recurring_transaction, mode: 'zero-out' }
+    let(:recurring_transaction_cumulative) { FactoryBot.create :monthly_recurring_transaction, mode: 'cumulative' }
     let(:inputs) { { transaction: recurring_transaction } }
     let(:inputs_cumulative) { { transaction: recurring_transaction_cumulative } }
     let(:inputs_not_recurring) { { transaction: not_recurring_transaction } }

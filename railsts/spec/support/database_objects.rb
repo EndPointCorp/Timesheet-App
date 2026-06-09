@@ -44,7 +44,7 @@ module DatabaseObjects
 
     $arel_silence_type_casting_deprecation = true
     silence_warnings do
-      ActiveSupport::Deprecation.silence do
+      ActiveSupport::Deprecation.new.silence do
         tables.each do |store_name, type|
           table = type.arel_table
           examples = self.send(store_name)
@@ -62,7 +62,7 @@ module DatabaseObjects
 
     # The fixtures above insert rows with explicit ids via raw SQL, which does
     # not advance each table's id sequence. Without this, the next
-    # FactoryGirl.create collides on the primary key (PG::UniqueViolation).
+    # FactoryBot.create collides on the primary key (PG::UniqueViolation).
     reset_id_sequences(tables.values)
   end
 

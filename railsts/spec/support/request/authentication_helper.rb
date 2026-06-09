@@ -16,11 +16,11 @@ module AuthenticationHelper
   end
 
   def create_team(code)
-    FactoryGirl.create :role, code: "team_#{code}"
+    FactoryBot.create :role, code: "team_#{code}"
   end
 
   def create_correct_user(email = "correct@endpointdev.com", options = {})
-    @current_user = FactoryGirl.create :user, email: email,
+    @current_user = FactoryBot.create :user, email: email,
       name: email.split('@').first,
       password: 'correct',
       password_confirmation: 'correct'
@@ -34,10 +34,10 @@ module AuthenticationHelper
       options[:rights].each do |name, targets|
         type = RightType.where(code: name.to_s).first
         if type
-          right = FactoryGirl.create :right, role_id: @current_user.role.id, right_type_id: type.id
+          right = FactoryBot.create :right, role_id: @current_user.role.id, right_type_id: type.id
           if targets.is_a?(Array)
             targets.each do |target|
-              FactoryGirl.create :right_target, ref_obj_pk: target.values.first,
+              FactoryBot.create :right_target, ref_obj_pk: target.values.first,
                 right_id: right.id, date_created: DateTime.now.to_date
             end
           end

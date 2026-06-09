@@ -1,16 +1,16 @@
 module EntriesHelper
 
   def create_basic_entries_setup
-    FactoryGirl.create(:production_category)
-    FactoryGirl.create(:duration_kind)
-    FactoryGirl.create(:duration_kind, code: 'billable_standard', display_label: "Billable: Standard", abbr_label: "BS")
-    FactoryGirl.create(:work_entry_status)
-    FactoryGirl.create(:work_chart_status, status: 'active')
-    root = FactoryGirl.create(:work_chart, id: 1)
+    FactoryBot.create(:production_category)
+    FactoryBot.create(:duration_kind)
+    FactoryBot.create(:duration_kind, code: 'billable_standard', display_label: "Billable: Standard", abbr_label: "BS")
+    FactoryBot.create(:work_entry_status)
+    FactoryBot.create(:work_chart_status, status: 'active')
+    root = FactoryBot.create(:work_chart, id: 1)
     # Explicit id:1 doesn't advance work_chart_id_seq (no OWNED BY), so bump it
     # before the sequence-based creates below or they collide on id=1 on a fresh DB.
     reset_id_sequences([WorkChart])
-    FactoryGirl.create_list(:work_chart, 2, parent_id: root.id)
+    FactoryBot.create_list(:work_chart, 2, parent_id: root.id)
   end
 
   def destroy_entries_setup

@@ -8,10 +8,10 @@ describe "Teams" do
   end
   describe "GET /team/teams.json" do
     it "get a list of teams" do
-      FactoryGirl.create(:role, code: "operational")
+      FactoryBot.create(:role, code: "operational")
 
       get '/api/team/teams.json'
-      response.should be_success
+      response.should be_successful
     end
   end
 end

@@ -6,7 +6,7 @@ describe WorkEntryAudit do
   end
 
   it 'has a valid factory' do
-    FactoryGirl.create(:work_entry_audit).should be_valid
+    FactoryBot.create(:work_entry_audit).should be_valid
   end
 
 end

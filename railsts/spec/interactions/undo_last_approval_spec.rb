@@ -6,12 +6,12 @@ describe Approvals::UndoLastApproval do
     create_real_groups
 
     @clients = create_proper_chart
-    @clients.update_attributes! display_label: 'Clients'
+    @clients.update! display_label: 'Clients'
     @perplexus = Role.where(code: "perplexus").first
     @manager = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{role: @perplexus.id}] }
     @user = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"]
-    @acme = FactoryGirl.create :work_chart, parent: @clients, display_label: 'Acme'
-    @acme_general = FactoryGirl.create :work_chart, parent: @acme, display_label: 'General'
+    @acme = FactoryBot.create :work_chart, parent: @clients, display_label: 'Acme'
+    @acme_general = FactoryBot.create :work_chart, parent: @acme, display_label: 'General'
     @chart = @acme_general
     @manager_acme = create_correct_user "developer2@endpointdev.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
     @entry = WorkEntries::CreateWorkEntry.run! work_chart_id: @chart.id, description: "YYy", fee: 0, user: @user,

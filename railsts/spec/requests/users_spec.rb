@@ -8,11 +8,11 @@ describe "Users" do
 
   describe "POST /users.json" do
     it "saves the new user in database", focus: true do
-      FactoryGirl.create(:right_type, code: "naggable", display_label: "Naggable")
-      @right_type = FactoryGirl.create(:right_type, code: "create_users", display_label: "Create Users")
-      @right = FactoryGirl.create(:right, role_id: @user.role_id, right_type_id: @right_type.id)
-      @right_target = FactoryGirl.create(:right_target, right_id: @right.id, ref_obj_pk: @user.id)
-      FactoryGirl.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
+      @right_type = FactoryBot.create(:right_type, code: "create_users", display_label: "Create Users")
+      @right = FactoryBot.create(:right, role_id: @user.role_id, right_type_id: @right_type.id)
+      @right_target = FactoryBot.create(:right_target, right_id: @right.id, ref_obj_pk: @user.id)
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
 
       _params = { email: 'testy@tester.com', username: 'Testy',
         name: 'Testy', time_zone_code: 'US/Eastern', password: 'sweetkitties', start_date: '23-12-2014' }
@@ -35,8 +35,8 @@ describe "Users" do
 
   describe "PUT /users/:id/disable" do
     it "disables a user in database", focus: true do
-      user = FactoryGirl.build(:user)
-      role = FactoryGirl.create(:role)
+      user = FactoryBot.build(:user)
+      role = FactoryBot.create(:role)
       user.role = role
       user.save!
       _params = { id: user.id, status_code: 'disabled' }
@@ -48,19 +48,19 @@ describe "Users" do
 
   describe "GET /users/all_roles.json" do
     it "get list of users" do
-      user = FactoryGirl.build(:user)
-      role = FactoryGirl.create(:role)
+      user = FactoryBot.build(:user)
+      role = FactoryBot.create(:role)
       user.role = role
       user.save!
       users = User.order("username ASC")
       get '/api/users/all_roles.json'
-      response.should be_success
+      response.should be_successful
       assigns(:all_roles).map(&:id).should eq(users.map(&:id))
     end
 
     it "renders the #all_roles view" do
-      user = FactoryGirl.build(:user)
-      role = FactoryGirl.create(:role)
+      user = FactoryBot.build(:user)
+      role = FactoryBot.create(:role)
       user.role = role
       user.save!
       get '/api/users/all_roles.json'
@@ -71,7 +71,7 @@ describe "Users" do
   describe "GET /users/current.json" do
     it "checks current user" do
       get '/api/users/current.json'
-      response.should be_success
+      response.should be_successful
       assigns(:current_user).email.should eq(@user.email)
     end
 
@@ -83,16 +83,16 @@ describe "Users" do
 
   describe "GET /users/:id.json" do
     it "assigns the requested user to @user" do
-      user = FactoryGirl.build(:user)
+      user = FactoryBot.build(:user)
       get "/api/users/#{user.id}"
-      response.should be_success
+      response.should be_successful
       assigns(:id).should eq(user.id)
     end
   end
 
   describe "POST /users/assume.json" do
     it "limits who can switch roles to those with the right" do
-      switched_user = FactoryGirl.create(:user,
+      switched_user = FactoryBot.create(:user,
                                          password: "correct",
                                          password_confirmation: "correct")
       expect(@user.can_switch_roles).to be_falsey
@@ -100,7 +100,7 @@ describe "Users" do
       session[:assume_role_id].should be_nil
       logout_sucessfully
 
-      super_user = FactoryGirl.create(:user,
+      super_user = FactoryBot.create(:user,
                                       email: "root@endpointdev.com",
                                       password: "correct",
                                       password_confirmation: "correct")
@@ -112,12 +112,12 @@ describe "Users" do
     end
 
     it "allows switching back to yourself" do
-      super_user    = FactoryGirl.create(:user,
+      super_user    = FactoryBot.create(:user,
                                          email: "root@endpointdev.com",
                                          password: "correct",
                                          password_confirmation: "correct")
       grant_superuser
-      switched_user = FactoryGirl.create(:user,
+      switched_user = FactoryBot.create(:user,
                                          password: "correct",
                                          password_confirmation: "correct")
       expect(super_user.can_switch_roles).to be_truthy

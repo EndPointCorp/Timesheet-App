@@ -8,14 +8,14 @@ describe PtosController do
       @request.env["devise.mapping"] = Devise.mappings[:user]
 
       # Setting up supporting data
-      root_chart = FactoryGirl.create :work_chart, id: 1, display_label: 'Top Node'
-      endpoint = FactoryGirl.create :work_chart, id: 2, display_label: 'End Point', parent_id: root_chart.id
-      @vacation_chart = FactoryGirl.create(:work_chart, id: 3, display_label: "Vacation", parent_id: endpoint.id)
-      holiday_chart = FactoryGirl.create(:work_chart, id: 4, display_label: "Holiday", parent_id: endpoint.id)
-      sick_chart = FactoryGirl.create(:work_chart, id: 5, display_label: "Sick Time", parent_id: endpoint.id)
-      production_category = FactoryGirl.create(:production_category)
+      root_chart = FactoryBot.create :work_chart, id: 1, display_label: 'Top Node'
+      endpoint = FactoryBot.create :work_chart, id: 2, display_label: 'End Point', parent_id: root_chart.id
+      @vacation_chart = FactoryBot.create(:work_chart, id: 3, display_label: "Vacation", parent_id: endpoint.id)
+      holiday_chart = FactoryBot.create(:work_chart, id: 4, display_label: "Holiday", parent_id: endpoint.id)
+      sick_chart = FactoryBot.create(:work_chart, id: 5, display_label: "Sick Time", parent_id: endpoint.id)
+      production_category = FactoryBot.create(:production_category)
 
-      FactoryGirl.create(
+      FactoryBot.create(
         :duration_kind,
         code: 'nonbillable_pto',
         production_category_id: production_category.id,
@@ -31,7 +31,7 @@ describe PtosController do
     # Then - that employee's vacations are calculated.
     it 'should calculate vacations for logged in user' do
       # Given - an employee that started working 2 years and one month ago...
-      test_user = FactoryGirl.create(
+      test_user = FactoryBot.create(
         :user,
         email: 'someone@endpointdev.com',
         start_date: (DateTime.now - 2.years - 1.month)
@@ -68,7 +68,7 @@ describe PtosController do
     # Then - the impersonated employee's vacations are calculated.
     it 'should calculate vacations for assumed user' do
       # Given - an employee that started working 2 years and one month ago...
-      test_user = FactoryGirl.create(
+      test_user = FactoryBot.create(
         :user,
         email: 'someone@endpointdev.com',
         start_date: (DateTime.now - 2.years - 1.month)
@@ -81,7 +81,7 @@ describe PtosController do
       sign_in test_user
 
       # And - there's another employee...
-      test_assumed_user = FactoryGirl.create(
+      test_assumed_user = FactoryBot.create(
         :user,
         email: 'assumed@endpointdev.com',
         start_date: (DateTime.now - 2.years - 1.month)

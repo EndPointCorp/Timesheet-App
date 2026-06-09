@@ -3,10 +3,10 @@ require 'spec_helper'
 describe WorkEntries::CreateWorkEntry do
   before(:each) do
     # destroy_all_objects
-    @user = FactoryGirl.create :user
-    FactoryGirl.create :duration_kind, code: 'billable_standard'
-    @parent_chart = FactoryGirl.create :work_chart, id: 1
-    @chart = FactoryGirl.create :work_chart, parent_id: @parent_chart.id
+    @user = FactoryBot.create :user
+    FactoryBot.create :duration_kind, code: 'billable_standard'
+    @parent_chart = FactoryBot.create :work_chart, id: 1
+    @chart = FactoryBot.create :work_chart, parent_id: @parent_chart.id
     @params = {
       description: "I'm a test",
       fee: 0,

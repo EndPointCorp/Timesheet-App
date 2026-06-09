@@ -2,15 +2,15 @@ require "spec_helper"
 
 describe UserReport do
   before(:each) do 
-    @root = FactoryGirl.create :work_chart, id: 1, display_label: 'Top node'
-    @endpoint = FactoryGirl.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
-    @client = FactoryGirl.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
-    @user = FactoryGirl.create(:user, name: 'User1')
-    @client1 = FactoryGirl.create :work_chart, display_label: 'Client One', parent_id: @client.id   
+    @root = FactoryBot.create :work_chart, id: 1, display_label: 'Top node'
+    @endpoint = FactoryBot.create :work_chart, id: 2, display_label: 'End Point', parent_id: @root.id
+    @client = FactoryBot.create :work_chart, id: 3, display_label: 'Clients', parent_id: @endpoint.id
+    @user = FactoryBot.create(:user, name: 'User1')
+    @client1 = FactoryBot.create :work_chart, display_label: 'Client One', parent_id: @client.id   
   end
   describe "nag emails delivery with entries" do
     before(:each) do 
-      @entry = FactoryGirl.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23')
+      @entry = FactoryBot.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23')
       options = {}
       options[:begin_date] = Time.zone.parse('2014-12-23')
       options[:end_date] = Time.zone.parse('2014-12-23')
@@ -69,7 +69,7 @@ describe UserReport do
 
   describe "nag emails delivery with entries have multiple durations" do
     before(:each) do 
-      @entry = FactoryGirl.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23', has_many_durations: true)
+      @entry = FactoryBot.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23', has_many_durations: true)
       options = {}
       options[:begin_date] = Time.zone.parse('2014-12-23')
       options[:end_date] = Time.zone.parse('2014-12-23')
@@ -95,30 +95,30 @@ describe UserReport do
 
   describe "nag emails to manager" do
     before(:each) do 
-      @entry = FactoryGirl.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23')
+      @entry = FactoryBot.create(:work_entry, role_id: @user.role_id, work_chart_id: @client1.id, date_performed: '2014/12/23')
       options = {}
       options[:begin_date] = Time.zone.parse('2014-12-23')
       options[:end_date] = Time.zone.parse('2014-12-23')
 
       # Build Team Roles
-      @base_team = FactoryGirl.create(:role, id: 82, code: "team", display_label: "Base role for teams")
-      @operational_team = FactoryGirl.create(:role, id: 7, code: "operational", display_label: "Operational team grouping")
-      FactoryGirl.create(:role_has_role, role_id: @operational_team.id, has_role_id: @base_team.id)
-      @teama = FactoryGirl.create(:role, id: 26, code: "team_a", display_label: "TeamA")
-      FactoryGirl.create(:role_has_role, role_id: @teama.id, has_role_id: @operational_team.id)
+      @base_team = FactoryBot.create(:role, id: 82, code: "team", display_label: "Base role for teams")
+      @operational_team = FactoryBot.create(:role, id: 7, code: "operational", display_label: "Operational team grouping")
+      FactoryBot.create(:role_has_role, role_id: @operational_team.id, has_role_id: @base_team.id)
+      @teama = FactoryBot.create(:role, id: 26, code: "team_a", display_label: "TeamA")
+      FactoryBot.create(:role_has_role, role_id: @teama.id, has_role_id: @operational_team.id)
 
       # Tag Users to Team
-      @user2 = FactoryGirl.create(:user, name: 'User2')
-      FactoryGirl.create(:role_has_role, role_id: @user2.role_id, has_role_id: @teama.id)
-      FactoryGirl.create(:role_has_role, role_id: @user.role_id, has_role_id: @teama.id)
-      @set_manager = FactoryGirl.create(:role, id: 81, code: "manager", display_label: "Base management role")
-      @set_staff = FactoryGirl.create(:role, id: 10, code: "staff", display_label: "General grouping for staff")
-      FactoryGirl.create(:role_has_role, role_id: @set_manager.id, has_role_id: @set_staff.id)
+      @user2 = FactoryBot.create(:user, name: 'User2')
+      FactoryBot.create(:role_has_role, role_id: @user2.role_id, has_role_id: @teama.id)
+      FactoryBot.create(:role_has_role, role_id: @user.role_id, has_role_id: @teama.id)
+      @set_manager = FactoryBot.create(:role, id: 81, code: "manager", display_label: "Base management role")
+      @set_staff = FactoryBot.create(:role, id: 10, code: "staff", display_label: "General grouping for staff")
+      FactoryBot.create(:role_has_role, role_id: @set_manager.id, has_role_id: @set_staff.id)
 
       # Set Manager rights to User
-      @manage_right_type = FactoryGirl.create(:right_type, id: 5, code: "manage_team", display_label: "Manage other roles")
-      @set_right = FactoryGirl.create(:right, role_id: @user2.role_id, right_type_id: @manage_right_type.id)
-      @set_target = FactoryGirl.create(:right_target, right_id: @set_right.id, ref_obj_pk: @teama.id)
+      @manage_right_type = FactoryBot.create(:right_type, id: 5, code: "manage_team", display_label: "Manage other roles")
+      @set_right = FactoryBot.create(:right, role_id: @user2.role_id, right_type_id: @manage_right_type.id)
+      @set_target = FactoryBot.create(:right_target, right_id: @set_right.id, ref_obj_pk: @teama.id)
 
       @result = UserReport.send_report(@user.email, options)
     end

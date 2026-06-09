@@ -15,7 +15,7 @@ describe WorkMonthsController do
         day.wday == 0 || day.wday == 6
       end.count * 8 * 60
     end
-    let(:work_chart) { FactoryGirl.create :work_chart }
+    let(:work_chart) { FactoryBot.create :work_chart }
     let(:user) { stub(id: 40, email: 'tester@endpointdev.com', time_zone_code: nil) }
     let(:index_result) do
       get 'index', params: { start: month_start, end: month_end }, xhr: true

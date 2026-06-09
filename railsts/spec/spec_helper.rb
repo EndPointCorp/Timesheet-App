@@ -37,7 +37,7 @@ RSpec.configure do |config|
   config.expect_with(:rspec) { |c| c.syntax = [ :should, :expect ] }
 
   config.mock_with :mocha
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  config.fixture_paths = ["#{::Rails.root}/spec/fixtures"]
   config.use_transactional_fixtures = true
   config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
@@ -47,9 +47,7 @@ RSpec.configure do |config|
     Dir["#{Rails.root}/app/controllers/**/*.rb"].each {|f| load f}
     Dir["#{Rails.root}/app/requests/**/*.rb"].each {|f| load f}
     Dir["#{Rails.root}/lib/*.rb"].each {|f| load f}
-    FactoryGirl.sequences.clear
-    FactoryGirl.factories.clear
-    load Rails.root.join("spec/factories.rb")
+    FactoryBot.reload
     Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| load f}
   end
 

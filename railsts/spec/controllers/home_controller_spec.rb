@@ -10,7 +10,7 @@ describe HomeController do
     let(:frontend_index) { Rails.root.join('frontend', 'index.html') }
 
     before(:each) do
-      FactoryGirl.create :work_chart
+      FactoryBot.create :work_chart
 
       unless File.exist?(frontend_index)
         @created_frontend_index = true
@@ -28,7 +28,7 @@ describe HomeController do
 
     it "returns http success" do
       get 'index'
-      response.should be_success
+      response.should be_successful
     end
   end
 
