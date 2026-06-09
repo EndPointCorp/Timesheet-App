@@ -12,8 +12,8 @@ class WorkCharts::CreateMissingRelationshipNodes < ActiveInteraction::Base
       compose(WorkEntries::MoveEntriesToNode, from: manag_node, to: general)
       compose(WorkCharts::SetNodeKindSet, work_chart: client_rel_node, default_kind: nonbillable_relationship)
       compose(WorkEntries::SetNodeEntriesDurationKind, work_chart: general, duration_kind: nonbillable_relationship)
-      mining_node.update_attributes!(status: 'dead')
-      manag_node.update_attributes!(status: 'dead')
+      mining_node.update!(status: 'dead')
+      manag_node.update!(status: 'dead')
     end
   end
 

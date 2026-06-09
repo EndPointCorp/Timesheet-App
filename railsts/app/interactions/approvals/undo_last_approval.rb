@@ -6,7 +6,7 @@ class Approvals::UndoLastApproval < ActiveInteraction::Base
   validate :next_approval_not_resolved
 
   def execute
-    approval.update_attributes(approved: nil)
+    approval.update(approved: nil)
     next_approvals.delete_all
   end
 

@@ -7,7 +7,7 @@ class WorkEntries::DenyEntry < ActiveInteraction::Base
   validate :user_isnt_author
 
   def execute
-    approval.update_attributes!(approved: false, comment: comment, role_id: user.role_id)
+    approval.update!(approved: false, comment: comment, role_id: user.role_id)
     compose(Approvals::CreateApproval, work_entry: work_entry, users: previous_reviewers)
     approval
   end

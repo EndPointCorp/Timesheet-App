@@ -5,7 +5,7 @@ class WorkEntries::ApproveEntry < ActiveInteraction::Base
   validate :approval_belongs_to_user
 
   def execute
-    approval.update_attributes!(approved: true, role_id: user.role_id)
+    approval.update!(approved: true, role_id: user.role_id)
     if !next_reviewers.empty?
       compose(Approvals::CreateApproval, work_entry: work_entry, users: next_reviewers)
     end

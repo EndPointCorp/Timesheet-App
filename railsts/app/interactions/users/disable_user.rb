@@ -7,7 +7,7 @@ class Users::DisableUser < ActiveInteraction::Base
   
   def execute
     @user = User.find id
-    @user.update_attributes( { status_code: status_code } )
+    @user.update( { status_code: status_code } )
     @user  
   end
 end
