@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   before_action :set_charts_version_header
   before_action :set_csrf_cookie
 
-  after_filter :dump_state_log
+  after_action :dump_state_log
 
   # before_action :assume_other_role, if: Proc.new { !session[:assume_role_id].nil? }
 

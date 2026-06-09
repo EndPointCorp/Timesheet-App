@@ -1,5 +1,5 @@
 class TimeZonesController < ApplicationController
-  before_filter :ensure_logged_in
+  before_action :ensure_logged_in
 
   #GET /time_zones
   def index

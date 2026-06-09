@@ -1,5 +1,5 @@
 class TeamController < ApplicationController
-  before_filter :ensure_logged_in
+  before_action :ensure_logged_in
 
   def totals
     @totals = DayWorkTotal.where('date_performed >= ? AND date_performed <= ?', params[:from], params[:to])

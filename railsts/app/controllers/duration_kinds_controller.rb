@@ -1,6 +1,6 @@
 class DurationKindsController < ApplicationController
   respond_to :json
-  before_filter :ensure_logged_in
+  before_action :ensure_logged_in
 
   # GET /duration_kinds.json
   #

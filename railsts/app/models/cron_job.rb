@@ -1,5 +1,5 @@
 class CronJob < ActiveRecord::Base
-  serialize :recur_at, CronSpec
+  serialize :recur_at, coder: CronSpec
 
   def self.current
     joins("INNER JOIN current_cron_jobs on current_cron_jobs.id = cron_jobs.id").

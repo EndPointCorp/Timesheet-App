@@ -1,7 +1,7 @@
 class Role < ActiveRecord::Base
   self.table_name = :roles
 
-  has_many :role_has_roles, class_name: RoleHasRole
+  has_many :role_has_roles, class_name: "RoleHasRole"
   has_many :roles, through: :role_has_roles
   has_many :check_role_id,
     class_name: "RoleHasRole",

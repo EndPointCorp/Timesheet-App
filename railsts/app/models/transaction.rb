@@ -5,7 +5,7 @@ class Transaction < ActiveRecord::Base
   MODES = [ 'cumulative', 'zero-out' ]
   validates :mode, presence: true, inclusion: MODES
 
-  serialize :recur_at, CronSpec
+  serialize :recur_at, coder: CronSpec
 
   def self.by_work_chart(work_chart)
     where(work_chart_id: work_chart.id)
