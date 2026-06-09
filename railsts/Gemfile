@@ -21,6 +21,7 @@ gem "rack-cors"
 gem "wicked_pdf"
 gem "wkhtmltopdf-binary"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "csv"
 
 group :development, :test do
   gem "dotenv-rails"
