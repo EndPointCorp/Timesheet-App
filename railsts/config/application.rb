@@ -3,10 +3,9 @@ require File.expand_path('../boot', __FILE__)
 require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
-require "sprockets/railtie"
 
 Bundler.require(*Rails.groups)
-Dotenv::Railtie.load if Rails.env != 'production'
+Dotenv::Rails.load if Rails.env != 'production'
 
 module TimesheetApp
   class Application < Rails::Application
@@ -28,10 +27,9 @@ module TimesheetApp
     config.filter_parameters += [:password, :password_confirmation]
     config.active_support.escape_html_entities_in_json = true
     config.action_dispatch.session_store = :active_record_store  
-    config.assets.enabled = false
 
-    config.middleware.delete "Rack::MethodOverride"
-    config.middleware.delete "ActionDispatch::RequestId"
+    config.middleware.delete Rack::MethodOverride
+    config.middleware.delete ActionDispatch::RequestId
 
     config.active_record.schema_format = :sql
   end

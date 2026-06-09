@@ -37,15 +37,10 @@ TimesheetApp::Application.configure do
 
   config.active_record.logger = Logger.new(File.join(Rails.root, 'log', 'activerecord.log'))
 
-  # Do not compress assets
-  config.assets.compress = false
-
   config.eager_load = false
 
   config.action_mailer.default_url_options = { host: InstanceInfo.base_url }
 
-  # Expands the lines which load the assets
-  config.assets.debug = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
