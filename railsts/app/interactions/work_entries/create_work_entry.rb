@@ -96,7 +96,7 @@ class WorkEntries::CreateWorkEntry < ActiveInteraction::Base
     modes.all? do |mode, durations|
       durations.count == 0 || -> {
         budget_id = HoursInTheBank::Day.joins("inner join chart_labels on budget_days.budget_id = any(chart_labels.ids)").
-          where(date: date_performed, kind_code: mode).where("chart_labels.id = ?", work_chart_id).first.try(:budget_id)
+          where(date: date_performed, kind_code: mode).where("chart_labels.id = ?", work_chart_id).order("position desc").first.try(:budget_id)
         budget = HoursInTheBank::Budget.where(work_chart_id: budget_id, kind_code: mode).first if budget_id
         billed = durations.map { |d| d[:duration] }.sum
         budget.nil? ||
