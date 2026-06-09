@@ -16,6 +16,7 @@ module TimesheetApp
     end
 
 
+    config.eager_load_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += %W(#{config.root}/lib/accounting)
     config.autoload_paths += %W(#{config.root}/app/interactions)

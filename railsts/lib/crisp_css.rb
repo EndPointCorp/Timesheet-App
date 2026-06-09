@@ -1,4 +1,4 @@
-class CrispCSS
+class CrispCss
   def self.process!(html)
     Rails.logger.debug "Processing html:\n\n#{html}"
     doc = Nokogiri::XML(html) { |config| config.noblanks }

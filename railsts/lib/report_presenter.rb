@@ -37,7 +37,7 @@ class ReportPresenter
         }
       )
       if mode == :html
-        CrispCSS.process! header.gsub("</body>","<div class='report_content'>#{report}</div></body>") 
+        CrispCss.process! header.gsub("</body>","<div class='report_content'>#{report}</div></body>") 
       else
         "#{header}#{report}\n\n(end)"
       end
