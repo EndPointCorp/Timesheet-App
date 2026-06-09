@@ -44,13 +44,13 @@ namespace :db do
     # parse. Run via `make test-db`.
     desc "Create the test DB, load db/structure.sql, and populate materialized views"
     task :setup => :environment do
-      config = ActiveRecord::Base.configurations.fetch('test')
-      db = config.fetch('database')
+      config = ActiveRecord::Base.configurations.configs_for(env_name: 'test').first
+      db = config.database
       # Guard against the dotenv footgun where the test env could resolve to the
       # dev DB; this task drops its target, so refuse anything not clearly a test DB.
       abort "Refusing: test database #{db.inspect} does not end in _test" unless db =~ /_test\z/
 
-      ActiveRecord::Base.establish_connection(config.merge('database' => 'postgres'))
+      ActiveRecord::Base.establish_connection(config.configuration_hash.merge(database: 'postgres'))
       ActiveRecord::Base.connection.drop_database(db) rescue nil
       ActiveRecord::Base.connection.create_database(db)
 
