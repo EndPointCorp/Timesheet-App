@@ -69,7 +69,7 @@ class HoursInTheBankController < ApplicationController
         [ effective_user.role_id ]
       end
 
-      scope.where("array[?] && role_ids", role_ids)
+      scope.where("array[?]::int[] && role_ids", role_ids)
     end
 
     if @project_ids.present?
