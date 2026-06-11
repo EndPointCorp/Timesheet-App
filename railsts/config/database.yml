@@ -6,6 +6,12 @@ default: &default
   port: <%= ENV.fetch('DATABASE_PORT') { 5432 } %>
   username: <%= ENV.fetch('DATABASE_USERNAME') { 'timesheet' } %>
   password: <%= ENV.fetch('DATABASE_PASSWORD') { 'timesheet' } %>
+  # Rails 6.1+ runs `SET intervalstyle = iso_8601` so it can parse intervals as
+  # ActiveSupport::Duration. This app's Interval class expects the legacy
+  # "HH:MM:SS" form, so force the session back to it. Pairs with the
+  # interval->String type override in config/initializers/custom_postgres_types.rb.
+  variables:
+    intervalstyle: postgres
 
 development:
   <<: *default
