@@ -123,14 +123,16 @@ module DatabaseObjects
       {
         code: "billable_standard",
         production_category_id: 1,
-        status: 'active',
+        # duration_kinds.status is an integer column the app never reads. Old Arel
+        # cast the "active" string to 0 when building the insert; keep that value.
+        status: 0,
         display_label: "Billable: Standard",
         abbr_label: "bst"
       },
       {
         code: "nonbillable_standard",
         production_category_id: 2,
-        status: 'active',
+        status: 0,
         display_label: "Non-Billable: Standard",
         abbr_label: "nbst"
       }
