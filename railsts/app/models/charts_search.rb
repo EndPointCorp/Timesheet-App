@@ -10,8 +10,11 @@ class ChartsSearch < ActiveRecord::Base
       map do |token|
         "#{token}:*"
     end.join " & "
+    # `query` is built only from word characters (the gsub above strips everything
+    # else), so it cannot carry SQL. That's why the interpolation here is safe and
+    # the order can be wrapped in Arel.sql to satisfy Rails' raw-SQL guard.
     where("search_spec @@ to_tsquery('#{query}')").
-      order("ts_rank(search_spec, to_tsquery('#{query}')) desc, labels asc")
+      order(Arel.sql("ts_rank(search_spec, to_tsquery('#{query}')) desc, labels asc"))
   end
 
   def self.without_dead
