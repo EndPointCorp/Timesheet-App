@@ -162,7 +162,7 @@ class Report
       @view = 'report_periods'
       if params[:show_hours_in_the_bank] == 'true'
         ids = ChartLabel.where("? = any(ids)", params[:work_chart_id]).select(:id).map(&:id)
-        @budgets = HoursInTheBank::Budget.where("work_chart_id = any(array[?])", ids).
+        @budgets = HoursInTheBank::Budget.where("work_chart_id = any(array[?]::int[])", ids).
                     joins(:chart_label).
                     order('labels asc')
       end
