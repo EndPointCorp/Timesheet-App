@@ -62,8 +62,8 @@ class WorkDay
   end
 
   def self.db_days(user, start_range, end_range)
-    start_range = start_range.to_s(:db) unless start_range.is_a?(String)
-    end_range = end_range.to_s(:db) unless end_range.is_a?(String)
+    start_range = start_range.to_fs(:db) unless start_range.is_a?(String)
+    end_range = end_range.to_fs(:db) unless end_range.is_a?(String)
     WorkEntry.connection.execute <<-sql
       SELECT not every(duration <> '00:00:00') as has_zero, SUM(duration) as time,
              date_performed, work_entry_durations.kind_code,
