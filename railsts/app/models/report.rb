@@ -321,7 +321,7 @@ class Report
       end
 
       get_duration_details_periods(subitems)
-      @billable_time = Interval.new(subitems.select { |item| item[:name] == 'Billable' }.sum { |item| Interval.new(item[:total]) })
+      @billable_time = Interval.new(subitems.select { |item| item[:name] == 'Billable' }.sum(Interval.new) { |item| Interval.new(item[:total]) })
       @non_billable_time = @total_total_time - @billable_time
     end
 
@@ -335,10 +335,10 @@ class Report
       nonbillable =  durations.grep(/non/i)
       billable = durations - nonbillable
       billable.each do |duration|
-        @billable_details << [duration, @all_items.first.select { |item| item[:name] == duration}.sum { |item| Interval.new(item[:total]) }]
+        @billable_details << [duration, @all_items.first.select { |item| item[:name] == duration}.sum(Interval.new) { |item| Interval.new(item[:total]) }]
       end
       nonbillable.each do |duration|
-        @nonbillable_details << [duration, @all_items.first.select { |item| item[:name] == duration}.sum { |item| Interval.new(item[:total]) }]
+        @nonbillable_details << [duration, @all_items.first.select { |item| item[:name] == duration}.sum(Interval.new) { |item| Interval.new(item[:total]) }]
       end
     end
 
@@ -352,16 +352,16 @@ class Report
       nonbillable =  durations.grep(/non/i)
       billable = durations - nonbillable
       billable.each do |duration|
-        @billable_details << [duration, subitems.select { |item| item[:name] == duration}.sum { |item| Interval.new(item[:total]) }]
+        @billable_details << [duration, subitems.select { |item| item[:name] == duration}.sum(Interval.new) { |item| Interval.new(item[:total]) }]
       end
       nonbillable.each do |duration|
-        @nonbillable_details << [duration, subitems.select { |item| item[:name] == duration}.sum { |item| Interval.new(item[:total]) }]
+        @nonbillable_details << [duration, subitems.select { |item| item[:name] == duration}.sum(Interval.new) { |item| Interval.new(item[:total]) }]
       end
     end
 
     def set_billable_time
       get_duration_details
-      @billable_time = Interval.new(@all_items.first.select { |item| item[:name] == 'Billable' }.sum { |item| Interval.new(item[:total]) })
+      @billable_time = Interval.new(@all_items.first.select { |item| item[:name] == 'Billable' }.sum(Interval.new) { |item| Interval.new(item[:total]) })
       @non_billable_time = @total_time - @billable_time
     end
 

@@ -25,9 +25,9 @@ class WorkMonth
           m.available = Interval.new 0
         end
       end
-      m.billable_total = Interval.new days.map(&:billable_time).sum
-      m.nonbillable_total = Interval.new days.map(&:nonbillable_time).sum
-      m.pto_total = Interval.new days.map(&:pto_time).sum
+      m.billable_total = Interval.new days.map(&:billable_time).sum(Interval.new)
+      m.nonbillable_total = Interval.new days.map(&:nonbillable_time).sum(Interval.new)
+      m.pto_total = Interval.new days.map(&:pto_time).sum(Interval.new)
       m.total = m.billable_total + m.nonbillable_total + m.pto_total
       m.total = Interval.new m.total
       m.difference = m.total - m.available

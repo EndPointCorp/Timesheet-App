@@ -120,7 +120,7 @@ class WorkEntry < ActiveRecord::Base
   end
 
   def total_for(durations)
-    durations.map(&:duration).map { |d| Interval.new(d) }.sum
+    durations.map(&:duration).map { |d| Interval.new(d) }.sum(Interval.new)
   end
 
   def sanitize_entry
