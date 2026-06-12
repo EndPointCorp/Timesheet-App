@@ -35,7 +35,10 @@ TimesheetApp::Application.configure do
 
   # Raise exception on mass assignment protection for Active Record models
 
-  config.active_record.logger = Logger.new(File.join(Rails.root, 'log', 'activerecord.log'))
+  # ActiveSupport::Logger (not plain Logger) so it has #silence. Rails 7.1+ stopped
+  # monkey-patching ::Logger with silence, and activerecord-session_store calls
+  # logger.silence on the AR logger for every session lookup.
+  config.active_record.logger = ActiveSupport::Logger.new(File.join(Rails.root, 'log', 'activerecord.log'))
 
   config.eager_load = false
 
