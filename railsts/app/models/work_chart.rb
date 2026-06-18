@@ -182,7 +182,7 @@ class WorkChart < ActiveRecord::Base
         FROM work_entries
         WHERE
           role_id = #{user.role_id} AND
-          date_performed > DATE('#{3.months.ago.to_s(:db)}')
+          date_performed > DATE('#{3.months.ago.to_fs(:db)}')
         GROUP BY work_chart_id
         ORDER BY last_date DESC
         LIMIT #{limit};

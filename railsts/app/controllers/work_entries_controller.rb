@@ -95,7 +95,7 @@ class WorkEntriesController < ApplicationController
   # Returns ids of previous & next entries
   def previous_next
     base    = WorkEntry.find params[:id]
-    date    = base.date_performed.to_s(:db)
+    date    = base.date_performed.to_fs(:db)
     role_id = effective_user.role_id
     prev_id = WorkEntry.where(role_id: role_id)
                        .where("date_performed < DATE(?) OR (date_performed = DATE(?) AND id < ?)", 
