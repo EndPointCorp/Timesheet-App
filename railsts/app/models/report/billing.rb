@@ -52,7 +52,7 @@ class Report::Billing < Report
         subtree[:total] = subtree[:children].inject(Interval.new(0)) { |s, i| s += i[:total]; s }
         subtree[:fee] = subtree[:children].inject(0) { |s, i| s += i[:fee]; s }
       end
-      tree[:children] = tree[:children].select { |c| c[:total] != Interval.new(0) || c[:fee] != BigDecimal.new('0.0') }
+      tree[:children] = tree[:children].select { |c| c[:total] != Interval.new(0) || c[:fee] != BigDecimal('0.0') }
       tree[:total] = tree[:children].inject(Interval.new(0)) { |s, i| s += i[:total]; s }
       tree[:fee] = tree[:children].inject(0) { |s, i| s += i[:fee]; s }
     end
