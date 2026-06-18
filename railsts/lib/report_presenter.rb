@@ -18,9 +18,9 @@ class ReportPresenter
       WickedPdf.new.pdf_from_string html
     else
       header = ApplicationController.renderer.render(
-        template: "reports/#{layout}_header.#{mode}.erb",
+        template: "reports/#{layout}_header",
         layout: layout.to_s,
-        format: mode,
+        formats: [mode],
         locals: {
           params: doc_params,
           type: report_type.name.gsub(/Report::/, ''),
@@ -28,9 +28,9 @@ class ReportPresenter
         }
       )
       report  = ApplicationController.renderer.render(
-        template: "reports/#{document.view}.#{mode}.erb",
+        template: "reports/#{document.view}",
         layout: false,
-        format: mode,
+        formats: [mode],
         locals: {
           report: document,
           effective_user: effective_user
