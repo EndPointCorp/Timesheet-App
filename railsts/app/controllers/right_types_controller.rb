@@ -3,6 +3,6 @@ class RightTypesController < ApplicationController
 
   def all
     @right_types = RightType.select('display_label as label, id, code as value, code, target_kind_code').sort
-    render json: JSON.dump(@right_types)
+    render json: @right_types
   end
 end

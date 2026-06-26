@@ -111,7 +111,7 @@ class ReportsController < ApplicationController
       new_preset
     end
 
-    render json: JSON.dump(@presets)
+    render json: @presets
   end
 
   def remove_preset

@@ -3,6 +3,6 @@ class SettingsController < ApplicationController
   def index
     @settings = Settings.instance.client
 
-    render json: JSON.dump(@settings)
+    render json: @settings
   end
 end

@@ -6,7 +6,7 @@ class GroupsController < ApplicationController
   # Returns all groups
   def all
     @groups_list = RoleDetail.where("code not like 'user_%'").select("id, code, code AS value, label")
-    render json: JSON.dump(@groups_list)
+    render json: @groups_list
   end
 
   # GET /groups/groups_no_teams.json
@@ -14,7 +14,7 @@ class GroupsController < ApplicationController
   # Returns all groups
   def groups_no_teams
     @groups_list = RoleDetail.where.not(id: Team.select(:role_id)).where("code not like 'user_%'").select("id, code, code AS value, label")
-    render json: JSON.dump(@groups_list)
+    render json: @groups_list
   end
 
   # GET /groups/groups_with_roles.json
@@ -22,7 +22,7 @@ class GroupsController < ApplicationController
   # Returns groups that has roles
   def groups_with_roles
     @groups_list = RoleDetail.select("id, code AS value, label").where("code not like 'user_%'")
-    render json: JSON.dump(@groups_list)
+    render json: @groups_list
   end
 
   # GET /groups/details.json
@@ -31,7 +31,7 @@ class GroupsController < ApplicationController
   def details
     @all_groups = RoleDetail.where("code not like 'user_%'")
 
-    render json: JSON.dump(@all_groups)
+    render json: @all_groups
   end
 
   # PUT /groups/{id}
@@ -63,12 +63,14 @@ class GroupsController < ApplicationController
   # Returns all teams
   def all_teams
     @teams_list = Team.select("role_id, code AS value, display_label AS label")
-    render json: JSON.dump(@teams_list.map do |team|
+    teams_mapped_list = @teams_list.map do |team|
       {
         id: team.role_id,
         label: team.label,
         value: team.value
       }
-    end)
+    end
+    
+    render json: teams_mapped_list
   end
 end

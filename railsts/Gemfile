@@ -10,7 +10,6 @@ gem "devise"
 gem "activerecord-session_store"
 gem "active_record_union"
 gem "rabl"
-gem "yajl-ruby", require: false        # JSON backend — 11 endpoints break without it
 gem "active_interaction"
 gem "delayed_job_active_record"        # ActiveJob queue adapter (config/application.rb)
 gem "with_advisory_lock"

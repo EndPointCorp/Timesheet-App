@@ -8,7 +8,7 @@ class RolesController < ApplicationController
   def all
     @all_roles = RoleDetail.all
 
-    render json: JSON.dump(@all_roles)
+    render json: @all_roles
   end
 
   # POST /roles/create_role

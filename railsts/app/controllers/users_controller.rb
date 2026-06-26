@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   def all
     @all_users = User.where("email not in (?)", [ "root@domain.com", "timesheet@endpointdev.com" ]).order(:username)
 
-    render json: JSON.dump(@all_users)
+    render json: @all_users
   end
 
   # GET /users/details.json
@@ -111,7 +111,7 @@ class UsersController < ApplicationController
       @users_groups_teams[user.id] = @user
     }
 
-    render json: JSON.dump(@users_groups_teams)
+    render json: @users_groups_teams
   end
 
   # GET /users/reportable.json
