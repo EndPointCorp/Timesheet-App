@@ -29,26 +29,27 @@ check_ruby_syntax:
 # then `make test`. See the README.
 .PHONY: test test-db coverage coverage-pdf
 
+# Compose lives at the repo root now and covers the frontend too; Compose finds
+# it by walking up from here. The Rails service is "api" ("web" is the frontend).
 TEST_RUN = docker compose run --rm -e RAILS_ENV=test
 
 # One-time (idempotent) test-DB setup: create the DB, load db/structure.sql, and
 # populate the materialized views the suite depends on.
 test-db:
-	docker compose up -d db
-	until docker compose exec -T db pg_isready -U timesheet -d timesheet >/dev/null 2>&1; do sleep 1; done
-	$(TEST_RUN) web bundle exec rake db:test:setup
+	docker compose up -d --wait db
+	$(TEST_RUN) api bundle exec rake db:test:setup
 
 test:
-	$(TEST_RUN) web bundle exec rspec
+	$(TEST_RUN) api bundle exec rspec
 
 # Opt-in SimpleCov coverage report. Writes coverage/index.html (gitignored).
 coverage:
-	$(TEST_RUN) -e COVERAGE=true web bundle exec rspec
+	$(TEST_RUN) -e COVERAGE=true api bundle exec rspec
 	@echo "Coverage report generated: open coverage/index.html in a browser"
 
 # One-page shareable PDF summary (headline %, by-area table, biggest gaps),
 # built from the last coverage run via Prawn (pure Ruby). Run `make
 # coverage` first so coverage/.resultset.json exists.
 coverage-pdf:
-	$(TEST_RUN) web bundle exec ruby script/coverage_summary.rb
+	$(TEST_RUN) api bundle exec ruby script/coverage_summary.rb
 	@echo "PDF generated: coverage/coverage_summary.pdf"
