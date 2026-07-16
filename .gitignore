@@ -5,6 +5,11 @@ Timesheet_Beta_Testing_Results_Claude_DEPLOYED_2026-05-29.xlsx
 resume.md
 railsts/out.txt
 
+# Compose reads an optional .env next to compose.yml, for overriding ports or
+# credentials locally. Root-scoped on purpose: railsts/ and timesheet-frontend/
+# ignore their own, and a bare ".env" here would match theirs too.
+/.env
+
 # Manual test checklist: track the checklist itself, ignore the runs. A run is
 # output — findings that matter become issues, and the issues are the record.
 testing/runs/
