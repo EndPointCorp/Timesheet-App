@@ -1,0 +1,32 @@
+# Keeps `COPY . .` from pulling local state into the image.
+# .env first: this directory has a real one (E2E credentials), and configuration
+# does not belong in a build artifact.
+
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+
+# Installed inside the image by `npm ci`. The host's copy may be built for a
+# different platform.
+node_modules/
+
+# Build and test output
+build/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# Local scratch
+.DS_Store
+*.swp
+.vscode/
+.continue/
+.mcp.json
+
+# Docker's own files
+Dockerfile
+.dockerignore

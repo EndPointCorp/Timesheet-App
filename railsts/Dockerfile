@@ -1,55 +1,50 @@
-FROM ubuntu:18.04
+# Rails API image. See compose.yml at the repo root.
+#
+# Ruby version matches .ruby-version and the `ruby` line in the Gemfile. Bump
+# one, bump all three.
+FROM ruby:3.3.6-slim-bookworm
 
-# Set environment variables to avoid interaction during package installation
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3
 
-# Install dependencies for building Ruby and other libraries
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libssl-dev \
-    libreadline-dev \
-    zlib1g-dev \
-    libyaml-dev \
-    libsqlite3-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libcurl4-openssl-dev \
-    wget \
-    libqtwebkit4 \
-    libqtwebkit-dev \
-    libpq-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential \
+      libpq-dev \
+      libyaml-dev \
+      git \
+      # wkhtmltopdf-binary ships its own binary, and these are the three shared
+      # libraries it links (confirmed with ldd; nothing else is missing). Leave
+      # them out and PDF reports fail when they render, not when you build.
+      libxrender1 \
+      libfontconfig1 \
+      libjpeg62-turbo \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Ruby 2.4.10
-RUN wget https://cache.ruby-lang.org/pub/ruby/2.4/ruby-2.4.10.tar.gz && \
-    tar -xvzf ruby-2.4.10.tar.gz && \
-    cd ruby-2.4.10 && \
-    ./configure --prefix=/usr/local && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf ruby-2.4.10 ruby-2.4.10.tar.gz
+# Run as a normal user, not root. The ruby image has no non-root user, so make
+# one and give it the gem directory. 1000 is the first real user on almost any
+# Linux desktop, which keeps bind-mounted file ownership sane there. macOS and
+# Windows remap ownership anyway, so it does not matter on those.
+#
+# The home directory is deliberately NOT /app. /app is your checkout, mounted in,
+# and anything that writes to ~ (wkhtmltopdf builds a fontconfig cache, for one)
+# would drop files straight into your source tree.
+RUN groupadd -g 1000 app \
+ && useradd --create-home --home-dir /home/app --shell /bin/bash --uid 1000 -g app app \
+ && mkdir -p /app \
+ && chown -R app:app /app /usr/local/bundle
 
-# Update RubyGems to the latest compatible version
-RUN gem update --system 3.2.3
-
-# Install Bundler 1.17.3, which is compatible with Ruby 2.4 and Rails 5.0.1
-RUN gem install bundler -v 1.17.3
-
-# Set working directory in container
 WORKDIR /app
+USER app
 
-# Copy Gemfile and Gemfile.lock to leverage Docker cache
-COPY Gemfile Gemfile.lock ./
+# Gems live at /usr/local/bundle, outside /app, so the compose bind mount over
+# /app does not hide them. Change the Gemfile and you need a rebuild.
+COPY --chown=app:app Gemfile Gemfile.lock ./
+RUN gem install bundler -v 2.5.22 \
+ && bundle install
 
-# Run bundle install
-RUN bundle install
+COPY --chown=app:app . .
 
-# Copy the entire application source code into the container
-COPY . .
-
-# Expose the default Rails port (3000)
 EXPOSE 3000
 
-# Set default command to start Rails server
-CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
