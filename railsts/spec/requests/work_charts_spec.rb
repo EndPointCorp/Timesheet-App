@@ -37,7 +37,8 @@ describe "WorkCharts" do
       work_chart = FactoryBot.create(:work_chart)
       get "/api/work_charts/#{work_chart.id}.json"
       response.should be_successful
-      assigns(:chart).should eq(work_chart)
+      body = JSON.parse(response.body)
+      body['id'].should eq(work_chart.id)
     end
   end
 

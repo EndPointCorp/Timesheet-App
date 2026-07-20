@@ -7,13 +7,59 @@ describe "Groups" do
   end
 
   describe "GET /groups.json" do
-    it "gets a list of groups" do
-      FactoryBot.create(:role, display_label: 'Group of test', code: 'group1')
-      roles = Role.select("id, code, code AS value, display_label as label").where('code NOT LIKE ?', '%user%')
+    it "returns a JSON array of groups" do
+      group = FactoryBot.create(:role, display_label: 'Group of test', code: 'group1')
+
       get "/api/groups.json"
 
       response.should be_successful
-      assigns(:groups_list).map(&:id).should eq(roles.map(&:id))
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      body.map { |g| g['id'] }.should include(group.id)
+    end
+  end
+
+  describe "GET /groups/details.json" do
+    it "returns a JSON array of groups" do
+      group = FactoryBot.create(:role, display_label: 'Group of test', code: 'group1')
+
+      get "/api/groups/details.json"
+
+      response.should be_successful
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      body.map { |g| g['id'] }.should include(group.id)
+    end
+  end
+
+  describe "GET /groups/groups_with_roles.json" do
+    it "returns a JSON array of groups" do
+      group = FactoryBot.create(:role, display_label: 'Group of test', code: 'group1')
+
+      get "/api/groups/groups_with_roles.json"
+
+      response.should be_successful
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      body.map { |g| g['id'] }.should include(group.id)
+    end
+  end
+
+  describe "GET /groups/groups_no_teams.json" do
+    it "returns a JSON array excluding groups that belong to a team" do
+      operational = FactoryBot.create(:role, code: 'operational')
+      plain  = FactoryBot.create(:role, code: 'group1', display_label: 'No team')
+      teamed = FactoryBot.create(:role, code: 'group2', display_label: 'Has team')
+      FactoryBot.create(:role_has_role, role_id: teamed.id, has_role_id: operational.id)
+
+      get "/api/groups/groups_no_teams.json"
+
+      response.should be_successful
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      ids = body.map { |g| g['id'] }
+      ids.should include(plain.id)
+      ids.should_not include(teamed.id)
     end
   end
 

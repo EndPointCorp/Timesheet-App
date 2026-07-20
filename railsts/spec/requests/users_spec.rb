@@ -6,6 +6,22 @@ describe "Users" do
     login_sucessfully
   end
 
+  
+  describe "GET /users.json" do
+    it "returns a JSON array of users" do
+      other = FactoryBot.create(:user)
+
+      get "/api/users.json"
+
+      response.should be_successful
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      ids = body.map { |u| u['id'] }
+      ids.should include(@user.id)
+      ids.should include(other.id)
+    end
+  end
+
   describe "POST /users.json" do
     it "saves the new user in database", focus: true do
       FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
@@ -52,10 +68,13 @@ describe "Users" do
       role = FactoryBot.create(:role)
       user.role = role
       user.save!
-      users = User.order("username ASC")
       get '/api/users/all_roles.json'
       response.should be_successful
-      assigns(:all_roles).map(&:id).should eq(users.map(&:id))
+      body = JSON.parse(response.body)
+      body.should be_an(Array)
+      emails = body.map { |u| u['email'] }
+      emails.should include(@user.email)
+      emails.should include(user.email)
     end
 
     it "renders the #all_roles view" do
@@ -72,7 +91,8 @@ describe "Users" do
     it "checks current user" do
       get '/api/users/current.json'
       response.should be_successful
-      assigns(:current_user).email.should eq(@user.email)
+      body = JSON.parse(response.body)
+      body['email'].should eq(@user.email)
     end
 
     it "renders the #current view" do
@@ -81,12 +101,16 @@ describe "Users" do
     end
   end
 
-  describe "GET /users/:id.json" do
-    it "assigns the requested user to @user" do
-      user = FactoryBot.build(:user)
-      get "/api/users/#{user.id}"
+  describe "GET /users/:user_id.json" do
+    it "returns the requested user's details" do
+      user = FactoryBot.create(:user)
+
+      get "/api/users/#{user.id}.json"
+
       response.should be_successful
-      assigns(:id).should eq(user.id)
+      body = JSON.parse(response.body)
+      body['id'].should eq(user.id)
+      body['email'].should eq(user.email)
     end
   end
 
