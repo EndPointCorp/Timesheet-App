@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../stores";
 import { usersHooks } from "../../hooks";
+import useSettingsMenu from "../../hooks/useSettingsMenu";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -22,22 +23,8 @@ const pages = [
   { name: "New Entry", link: "/today/new", icon: "icon-edit" },
 ];
 
-const settings = [
-  { name: "Roles editor", link: "/users-editor", icon: "icon-group" },
-
-  {
-    name: "Edit work charts",
-    link: "/work_charts/editor",
-    icon: "icon-flow-tree",
-  },
-  { name: "Reports", link: "/reports", icon: "icon-doc-text" },
-
-  { name: "Switch role", link: "/", icon: "icon-flow-cross" },
-  { name: "Create user", link: "/create_user", icon: "icon-user-plus" },
-  { name: "User calendar", link: "/calendar-user", icon: "icon-calendar-inv" },
-];
-
 export default function NavDrawer() {
+  const settings = useSettingsMenu();
   const [open, setOpen] = React.useState(false);
 
   const closeNavDrawer = (reason: "backdropClick") => {
