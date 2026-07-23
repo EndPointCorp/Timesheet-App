@@ -382,4 +382,38 @@ describe "HoursInTheBank" do
     end
   end
 
+  # Guards the third site of the role-id array-cast bug (see e09bc05, 9f11b24).
+  # active_projects filters HistoryBudget with `array[?]::int[] && role_ids`.
+  # role_ids is an integer[] column; without the ::int[] cast Rails 8 sends the
+  # bound array as text[], Postgres has no `text[] && integer[]` operator, and
+  # the endpoint 500s. This path only runs for non-directors, so we exercise it
+  # as a developer and as a manager.
+  describe "GET /hours/active_projects" do
+    it "returns the history budgets for a developer" do
+      WorkEntries::CreateWorkEntry.run! work_chart_id: @acme_ios_devel.id,
+        user: @developer_perplexus_acme,
+        date_performed: 10.days.ago.to_date,
+        fee: 0,
+        description: "test",
+        durations: [{ kind_code: "billable_standard", duration: 10*60 }]
+      login_sucessfully @developer_perplexus_acme.email
+      get active_projects_path
+      response.status.should eq(200)
+      JSON.parse(response.body).should be_an(Array)
+    end
+
+    it "returns the history budgets for a manager across their team" do
+      WorkEntries::CreateWorkEntry.run! work_chart_id: @acme_ios_devel.id,
+        user: @developer_perplexus_acme,
+        date_performed: 10.days.ago.to_date,
+        fee: 0,
+        description: "test",
+        durations: [{ kind_code: "billable_standard", duration: 10*60 }]
+      login_sucessfully @manager_perplexus.email
+      get active_projects_path
+      response.status.should eq(200)
+      JSON.parse(response.body).should be_an(Array)
+    end
+  end
+
 end

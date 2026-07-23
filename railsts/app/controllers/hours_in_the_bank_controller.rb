@@ -42,7 +42,7 @@ class HoursInTheBankController < ApplicationController
         [ effective_user.role_id ]
       end
 
-      HoursInTheBank::HistoryBudget.where("array[?] && role_ids", role_ids)
+      HoursInTheBank::HistoryBudget.where("array[?]::int[] && role_ids", role_ids)
     end
 
     if @project_ids.present?
