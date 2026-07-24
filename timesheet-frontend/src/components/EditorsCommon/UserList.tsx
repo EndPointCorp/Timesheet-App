@@ -10,7 +10,7 @@ interface UserListProps {
   chosenTeam: string;
   chosenGroup: string;
   searchValue: string;
-  timeZones: Array<string>;
+  timeZones: Array<{ code: string; utc_offset: number }>;
 }
 
 const UserList: FC<UserListProps> = (props) => {

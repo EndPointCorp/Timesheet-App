@@ -5,7 +5,7 @@ import Text from "../../../components/EditorsCommon/Text";
 interface TimeZonesProps {
   timeZone: string;
   setTimeZone: Function;
-  timeZones: Array<string>;
+  timeZones: Array<{ code: string; utc_offset: number }>;
 }
 
 const TimeZones: FC<TimeZonesProps> = (props) => {
@@ -21,9 +21,9 @@ const TimeZones: FC<TimeZonesProps> = (props) => {
         }}
         className="select-dropdown-menu time-zone-user-card"
       >
-        {timeZones?.map((value: string, key: number) => (
-          <option key={key} value={value}>
-            {value}
+        {timeZones?.map((tz: { code: string; utc_offset: number }) => (
+          <option key={tz.code} value={tz.code}>
+            {`${tz.code} (GMT${tz.utc_offset >= 0 ? "+" : ""}${tz.utc_offset})`}
           </option>
         ))}
       </select>

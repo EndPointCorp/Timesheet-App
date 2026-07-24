@@ -183,9 +183,9 @@ const NewUser = () => {
             }}
             className="select-dropdown-menu time-zone-select"
           >
-            {timeZones?.map((value: string, key: number) => (
-              <option key={key} value={value}>
-                {value}
+            {timeZones?.map((tz: { code: string; utc_offset: number }) => (
+              <option key={tz.code} value={tz.code}>
+                {`${tz.code} (GMT${tz.utc_offset >= 0 ? "+" : ""}${tz.utc_offset})`}
               </option>
             ))}
           </select>

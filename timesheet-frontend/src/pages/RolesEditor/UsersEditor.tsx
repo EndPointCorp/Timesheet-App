@@ -13,7 +13,7 @@ interface UsersEditorProps {
   teams: Array<object>;
   groupsNoTeams: Array<object>;
   details: Array<{ name: string }>;
-  timeZones: Array<string>;
+  timeZones: Array<{ code: string; utc_offset: number }>;
 }
 
 const UsersEditor: FC<UsersEditorProps> = (props) => {

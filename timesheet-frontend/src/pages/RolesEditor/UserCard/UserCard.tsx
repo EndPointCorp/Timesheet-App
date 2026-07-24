@@ -23,7 +23,7 @@ interface UserCardProps {
   user: RolesEditorUser;
   teams: Array<RolesEditorTeam>;
   groups: Array<RolesEditorGroup>;
-  timeZones: Array<string>;
+  timeZones: Array<{ code: string; utc_offset: number }>;
 }
 
 interface ChangeObjectItem {

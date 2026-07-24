@@ -25,8 +25,14 @@ class Users::UpdateUser < ActiveInteraction::Base
         end
         @target_user.save
       when "time_zone"
-        @target_user.time_zone_code = value
-        @target_user.save
+        # Only accept a zone present in the master table (mirrors the
+        # users.time_zone_code foreign key); the DB rejects anything else.
+        if TimeZone.exists?(code: value)
+          @target_user.time_zone_code = value
+          @target_user.save
+        else
+          errors.add(:time_zone, "doesn't exist")
+        end
       when "myteam"
         value.each { |team|
           if team['status'] == "add"

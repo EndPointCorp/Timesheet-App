@@ -47,6 +47,77 @@ describe "Users" do
       response.status.should == 401
       User.count.should == 1
     end
+
+    it "accepts a zone in the master table that no existing user has", focus: true do
+      FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
+      @right_type = FactoryBot.create(:right_type, code: "create_users", display_label: "Create Users")
+      @right = FactoryBot.create(:right, role_id: @user.role_id, right_type_id: @right_type.id)
+      @right_target = FactoryBot.create(:right_target, right_id: @right.id, ref_obj_pk: @user.id)
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      # A visible master zone that no user occupies. Before the fix this was
+      # rejected because validation read DISTINCT zones from users, not this table.
+      FactoryBot.create(:time_zone, code: 'Europe/Warsaw', utc_offset: 1, is_visible: true)
+
+      _params = { email: 'warsaw@tester.com', username: 'Warsaw',
+        name: 'Warsaw', time_zone_code: 'Europe/Warsaw', password: 'sweetkitties', start_date: '23-12-2014' }
+      post '/api/users.json', params: _params
+      response.status.should == 200
+      User.find_by(email: 'warsaw@tester.com').time_zone_code.should == 'Europe/Warsaw'
+    end
+
+    it "rejects a zone that is not in the master table", focus: true do
+      FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
+      @right_type = FactoryBot.create(:right_type, code: "create_users", display_label: "Create Users")
+      @right = FactoryBot.create(:right, role_id: @user.role_id, right_type_id: @right_type.id)
+      @right_target = FactoryBot.create(:right_target, right_id: @right.id, ref_obj_pk: @user.id)
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+
+      _params = { email: 'mars@tester.com', username: 'Mars',
+        name: 'Mars', time_zone_code: 'Mars/Olympus', password: 'sweetkitties', start_date: '23-12-2014' }
+      post '/api/users.json', params: _params
+      response.status.should == 400
+      User.find_by(email: 'mars@tester.com').should be_nil
+    end
+
+    it "accepts a zone that exists in the master table even when hidden", focus: true do
+      FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
+      @right_type = FactoryBot.create(:right_type, code: "create_users", display_label: "Create Users")
+      @right = FactoryBot.create(:right, role_id: @user.role_id, right_type_id: @right_type.id)
+      @right_target = FactoryBot.create(:right_target, right_id: @right.id, ref_obj_pk: @user.id)
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      # Validation mirrors the FK (any zone in the table), so is_visible = false
+      # is still a valid value even though the dropdown would not offer it.
+      FactoryBot.create(:time_zone, code: 'Pacific/Niue', utc_offset: -11, is_visible: false)
+
+      _params = { email: 'niue@tester.com', username: 'Niue',
+        name: 'Niue', time_zone_code: 'Pacific/Niue', password: 'sweetkitties', start_date: '23-12-2014' }
+      post '/api/users.json', params: _params
+      response.status.should == 200
+      User.find_by(email: 'niue@tester.com').time_zone_code.should == 'Pacific/Niue'
+    end
+  end
+
+  describe "PUT /users/:id (edit time zone)" do
+    it "updates the zone when it exists in the master table", focus: true do
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      FactoryBot.create(:time_zone, code: 'Europe/Warsaw', utc_offset: 1, is_visible: true)
+      user = FactoryBot.create(:user)
+
+      put "/api/users/#{user.id}", params: {
+        user_id: user.id, user_entity: { time_zone: 'Europe/Warsaw' }.to_json }
+      response.status.should == 200
+      user.reload.time_zone_code.should == 'Europe/Warsaw'
+    end
+
+    it "rejects an unknown zone and leaves the existing zone unchanged", focus: true do
+      FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      user = FactoryBot.create(:user) # seeded with US/Eastern
+
+      put "/api/users/#{user.id}", params: {
+        user_id: user.id, user_entity: { time_zone: 'Mars/Olympus' }.to_json }
+      response.status.should == 400
+      user.reload.time_zone_code.should == 'US/Eastern'
+    end
   end
 
   describe "PUT /users/:id/disable" do
