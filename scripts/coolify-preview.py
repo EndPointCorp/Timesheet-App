@@ -20,6 +20,8 @@ Required env vars (GitLab CI/CD variables):
   deploy-preview also needs: COOLIFY_PROJECT_UUID, COOLIFY_SERVER_UUID,
     COOLIFY_ENVIRONMENT_NAME, COOLIFY_PRIVATE_KEY_UUID, GIT_REPOSITORY_URL,
     PREVIEW_DOMAIN, COOLIFY_PREVIEW_DB_PASSWORD, COOLIFY_PREVIEW_SECRET_KEY_BASE
+    and, when the server has more than one destination (docker network):
+    COOLIFY_DESTINATION_UUID
   deploy-prod also needs: COOLIFY_PROD_APP_UUID
 """
 
@@ -179,6 +181,12 @@ def deploy_preview(args):
             "docker_compose_domains": [{"name": PUBLIC_SERVICE, "domain": f"https://{fqdn}"}],
             "instant_deploy": False,
         }
+        # Coolify rejects creation with "Server has multiple destinations and
+        # you do not set destination_uuid" when the server has more than one
+        # docker network; single-destination servers don't need it.
+        destination_uuid = os.environ.get("COOLIFY_DESTINATION_UUID")
+        if destination_uuid:
+            body["destination_uuid"] = destination_uuid
         status, response = api("POST", "/applications/private-deploy-key", body)
         if status >= 300:
             fail("Failed to create app (see API response above)")
