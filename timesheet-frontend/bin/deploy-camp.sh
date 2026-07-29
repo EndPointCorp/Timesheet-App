@@ -52,7 +52,9 @@ fi
 
 # Define variables
 REMOTE_HOST="camp.timesheet.endpointdev.com"
-REMOTE_PATH="/home/$REMOTE_USER/camp$CAMP_NUMBER/frontend"
+# This must be the camp's Apache DocumentRoot, which is what actually serves
+# the SPA. Writing anywhere else lands the build in a folder nothing serves.
+REMOTE_PATH="/home/$REMOTE_USER/camp$CAMP_NUMBER/timesheet/build"
 LOCAL_BUILD_DIR="./build"
 
 # Run build locally
@@ -67,7 +69,9 @@ fi
 
 # Sync build files to remote server
 echo "Syncing files to the server..."
-echo "2d66250a-6c8c-458a-8aa4-7af8840746a1" > "$LOCAL_BUILD_DIR/front.version"
+# Stamp the actual deploy so /front.version tells you what is live, instead of
+# a fixed string that never changes between deploys.
+echo "oss-deploy $(date -u +%Y-%m-%dT%H:%M:%SZ) $(git rev-parse --short HEAD 2>/dev/null || echo nogit)" > "$LOCAL_BUILD_DIR/front.version"
 rsync -avz "$LOCAL_BUILD_DIR/" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH"
 
 # Confirm the sync

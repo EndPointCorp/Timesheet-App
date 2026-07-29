@@ -15,11 +15,11 @@ type OtherUser = {
 const SwitchRole = () => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
-  const { data: otherUsers, isLoading } = usersHooks.useOtherUsers();
+  const { data: otherUsers } = usersHooks.useOtherUsers();
   const { mutateAsync: switchRole, success } = usersHooks.useSwichRole();
   const { setIsLoading } = useLoadingStore();
 
-  const roles: OtherUser[] = otherUsers
+  const roles: OtherUser[] = (otherUsers ?? [])
     .filter((otherUser: OtherUser) => {
       if (showAll) return showAll;
       return otherUser.status_code === "enabled";

@@ -14,13 +14,13 @@ import cancelIcon from "../../assets/images/cancel-white.png";
 import Fade from "@mui/material/Fade";
 import { useUserStore } from "../../stores";
 import Grid from "@mui/material/Unstable_Grid2";
-import dayjs from "dayjs";
 import { usersHooks } from "../../hooks";
 import Divider from "@mui/material/Divider";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconButton from "@mui/material/IconButton";
 import NavDrawer from "./NavDrawer";
 import useCheckPermissions from "../../hooks/useCheckPermissions";
+import useSettingsMenu from "../../hooks/useSettingsMenu";
 import LoadingSpinner from "../LoadingSpinner";
 import useLoadingStore from "../../stores/useLoadingStore";
 
@@ -33,10 +33,7 @@ const pages = [
 const NavBar = () => {
   const navigate = useNavigate();
   const isManager = useCheckPermissions("is_manager");
-  const isAdmin = useCheckPermissions("is_admin");
-  const canEditCharts = useCheckPermissions("can_edit_charts");
-  const canSwitchRoles = useCheckPermissions("can_switch_roles");
-  const canCreateUsers = useCheckPermissions("can_create_users");
+  const settings = useSettingsMenu();
 
   const { mutateAsync: switchRole } = usersHooks.useSwichRole();
   const { setIsLoading } = useLoadingStore();
@@ -46,51 +43,6 @@ const NavBar = () => {
   const { user, setUser } = useUserStore();
   const { mutateAsync: logout } = usersHooks.useLogout();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const userName = user?.code.split("_")[1];
-
-  const allSettings = [
-    {
-      name: "Roles editor",
-      link: "/users-editor",
-      icon: "icon-group",
-      isShowSetting: isAdmin,
-    },
-
-    {
-      name: "Edit work charts",
-      link: "/work_charts/editor",
-      icon: "icon-flow-tree",
-      isShowSetting: canEditCharts,
-    },
-    {
-      name: "Reports",
-      link: "/reports",
-      icon: "icon-doc-text",
-      isShowSetting: true,
-    },
-
-    {
-      name: "Switch role",
-      link: "/switch-role",
-      icon: "icon-flow-cross",
-      isShowSetting: canSwitchRoles,
-    },
-    {
-      name: "Create user",
-      link: "/create_user",
-      icon: "icon-user-plus",
-      isShowSetting: canCreateUsers,
-    },
-    {
-      name: "User calendar",
-      link: `/calendar-user/${dayjs().format("YYYY/M")}/${userName}`,
-      icon: "icon-calendar-inv",
-      isShowSetting: isManager,
-    },
-  ];
-
-  // Filter settings to include only those applicable to the current user based on their roles/permissions
-  const settings = allSettings.filter(({ isShowSetting }) => isShowSetting);
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
     if (anchorEl !== event.currentTarget) {
