@@ -1,4 +1,9 @@
 .DS_Store
+/.env
+*.backup
+*.sql.zst
+
+__pycache__/
 CLAUDE.md
 COLLABORATION.md
 Timesheet_Beta_Testing_Results_Claude_DEPLOYED_2026-05-29.xlsx

@@ -1,0 +1,85 @@
+# Preview (per-MR) stack — STANDALONE on purpose: Coolify's
+# docker_compose_location points at exactly this file (no overlay merging).
+# scripts/coolify-preview.py creates the app `timesheet-mr-N` and pushes the
+# ${...:?} variables as Coolify env vars; Coolify's Domains field wires
+# Traefik + wildcard TLS to the `frontend` service.
+#
+# Data: the backend entrypoint restores /seed/*.sql.zst (sanitized dump,
+# mounted from the host) into an EMPTY database. Without a dump it falls back
+# to db:prepare, which loads the schema and the synthetic demo seeds.
+
+x-backend-env: &backend-env
+  RAILS_ENV: production
+  DATABASE_HOST: db
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: timesheet
+  DATABASE_USERNAME: timesheet
+  DATABASE_PASSWORD: ${DATABASE_PASSWORD:?set by CI}
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set by CI}
+  APP_HOST: ${COOLIFY_FQDN:?set by CI}
+  RESTORE_SEED_ON_EMPTY: "true"
+  # Previews must never deliver real mail.
+  MAILER_DELIVERY_METHOD: "test"
+  # App-specific ids; override in Coolify env if the seed dump uses others.
+  WORK_CHART_ROOT_ID: ${WORK_CHART_ROOT_ID:-1}
+  WORK_CHART_CLIENTS_ID: ${WORK_CHART_CLIENTS_ID:-2}
+  TEAM_ROLE_ID: ${TEAM_ROLE_ID:-7}
+  MAILER_FROM_EMAIL: ${MAILER_FROM_EMAIL:-timesheet-preview@example.com}
+
+services:
+  frontend:
+    container_name: timesheet-mr-${MR_NUMBER:?}-frontend
+    image: ${IMAGE_TAG_FRONTEND:?set by CI}
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    healthcheck:
+      # 127.0.0.1, not localhost: inside the container localhost resolves to
+      # ::1 first and nginx only listens on IPv4.
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  backend:
+    container_name: timesheet-mr-${MR_NUMBER:?}-backend
+    image: ${IMAGE_TAG_BACKEND:?set by CI}
+    environment:
+      <<: *backend-env
+      CONTAINER_ROLE: web
+    volumes:
+      - /srv/timesheet/seeds:/seed:ro
+    expose:
+      - "3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    restart: unless-stopped
+
+  db:
+    container_name: timesheet-mr-${MR_NUMBER:?}-db
+    image: postgres:16
+    environment:
+      POSTGRES_USER: timesheet
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?set by CI}
+      POSTGRES_DB: timesheet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U timesheet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - preview_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  # Deleted with the app by delete-preview (delete_volumes=true).
+  preview_postgres_data:

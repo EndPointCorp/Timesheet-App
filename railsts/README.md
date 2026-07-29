@@ -1,42 +1,17 @@
 # Timesheet Backend
 
-Rails 5.0 / Ruby 2.4 API backend. Postgres 16. Runs entirely in Docker.
+Rails 8.1 / Ruby 3.3 API backend. Postgres 16. Runs entirely in Docker.
 
-## Prerequisites
-
-Docker Desktop (or Docker Engine + Compose plugin). Nothing else.
+**The dev/test stack lives at the repo root now** — `make dev-build` there
+starts everything (nginx-served SPA on :8080, this API on :8088, Postgres on
+:55432) and an empty database is schema-loaded and demo-seeded automatically
+on first boot. See `../README.md`. This file covers backend-specific details.
 
 ## Setup
 
 ```sh
-cp .env.example .env
-docker compose build
-docker compose up -d db
-```
-
-Wait for Postgres to accept connections:
-
-```sh
-until docker compose exec -T db pg_isready -U timesheet -d timesheet; do sleep 1; done
-```
-
-Load schema and reference data via `psql` (the `web` image has no `psql`
-binary, and loading reference data through Rails breaks its connection's
-search_path — so both files go through the `db` container):
-
-```sh
-docker compose exec -T db psql -U timesheet -d timesheet -v ON_ERROR_STOP=1 \
-  < db/structure.sql
-
-docker compose exec -T db psql -U timesheet -d timesheet -v ON_ERROR_STOP=1 \
-  < db/seeds/reference_data.sql
-```
-
-Seed demo data and start the web server:
-
-```sh
-docker compose run --rm web bundle exec rails db:seed
-docker compose up -d web
+cp .env.example .env        # backend runtime config (dotenv, dev/test only)
+cd .. && cp .env.example .env && make dev-build
 ```
 
 Verify it's up:
@@ -57,17 +32,18 @@ Password: please1234
 george, hannah, isaac) share the same password. Only `admin` is
 superuser.
 
-App is served at <http://localhost:8088/api/>. Root `/` returns 500 on
-its own — it expects the compiled React frontend (`timesheet-frontend`).
+The API is served at <http://localhost:8088/api/> and through nginx at
+<http://localhost:8080/api/>. Root `/` on :8088 returns 500 — the SPA is
+served by nginx (:8080), not by Rails.
 
 ## Everyday commands
 
+Run from the repo root (the compose stack lives there; make targets wrap it):
+
 ```sh
-docker compose up -d                                    # start db + web
-docker compose stop                                     # stop everything
-docker compose logs -f web                              # tail web logs
+make dev / make logs / make dev-down                    # see ../README.md
 docker compose exec db psql -U timesheet -d timesheet   # psql into db
-docker compose run --rm web bundle exec rails c        # rails console
+docker compose run --rm -e CONTAINER_ROLE=task backend bin/rails c   # console
 ```
 
 ## Running the test suite
@@ -77,34 +53,33 @@ isolated `timesheet_test` DB, so it never touches your dev data.
 
 ```sh
 make test-db   # one-time: create timesheet_test, load schema, populate matviews
-make test      # run RSpec (142 examples)
+make test      # run RSpec
 make coverage  # run with SimpleCov -> coverage/index.html
 ```
 
-`make test-db` is idempotent — re-run it any time to reset the test DB. It loads
-`db/structure.sql` through the Rails `pg` connection (the `web` image has no
-`psql` binary) and then populates the `chart_labels`, `charts_search_specs`, and
-`project_summaries` materialized views, which the suite's truncation depends on.
+(These targets delegate to the repo-root Makefile; run them from either
+directory.) `make test-db` is idempotent — re-run it any time to reset the test
+DB. It loads `db/structure.sql` through the Rails `pg` connection and then
+populates the `chart_labels`, `charts_search_specs`, and `project_summaries`
+materialized views, which the suite's truncation depends on.
 
 ## Reset the database
 
 ```sh
-docker compose down -v      # destroys the postgres volume
-docker compose up -d db
-# then re-run the Setup steps from "Load schema..." onward
+cd .. && make dev-clean     # destroys the postgres volume
+make dev                    # fresh boot: schema + demo seeds reload automatically
 ```
 
 ## Troubleshooting
 
-**"A server is already running. Check /app/tmp/pids/server.pid"**
-Stale PID. `docker compose run --rm web rm -f /app/tmp/pids/server.pid`
-then `docker compose restart web`.
+**"A server is already running. Check /rails/tmp/pids/server.pid"**
+Stale PID. `tmp/` is a tmpfs in dev, so `make dev-down && make dev` clears it.
 
 **"relation chart_labels does not exist" during seed**
-You loaded `reference_data.sql` through Rails instead of `psql`. pg_dump
+You loaded `reference_data.sql` through a Rails connection by hand. pg_dump
 emits `SELECT pg_catalog.set_config('search_path', '', false);` which
-clobbers the Rails connection's search_path for the rest of the process.
-Use the `psql` commands in the Setup section.
+clobbers that connection's search_path. Use the entrypoint's `db:prepare`
+path (automatic) or load it via `psql` in the `db` container.
 
 **Password auth fails after changing `DATABASE_PASSWORD`**
 Postgres only reads `POSTGRES_PASSWORD` on first volume init. To resync:
@@ -116,11 +91,21 @@ docker compose exec db psql -U timesheet -d timesheet \
 
 ## Configuration
 
-All runtime config is in `.env` (gitignored). See `.env.example` for the
-full list. Key vars: `DATABASE_*`, `MAILER_FROM_EMAIL`,
-`WORK_CHART_ROOT_ID`, `WORK_CHART_CLIENTS_ID`, `TEAM_ROLE_ID`.
+All runtime config comes from env vars. In dev/test they load from `.env`
+via dotenv (gitignored); in preview/production Coolify injects them. See
+`.env.example` for the full list. Key vars: `DATABASE_*`, `SECRET_KEY_BASE`,
+`APP_HOST`, `SMTP_*`, `MAILER_*`, `WORK_CHART_ROOT_ID`,
+`WORK_CHART_CLIENTS_ID`, `TEAM_ROLE_ID`.
 
 ## Schema changes
 
 Schema format is `:sql`. After `rails db:migrate`, `db/structure.sql` is
 regenerated automatically. Commit it with the migration.
+
+## Scheduled & background work
+
+Not deployed. The app defines delayed_job (`rake jobs:work`) and cron-driven
+rakes (`cron:tick`, `mail:send`, `activate:workcharts`), but no interactive
+flow depends on them — they only drive reminder emails and workchart
+housekeeping. Worker/scheduler services get reintroduced at production
+cutover; see `COOLIFY.md § Production — DEFERRED`.

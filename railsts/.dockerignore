@@ -1,0 +1,21 @@
+# Never bake env files or secrets into the image.
+.env*
+
+# Git and editor noise.
+.git
+.gitignore
+
+# Docker files themselves.
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Runtime artifacts (recreated in-container).
+log/*
+tmp/*
+coverage
+backups
+
+# The compiled SPA lives in the frontend image (nginx), not here.
+# (home_controller's legacy fallback reads this dir; nginx owns "/" now.)
+frontend/
