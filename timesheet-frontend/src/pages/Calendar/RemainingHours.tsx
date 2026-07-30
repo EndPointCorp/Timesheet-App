@@ -13,17 +13,31 @@ interface RemainingHoursWorkChart {
 }
 
 /**
- * Returns a color string based on hours left.
+ * The remaining-hours indicator colors and what each one means. One table
+ * drives the row color, the box tooltip/aria-label, and the help legend, so
+ * the legend can never claim a meaning the color logic doesn't actually use.
  */
-function getRowColor(hours: number): string {
-  if (hours === 0) {
-    return "#FF4300";
-  } else if (hours > 0 && hours < 16) {
-    return "orange";
-  } else if (hours >= 16) {
-    return "rgb(134, 196, 0)";
+const HOURS_COLORS = {
+  ok: { color: "rgb(134, 196, 0)", label: "16 or more hours left" },
+  low: { color: "orange", label: "Fewer than 16 hours left" },
+  out: { color: "#FF4300", label: "No hours left / over budget" },
+};
+
+// Legend rows, ordered most hours -> least hours.
+const COLOR_LEGEND = [HOURS_COLORS.ok, HOURS_COLORS.low, HOURS_COLORS.out];
+
+/**
+ * Returns the color and its meaning for a row's hours-left value. Zero or fewer
+ * hours (i.e. at or over the banked allotment) is red, matching the "out of
+ * banked hours" meaning users expect.
+ */
+function getRowMeaning(hours: number): { color: string; label: string } {
+  if (hours <= 0) {
+    return HOURS_COLORS.out;
+  } else if (hours < 16) {
+    return HOURS_COLORS.low;
   } else {
-    return "orange";
+    return HOURS_COLORS.ok;
   }
 }
 
@@ -56,7 +70,7 @@ const WorkChartGrid: React.FC<WorkChartGridProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const rowColor = getRowColor(hours);
+  const { color: rowColor, label: rowColorLabel } = getRowMeaning(hours);
 
   const openTransactions = () => {
     navigate("/work_charts/editor", { state: { workChartId } });
@@ -122,6 +136,9 @@ const WorkChartGrid: React.FC<WorkChartGridProps> = ({
       </Box>
 
       <Box
+        role="img"
+        title={rowColorLabel}
+        aria-label={rowColorLabel}
         sx={{
           width: 26, // The width of your triangle “arrow”
           // Let it fill the parent’s height
@@ -145,6 +162,7 @@ const WorkChartGrid: React.FC<WorkChartGridProps> = ({
 
       {/* Main Hours Box */}
       <Box
+        title={rowColorLabel}
         sx={{
           width: 70,
           backgroundColor: rowColor,
@@ -221,6 +239,32 @@ export const RemainingHours = ({ username }: { username?: string }) => {
                   the right shows how many are left.
                 </b>
               </p>
+              <p style={{ marginBottom: 4 }}>
+                <b>What the colors mean</b>
+              </p>
+              {COLOR_LEGEND.map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 3,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 12,
+                      height: 12,
+                      backgroundColor: item.color,
+                      marginRight: 6,
+                      flexShrink: 0,
+                      border: "1px solid rgba(255, 255, 255, 0.4)",
+                    }}
+                  />
+                  <span>{item.label}</span>
+                </div>
+              ))}
             </>
           }
         />
