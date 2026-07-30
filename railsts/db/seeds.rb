@@ -21,6 +21,11 @@ if UserStatus.count.zero?
   # ActiveRecord cannot execute. Strip them; the rest is plain SQL.
   clean = raw.lines.reject { |l| l.start_with?('\\') }.join
   ActiveRecord::Base.connection.execute(clean)
+  # reference_data.sql is a pg_dump; its leading `set_config('search_path','')`
+  # is non-local, so it sticks on this connection and would make every
+  # unqualified table reference below fail with "relation does not exist".
+  # Restore the default search_path before continuing.
+  ActiveRecord::Base.connection.execute(%q{SET search_path TO "$user", public})
   puts "[ref] loaded"
 else
   puts "[ref] already loaded — skipping"
@@ -141,10 +146,34 @@ created_users = DEMO_USERS.map do |u|
         last_modified: NOW,
       )
     end
+
+    # The "Remaining hours" calendar panel is gated behind new_features_tester.
+    # Role#has_right_to deliberately excludes this right from the superuser
+    # shortcut, so it must be granted explicitly for admin to see the panel.
+    tester_rt = RightType.find_by!(code: 'new_features_tester')
+    unless Right.exists?(role_id: role.id, right_type_id: tester_rt.id)
+      Right.create!(
+        role_id: role.id,
+        right_type_id: tester_rt.id,
+        is_granted: true,
+        date_created: NOW,
+        last_modified: NOW,
+      )
+    end
   end
 
   user
 end
+
+# Hours-in-the-bank budgets (created in section 5). Each is a billable client
+# project with a bought/used pair chosen to land in one color band of the
+# "Remaining hours" panel: green (>=16h left), orange (0-16h), red (<=0h).
+DEMO_BUDGETS = [
+  { chart: 'Website Redesign', bought: 40, used: 5,  note: 'green (plenty left)'  },
+  { chart: 'Mobile App',       bought: 20, used: 12, note: 'orange (running low)' },
+  { chart: 'Client Support',   bought: 8,  used: 14, note: 'red (over budget)'    },
+].freeze
+budget_chart_names = DEMO_BUDGETS.map { |b| b[:chart] }
 
 # ---------------------------------------------------------------------
 # 4. Work entries (50 entries, spread across users, projects, last 30d)
@@ -152,6 +181,9 @@ end
 puts "[entries] Creating demo work entries..."
 
 user_roles = created_users.map(&:role_id)
+# Keep random filler entries off the budget charts so their "used" totals stay
+# deterministic — section 5 logs exactly the usage each budget needs.
+random_leaves = leaves.reject { |c| budget_chart_names.include?(c.display_label) }
 duration_codes = %w[billable_standard nonbillable_standard]
 descriptions = [
   'Scoping and requirements',
@@ -168,7 +200,7 @@ entries_to_create = 50 - WorkEntry.count
 entries_to_create = 0 if entries_to_create.negative?
 
 entries_to_create.times do |i|
-  chart = leaves.sample
+  chart = random_leaves.sample
   role_id = user_roles.sample
   date = rand(30.days.ago.to_date..Date.today)
   kind_code = other_leaves.include?(chart) ? 'nonbillable_standard' : duration_codes.sample
@@ -193,9 +225,61 @@ entries_to_create.times do |i|
   )
 end
 
+# ---------------------------------------------------------------------
+# 5. Hours-in-the-bank budgets ("Remaining hours" calendar panel)
+# ---------------------------------------------------------------------
+# The panel reads the hours_in_the_bank view: hours bought (a transaction
+# against a work chart) minus hours used (work entries under it). With no
+# transactions the view is empty and the panel never renders. Seed one budget
+# per color band, using admin's own logged time as the "used" side so each
+# appears for admin (the view exposes each budget only to roles that logged
+# against it).
+puts "[budget] Creating demo hours-in-the-bank budgets..."
+
+admin_user    = created_users.first
+pcat_id       = ProductionCategory.first.id
+txn_date      = 60.days.ago.to_date  # opens the budget well before any usage
+usage_date    = 15.days.ago.to_date  # within the open budget window and <= today
+
+DEMO_BUDGETS.each do |b|
+  chart = client_leaves.find { |c| c.display_label == b[:chart] }
+
+  # Admin's logged time = the "used" side. billable_standard matches the
+  # 'billable' budget kind through the view's kind_code-prefix join.
+  entry = WorkEntry.find_or_create_by!(
+    work_chart_id: chart.id,
+    role_id: admin_user.role_id,
+    date_performed: usage_date,
+    description: "Demo budget usage - #{b[:note]}",
+  ) do |e|
+    e.date_created  = NOW
+    e.last_modified = NOW
+  end
+
+  WorkEntryDuration.find_or_create_by!(work_entry_id: entry.id, kind_code: 'billable_standard') do |d|
+    # WorkEntryDuration#duration= takes an integer number of minutes
+    # (Interval.new(duration.to_i)), so convert the budget's used hours.
+    d.duration               = b[:used] * 60
+    d.production_category_id  = pcat_id
+    d.date_created           = NOW
+    d.last_modified          = NOW
+  end
+
+  # Hours bought = an open-ended cumulative transaction so the budget stays
+  # active. kind_code 'billable' is the mode the panel shows for the row.
+  Transaction.find_or_create_by!(work_chart_id: chart.id, kind_code: 'billable') do |t|
+    t.hours       = b[:bought]
+    t.date        = txn_date
+    t.mode        = 'cumulative'
+    t.user_id     = admin_user.id
+    t.description  = "Demo budget - #{b[:note]}"
+  end
+end
+
 puts "=== Seeding complete ==="
 puts "  WorkCharts:     #{WorkChart.count}"
 puts "  Users:          #{User.count}"
 puts "  Roles:          #{Role.count}"
 puts "  WorkEntries:    #{WorkEntry.count}"
+puts "  Budgets:        #{Transaction.count}"
 puts "  Login:          admin@example.com / please1234"
