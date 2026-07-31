@@ -1,27 +1,21 @@
-# Keeps `COPY . .` from pulling local state into the image.
-# .env first: this directory has a real one, and configuration does not belong
-# in a build artifact.
+# Never bake env files or secrets into the image.
+.env*
 
-.env
-.env.*
-!.env.example
-
+# Git and editor noise.
 .git
 .gitignore
 
-# Runtime state, never useful in an image
-log/
-tmp/
-coverage/
-storage/
-public/system/
-
-# Local scratch
-out.txt
-.irbrc
-*.swp
-.DS_Store
-
-# Docker's own files
-Dockerfile
+# Docker files themselves.
+Dockerfile*
+docker-compose*
 .dockerignore
+
+# Runtime artifacts (recreated in-container).
+log/*
+tmp/*
+coverage
+backups
+
+# The compiled SPA lives in the frontend image (nginx), not here.
+# (home_controller's legacy fallback reads this dir; nginx owns "/" now.)
+frontend/

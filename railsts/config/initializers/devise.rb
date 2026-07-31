@@ -5,7 +5,13 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
-  config.secret_key = 'd11b25aa85f27b115777c392ac2c4d83da682edeb053166450f756939a58ec003751bb2f8127e194887c46ebae10995bbcb1d06b975b70b25586846b89453824'
+  # config.secret_key intentionally not set: Devise falls back to the app's
+  # secret_key_base (env-injected — see initializers/secret_token.rb).
+
+  # Password pepper. The original production app hashed passwords with its
+  # own pepper; imported production hashes only validate when the SAME value
+  # is configured. Leave unset for fresh/demo databases.
+  config.pepper = ENV["DEVISE_PEPPER"].presence
 
 
   # Configure the class responsible to send e-mails.

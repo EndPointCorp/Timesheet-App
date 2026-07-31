@@ -1,0 +1,66 @@
+#!/bin/bash
+# Container entrypoint for the backend image.
+#
+# CONTAINER_ROLE decides the boot behavior:
+#   web        wait for Postgres; optionally restore a seed dump into an empty
+#              DB (previews/dev); then `rails db:prepare` on EVERY boot —
+#              creates + loads db/structure.sql (+ db/seeds.rb) on an empty
+#              DB, runs pending migrations otherwise. Rails' migration
+#              advisory lock makes accidental concurrent runs safe.
+#   anything   else (rake tasks, rspec, consoles): just wait for Postgres.
+set -e
+
+DB_HOST="${DATABASE_HOST:-db}"
+DB_PORT="${DATABASE_PORT:-5432}"
+DB_USER="${DATABASE_USERNAME:-timesheet}"
+DB_NAME="${DATABASE_NAME:-timesheet}"
+
+run_psql() {
+  PGPASSWORD="${DATABASE_PASSWORD:-timesheet}" \
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" "$@"
+}
+
+# Bounded waits: a clear failure beats a container that hangs forever.
+WAIT_LIMIT="${DB_WAIT_TIMEOUT:-300}"
+
+echo "Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT} (limit ${WAIT_LIMIT}s)..."
+waited=0
+until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" >/dev/null 2>&1; do
+  waited=$((waited + 1))
+  if [ "$waited" -ge "$WAIT_LIMIT" ]; then
+    echo "ERROR: PostgreSQL not reachable after ${WAIT_LIMIT}s, giving up." >&2
+    exit 1
+  fi
+  sleep 1
+done
+
+case "${CONTAINER_ROLE:-}" in
+  web)
+    table_count=$(run_psql -tAc \
+      "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'" \
+      2>/dev/null || echo 0)
+    # Newest dump wins (dated names sort chronologically: timesheet-YYYYMMDD…).
+    seed_file=$(ls /seed/*.sql.zst 2>/dev/null | tail -1 || true)
+
+    # Previews and local dev opt in (RESTORE_SEED_ON_EMPTY=true) to boot from a
+    # dump mounted at /seed. Production keeps this false so a wiped
+    # DB can never silently self-restore demo data over real data.
+    if [ "$table_count" = "0" ] && [ "${RESTORE_SEED_ON_EMPTY:-false}" = "true" ] && [ -n "$seed_file" ]; then
+      echo "Empty database: restoring seed dump ${seed_file}..."
+      zstd -dc "$seed_file" |
+        sed -e '/^CREATE DATABASE/d' -e '/^\\connect/d' -e '/^ALTER DATABASE/d' \
+            -e '/^\\restrict/d' -e '/^\\unrestrict/d' |
+        run_psql -q -v ON_ERROR_STOP=0
+      echo "Seed restore finished."
+    fi
+
+    # SKIP_TEST_DATABASE: in development, db tasks otherwise also manage the
+    # test DB — and db:prepare runs db/seeds.rb whenever it had to create ANY
+    # database. On a fresh volume that meant: restore dump, create missing
+    # timesheet_test, then seed demo data on top of the restored dump (boom).
+    # `make test-db` owns the test database instead.
+    SKIP_TEST_DATABASE=1 ./bin/rails db:prepare
+    ;;
+esac
+
+exec "$@"

@@ -1,25 +1,22 @@
-# Development image for the React dev server. See compose.yml at the repo root.
-#
-# This runs `react-scripts start`, not a production build. A deployed frontend is
-# a `npm run build` static bundle served by a real web server — that is what
-# .gitlab-ci.yml does, and it does not use this file.
-#
-# Node version matches .gitlab-ci.yml so local and CI agree.
-FROM node:22.18.0-bookworm-slim
+# Frontend image: build the CRA bundle, serve it with nginx.
+# nginx is the public entrypoint of every environment — it serves the SPA
+# and reverse-proxies /api to the Rails backend (see nginx/default.conf).
 
-# Create the workdir as root and hand it over, before dropping privileges.
-RUN mkdir -p /app && chown node:node /app
+FROM node:22.18.0-alpine AS build
+
 WORKDIR /app
 
-# The node image ships a non-root "node" user but does not select it, so
-# without this line everything below would run as root.
-USER node
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
+COPY . .
+# Same flag the legacy CI build used; lint runs in CI, not in the image build.
+ENV DISABLE_ESLINT_PLUGIN=true
+RUN npm run build
 
-COPY --chown=node:node . .
+FROM nginx:1.27-alpine
 
-EXPOSE 3000
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/build /usr/share/nginx/html
 
-CMD ["npm", "start"]
+EXPOSE 80

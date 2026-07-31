@@ -1,13 +1,17 @@
 .DS_Store
+*.sql.zst
+
+__pycache__/
 CLAUDE.md
 COLLABORATION.md
 Timesheet_Beta_Testing_Results_Claude_DEPLOYED_2026-05-29.xlsx
 resume.md
 railsts/out.txt
 
-# Compose reads an optional .env next to compose.yml, for overriding ports or
-# credentials locally. Root-scoped on purpose: railsts/ and timesheet-frontend/
-# ignore their own, and a bare ".env" here would match theirs too.
+# Compose reads an optional .env next to docker-compose.yml, for overriding
+# ports or credentials locally. Root-scoped on purpose: railsts/ and
+# timesheet-frontend/ ignore their own, and a bare ".env" here would match
+# theirs too.
 /.env
 
 # Manual test checklist: track the checklist itself, ignore the runs. A run is

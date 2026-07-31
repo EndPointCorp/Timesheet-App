@@ -6,10 +6,11 @@ frontend (`timesheet-frontend/`).
 ## Run it
 
 ```sh
-docker compose up
+cp .env.example .env
+make dev-build
 ```
 
-Open <http://localhost:3000> and sign in as `admin@example.com` / `please1234`.
+Open <http://localhost:8080> and sign in as `admin@example.com` / `please1234`.
 
 **If that first login says your password is wrong, it isn't — just sign in
 again.** The first request after the server starts always fails
@@ -17,44 +18,67 @@ authentication ([#25]). Nothing is misconfigured, and the second attempt works.
 
 That's the whole setup. The first run takes a few minutes: it builds both
 images, then loads the schema, reference data, and demo seed into an empty
-database. Later runs skip all of that.
+database. Later runs skip all of that — `make dev` is enough once the images
+exist.
 
 Once it's up:
 
-- Frontend: <http://localhost:3000>
-- API: <http://localhost:3001/api/>
+- Frontend: <http://localhost:8080>
+- API: <http://localhost:8088/api/>
 - Postgres: `localhost:55432`
 
-If a port is already taken, put the one you want in a `.env` file next to
-`compose.yml` — `WEB_PORT=3100`, `API_PORT`, `DB_PORT`. Everything is published
-on `127.0.0.1` only, so none of it is reachable from your network.
+`/` on port 8088 returns 500. Rails serves the API only; nginx serves the app.
+
+Other targets: `make logs`, `make dev-down`, `make dev-clean` (drops the
+database volume), `make dev-config` (print the resolved compose file).
 
 ## What runs where
 
-`compose.yml` at the root defines three services:
+`docker-compose.yml` at the root defines three services:
 
-- **db** — Postgres 16
-- **api** — Rails, at `railsts/`. Loads the database on first run, then serves
-  `/api`.
-- **web** — the React dev server, at `timesheet-frontend/`. Hot-reloads your
-  edits and proxies `/api` to the API (see `src/setupProxy.js`).
+- **db** — Postgres 16.
+- **backend** — Rails, at `railsts/`. Built from the `dev` stage of
+  `railsts/Dockerfile`. Loads the database on first run, then serves `/api`.
+  Your source is bind-mounted, so edits reload.
+- **frontend** — nginx, at `timesheet-frontend/`. Serves the compiled bundle
+  and reverse-proxies `/api` to the backend (`nginx/default.conf`).
 
-Both source trees are bind-mounted, so edits show up without a rebuild. Change
-a `Gemfile` or `package.json` and you need `docker compose up --build`.
+The frontend image is a production build, so it does **not** hot-reload. For
+that, run the React dev server on your machine instead — `npm start` in
+`timesheet-frontend/` serves port 3000 and proxies `/api` to port 8088, against
+the same containers. See `timesheet-frontend/README.md`.
+
+Change a `Gemfile` or `package.json` and you need `make dev-build`.
+
+## Tests
+
+```sh
+make test-db   # one-time: create the test DB, load the schema, build matviews
+make test      # RSpec
+make coverage  # RSpec with SimpleCov -> railsts/coverage/index.html
+```
+
+These work from `railsts/` too — that Makefile delegates here.
+
+## Previews and deploys
+
+`.gitlab-ci.yml` builds both images on every pipeline and, for a merge request,
+hands them to Coolify through `scripts/coolify-preview.py`, which stands up a
+per-MR environment from `docker-compose.preview.yml`. That file is standalone
+on purpose: Coolify deploys exactly one compose file and does not merge
+overlays. Production deploys are deliberately not wired up yet.
 
 ## Scope
 
-`compose.yml` is for working on the app, not for running it in production. It
-builds images on your machine and mounts your source, neither of which belongs
-on a server. A deployment should pull prebuilt, tagged images and serve a
-compiled frontend from a web server.
+`docker-compose.yml` is for working on the app, not for running it in
+production. It builds images on your machine and mounts your source, neither of
+which belongs on a server. The preview and production paths pull prebuilt,
+tagged images instead.
 
-The safe defaults are kept anyway, because they cost nothing: containers run as
-a non-root user, no `.env` is baked into an image, image tags are pinned to a
-patch version, and every port binds to `127.0.0.1`. The database password is in
-the open in `compose.yml` on purpose — it guards a database only your own
-machine can reach, and hiding it in a committed `.env.example` would have been
-theatre. Give it a real one the moment anything else can reach it.
+The safe defaults are kept anyway, because they cost nothing: the production
+image runs as a non-root user, no `.env` is baked into an image, and image tags
+are pinned. `DATABASE_PASSWORD` has no default — compose refuses to start
+without a `.env` — so nothing ships with a password that was committed.
 
 ## More
 

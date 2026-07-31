@@ -4,16 +4,16 @@ This is the timesheet app's frontend, written with React (created using the now-
 
 ## Running the development server
 
-The whole stack — this frontend, the Rails API, and Postgres — starts with `docker compose up` from the repo root. See the [root README](../README.md).
+The whole stack — this frontend, the Rails API, and Postgres — starts with `make dev-build` from the repo root. See the [root README](../README.md). That stack serves a compiled bundle through nginx on <http://localhost:8080>, so it does not hot-reload.
 
-To run only this dev server on your machine:
+To run the dev server on your machine instead, with hot reload:
 
 ```bash
 npm install
 npm run start
 ```
 
-It serves <http://localhost:3000> and forwards `/api` to the Rails API. The target comes from `API_PROXY_TARGET` and defaults to `http://localhost:3001`, which is where `compose.yml` publishes the API — so the default already works against a containerised backend. Set the variable to point somewhere else. See `src/setupProxy.js`.
+It serves <http://localhost:3000> and forwards `/api` to <http://localhost:8088>, which is where the compose stack publishes the API — so it works against a containerised backend with no extra setup. The target is the `proxy` field in `package.json`.
 
 ## Building for a camp
 

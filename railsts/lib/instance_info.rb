@@ -1,5 +1,9 @@
 class InstanceInfo
   def self.base_url
+    # Containerized deploys set APP_HOST (the public FQDN); the camp working
+    # directory heuristics below only apply to legacy DevCamp hosts.
+    return "https://#{ENV['APP_HOST']}" if ENV["APP_HOST"].present?
+
     base = "timesheet.endpointdev.com"
     if in_camp?
       "https://#{camp_number}.camp.#{base}:#{camp_port}"

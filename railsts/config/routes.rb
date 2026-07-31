@@ -125,6 +125,12 @@ scope '/api' do
   get "/settings" => 'settings#index'
   
   end
+
+  # Container/Coolify health check. Uses the Rails built-in controller, which
+  # skips ApplicationController's per-request side effects (front.version read,
+  # charts-version header, persistance log).
+  get "up" => "rails/health#show", as: :rails_health_check
+
   # Catch-all route for React front-end
   root to: "home#index"
   get '*path', to: "home#index", constraints: ->(req) { req.format.html? }

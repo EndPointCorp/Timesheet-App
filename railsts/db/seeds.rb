@@ -18,8 +18,10 @@ if UserStatus.count.zero?
   sql_path = Rails.root.join('db', 'seeds', 'reference_data.sql')
   raw = File.read(sql_path)
   # pg_dump 16+ emits psql meta-commands (\restrict, \unrestrict) which
-  # ActiveRecord cannot execute. Strip them; the rest is plain SQL.
-  clean = raw.lines.reject { |l| l.start_with?('\\') }.join
+  # ActiveRecord cannot execute, plus set_config('search_path', '', false),
+  # which would poison this connection for every unqualified statement the
+  # rest of this seed run executes. Strip both; the rest is plain SQL.
+  clean = raw.lines.reject { |l| l.start_with?('\\') || l.include?("set_config('search_path'") }.join
   ActiveRecord::Base.connection.execute(clean)
   # reference_data.sql is a pg_dump; its leading `set_config('search_path','')`
   # is non-local, so it sticks on this connection and would make every

@@ -1,0 +1,83 @@
+# Local development stack: `make dev` (or plain `docker compose up`).
+# Preview/production environments use their own standalone files because
+# Coolify deploys exactly one compose file — see docker-compose.preview.yml.
+#
+# Project name `timesheet`
+
+name: timesheet
+
+services:
+  frontend:
+    build: ./timesheet-frontend
+    image: timesheet-frontend:local
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    healthcheck:
+      # 127.0.0.1, not localhost: inside the container localhost resolves to
+      # ::1 first and nginx only listens on IPv4.
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./railsts
+      target: dev
+    image: timesheet-backend:local
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST:-db}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DATABASE_NAME: ${DATABASE_NAME:-timesheet}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-timesheet}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required — cp .env.example .env}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-}
+      APP_HOST: ${APP_HOST:-}
+      RAILS_ENV: development
+      CONTAINER_ROLE: web
+      # On a fresh/empty DB, restore the newest seeds/*.sql.zst (if any)
+      # before db:prepare — same mechanism previews use. No dump present =>
+      # demo seeds as before. Never touches a non-empty DB.
+      RESTORE_SEED_ON_EMPTY: "true"
+    volumes:
+      - ./railsts:/rails
+      - ./seeds:/seed:ro
+    tmpfs:
+      - /rails/tmp
+    ports:
+      - "8088:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-timesheet}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required — cp .env.example .env}
+      POSTGRES_DB: ${DATABASE_NAME:-timesheet}
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-timesheet}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  # Named `postgres_data` under project `timesheet` => the same
+  # `timesheet_postgres_data` volume the old railsts/ compose stack used.
+  postgres_data:
