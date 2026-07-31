@@ -3,24 +3,53 @@
 # Coolify deploys exactly one compose file — see docker-compose.preview.yml.
 #
 # Project name `timesheet`
+#
+# The published ports are variables so that several checkouts of this repo can
+# each run their own stack at the same time (see bin/wt, which assigns a free
+# set per worktree). Leave them unset and you get the defaults below.
 
 name: timesheet
 
 services:
   frontend:
-    build: ./timesheet-frontend
-    image: timesheet-frontend:local
+    build:
+      context: ./timesheet-frontend
+      target: dev
+    # Safe for every checkout to share: this image is node_modules and nothing
+    # else, and the code it serves arrives through the bind mount below. So a
+    # worktree always runs its own branch, and a second worktree starts without
+    # building anything. Previews and production use the nginx stage instead.
+    image: timesheet-frontend:dev
+    environment:
+      # The app calls /api on its own origin and the dev server forwards it
+      # (src/setupProxy.js). Configured here rather than as a fixed string in
+      # package.json so the same code works against a container, a laptop, or
+      # one of several task stacks.
+      API_PROXY_TARGET: http://backend:3000
+      # Wins over a mounted timesheet-frontend/.env.local — bin/wt writes one
+      # for host-run dev servers, and its PORT would otherwise move this one
+      # off the port compose publishes.
+      PORT: 3000
+      # The file watcher does not see writes through a bind mount without this.
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./timesheet-frontend:/app
+      # Keeps the image's node_modules. Without it the bind mount above hides
+      # them and nothing starts.
+      - /app/node_modules
     ports:
-      - "8080:80"
+      - "127.0.0.1:${WEB_PORT:-8080}:3000"
     depends_on:
       - backend
     healthcheck:
       # 127.0.0.1, not localhost: inside the container localhost resolves to
-      # ::1 first and nginx only listens on IPv4.
-      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/healthz"]
+      # ::1 first and the dev server only listens on IPv4. Generous start
+      # period — the first compile takes a while.
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:3000/"]
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 90s
     restart: unless-stopped
 
   backend:
@@ -48,7 +77,7 @@ services:
     tmpfs:
       - /rails/tmp
     ports:
-      - "8088:3000"
+      - "127.0.0.1:${API_PORT:-8088}:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -67,7 +96,11 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required — cp .env.example .env}
       POSTGRES_DB: ${DATABASE_NAME:-timesheet}
     ports:
-      - "55432:5432"
+      # 127.0.0.1 matters here and above: without it these listen on every
+      # interface, and Docker's firewall rules sit in front of the host's — so
+      # a dev database with a published password is reachable from the network
+      # you happen to be on.
+      - "127.0.0.1:${DB_PORT:-55432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

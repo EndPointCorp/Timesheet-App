@@ -27,7 +27,7 @@ Once it's up:
 - API: <http://localhost:8088/api/>
 - Postgres: `localhost:55432`
 
-`/` on port 8088 returns 500. Rails serves the API only; nginx serves the app.
+`/` on port 8088 returns 500. Rails serves the API only; port 8080 serves the app.
 
 Other targets: `make logs`, `make dev-down`, `make dev-clean` (drops the
 database volume), `make dev-config` (print the resolved compose file).
@@ -40,13 +40,18 @@ database volume), `make dev-config` (print the resolved compose file).
 - **backend** — Rails, at `railsts/`. Built from the `dev` stage of
   `railsts/Dockerfile`. Loads the database on first run, then serves `/api`.
   Your source is bind-mounted, so edits reload.
-- **frontend** — nginx, at `timesheet-frontend/`. Serves the compiled bundle
-  and reverse-proxies `/api` to the backend (`nginx/default.conf`).
+- **frontend** — the React dev server, at `timesheet-frontend/`. Built from the
+  `dev` stage of `timesheet-frontend/Dockerfile`. Your source is bind-mounted,
+  so edits reload, and it forwards `/api` to the backend (`src/setupProxy.js`).
 
-The frontend image is a production build, so it does **not** hot-reload. For
-that, run the React dev server on your machine instead — `npm start` in
-`timesheet-frontend/` serves port 3000 and proxies `/api` to port 8088, against
-the same containers. See `timesheet-frontend/README.md`.
+Previews and production do not run that dev server. They serve a compiled
+bundle from nginx — the last stage of the same Dockerfile, with the proxying
+done by `nginx/default.conf`. That is what CI builds and what
+`docker-compose.preview.yml` deploys.
+
+You can also run the dev server on your machine rather than in the stack:
+`npm start` in `timesheet-frontend/` proxies `/api` to port 8088 against the
+same containers. See `timesheet-frontend/README.md`.
 
 Change a `Gemfile` or `package.json` and you need `make dev-build`.
 
