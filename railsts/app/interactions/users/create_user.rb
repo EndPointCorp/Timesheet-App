@@ -59,9 +59,11 @@ class Users::CreateUser < ActiveInteraction::Base
   private
 
   def verify_time_zone
-    if User.select("DISTINCT(time_zone_code)").where(time_zone_code: time_zone_code).count == 0
+    # Validate against the master time_zones table (mirrors the users
+    # time_zone_code foreign key), not the zones existing users happen to have.
+    unless TimeZone.exists?(code: time_zone_code)
       errors.add(:time_zone_code, 'doesn\'t exist')
-    end 
+    end
   end
   
   def ensure_email_unique
