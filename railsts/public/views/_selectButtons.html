@@ -1,7 +1,0 @@
-<div>
-  <dl class="select-buttons">
-    <dd ng-repeat="buttonItem in buttonItems | orderBy: 'label'" ng-class="{active : isSelectedReport(buttonItem)}">
-      <a ng-click="selectItem(buttonItem)">{{::buttonItem.label}}</a>
-    </dd>
-  </dl>
-</div>
