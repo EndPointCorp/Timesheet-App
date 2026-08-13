@@ -91,4 +91,8 @@ without a `.env` — so nothing ships with a password that was committed.
 - `timesheet-frontend/README.md` — frontend, Playwright e2e suite, camp deploys
 - `testing/checklist.md` — the manual test checklist, and how to judge a run
 
+## License
+
+MIT. See [LICENSE](LICENSE).
+
 [#25]: https://bits.endpointdev.com/timesheet/timesheet-oss/-/issues/25
