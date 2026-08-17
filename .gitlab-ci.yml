@@ -1,8 +1,3 @@
-# CI/CD: build both images once per pipeline, then drive Coolify via
-# scripts/coolify-preview.py (preview app per MR).
-# Production deploy is intentionally deferred — see COOLIFY.md.
-# See COOLIFY.md for the required CI/CD variables and one-time setup.
-
 stages:
   - build
   - deploy
@@ -14,12 +9,11 @@ variables:
   FRONTEND_SHA_IMAGE: ${CI_REGISTRY_IMAGE}/frontend:${CI_COMMIT_SHA}
   BACKEND_MR_IMAGE: ${CI_REGISTRY_IMAGE}/backend:mr-${CI_MERGE_REQUEST_IID}
   BACKEND_SHA_IMAGE: ${CI_REGISTRY_IMAGE}/backend:${CI_COMMIT_SHA}
-  DOCKER_BUILDKIT: "1"
+  FRONTEND_CACHE_IMAGE: ${CI_REGISTRY_IMAGE}/frontend:buildcache
+  BACKEND_CACHE_IMAGE: ${CI_REGISTRY_IMAGE}/backend:buildcache
 
 default:
-  image: docker:27
   interruptible: true
-  # Retry infrastructure flakes (runner/network), never real script failures.
   retry:
     max: 1
     when:
@@ -27,64 +21,87 @@ default:
       - api_failure
       - stuck_or_timeout_failure
       - scheduler_failure
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
-# --- Build (merge requests) -------------------------------------------
+.buildkit:
+  stage: build
+  tags:
+    - image-build
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: [""]
+  variables:
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+  before_script:
+    - mkdir -p ~/.docker
+    - |
+      cat > ~/.docker/config.json <<EOF
+      {
+        "auths": {
+          "$CI_REGISTRY": {
+            "username": "$CI_REGISTRY_USER",
+            "password": "$CI_REGISTRY_PASSWORD"
+          }
+        }
+      }
+      EOF
 
 build_backend_mr:
-  stage: build
-  variables:
-    DOCKER_HOST: unix:///var/run/docker.sock
+  extends: .buildkit
   script:
-    - docker build --network host
-        --build-arg APP_VERSION=${CI_COMMIT_SHA}
-        -t ${BACKEND_MR_IMAGE} -t ${BACKEND_SHA_IMAGE} ./railsts
-    - docker push ${BACKEND_MR_IMAGE}
-    - docker push ${BACKEND_SHA_IMAGE}
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=./railsts \
+        --local dockerfile=./railsts \
+        --opt build-arg:APP_VERSION=${CI_COMMIT_SHA} \
+        --output type=image,\"name=${BACKEND_MR_IMAGE},${BACKEND_SHA_IMAGE}\",push=true \
+        --import-cache type=registry,ref=${BACKEND_CACHE_IMAGE} \
+        --export-cache type=registry,ref=${BACKEND_CACHE_IMAGE},mode=max
   only:
     - merge_requests
 
 build_frontend_mr:
-  stage: build
-  variables:
-    DOCKER_HOST: unix:///var/run/docker.sock
+  extends: .buildkit
   script:
-    - docker build --network host
-        -t ${FRONTEND_MR_IMAGE} -t ${FRONTEND_SHA_IMAGE} ./timesheet-frontend
-    - docker push ${FRONTEND_MR_IMAGE}
-    - docker push ${FRONTEND_SHA_IMAGE}
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=./timesheet-frontend \
+        --local dockerfile=./timesheet-frontend \
+        --output type=image,\"name=${FRONTEND_MR_IMAGE},${FRONTEND_SHA_IMAGE}\",push=true \
+        --import-cache type=registry,ref=${FRONTEND_CACHE_IMAGE} \
+        --export-cache type=registry,ref=${FRONTEND_CACHE_IMAGE},mode=max
   only:
     - merge_requests
 
-# --- Build (main) ------------------------------------------------------
-
 build_backend_main:
-  stage: build
-  variables:
-    DOCKER_HOST: unix:///var/run/docker.sock
+  extends: .buildkit
   script:
-    - docker build --network host
-        --build-arg APP_VERSION=${CI_COMMIT_SHA}
-        -t ${BACKEND_SHA_IMAGE} -t ${CI_REGISTRY_IMAGE}/backend:latest ./railsts
-    - docker push ${BACKEND_SHA_IMAGE}
-    - docker push ${CI_REGISTRY_IMAGE}/backend:latest
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=./railsts \
+        --local dockerfile=./railsts \
+        --opt build-arg:APP_VERSION=${CI_COMMIT_SHA} \
+        --output type=image,\"name=${BACKEND_SHA_IMAGE},${CI_REGISTRY_IMAGE}/backend:latest\",push=true \
+        --import-cache type=registry,ref=${BACKEND_CACHE_IMAGE} \
+        --export-cache type=registry,ref=${BACKEND_CACHE_IMAGE},mode=max
   only:
     - main
 
 build_frontend_main:
-  stage: build
-  variables:
-    DOCKER_HOST: unix:///var/run/docker.sock
+  extends: .buildkit
   script:
-    - docker build --network host
-        -t ${FRONTEND_SHA_IMAGE} -t ${CI_REGISTRY_IMAGE}/frontend:latest ./timesheet-frontend
-    - docker push ${FRONTEND_SHA_IMAGE}
-    - docker push ${CI_REGISTRY_IMAGE}/frontend:latest
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=./timesheet-frontend \
+        --local dockerfile=./timesheet-frontend \
+        --output type=image,\"name=${FRONTEND_SHA_IMAGE},${CI_REGISTRY_IMAGE}/frontend:latest\",push=true \
+        --import-cache type=registry,ref=${FRONTEND_CACHE_IMAGE} \
+        --export-cache type=registry,ref=${FRONTEND_CACHE_IMAGE},mode=max
   only:
     - main
-
-# --- Preview per MR ----------------------------------------------------
 
 deploy_preview:
   stage: deploy
@@ -118,20 +135,3 @@ cleanup_preview:
   only:
     - merge_requests
   when: manual
-
-# --- Production (DEFERRED — do not enable until the cutover plan is agreed) --
-# deploy_production:
-#   stage: deploy
-#   image: alpine:3
-#   before_script:
-#     - apk add --no-cache python3
-#   script:
-#     - python3 scripts/coolify-preview.py deploy-prod
-#         --frontend-image "${FRONTEND_SHA_IMAGE}"
-#         --backend-image "${BACKEND_SHA_IMAGE}"
-#   environment:
-#     name: production
-#     url: https://${PROD_FQDN}
-#   only:
-#     - main
-#   when: manual
