@@ -7,11 +7,8 @@ class WorkMonthsController < ApplicationController
   #
   # Returns monthly stats for months between given dates.
   def index
-    user = if params[:username]
-             Role.where(code: 'user_' + params[:username]).first.user
-           else
-             effective_user
-           end
+    user = user_from_username_param
+    return return_401 if user.nil?
 
     start = Date.strptime(params[:start], '%Y-%m-%d')
     _end  = Date.strptime(params[:end], '%Y-%m-%d')

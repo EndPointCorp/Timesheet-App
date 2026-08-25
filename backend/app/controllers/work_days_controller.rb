@@ -9,11 +9,8 @@ class WorkDaysController < ApplicationController
   # last days of the month before and first days of the month
   # after.
   def calendar
-    user = if params[:username]
-             Role.where(code: 'user_' + params[:username]).first.user
-           else
-             effective_user
-           end
+    user = user_from_username_param
+    return return_401 if user.nil?
 
     @days = WorkDay.by_year_and_month(user, params[:year], params[:month])
     respond_with @days
