@@ -118,9 +118,6 @@ scope '/api' do
   get "/hours/active_projects" => "hours_in_the_bank#active_projects", as: :active_projects
   get "/hours/:work_chart_id" => "hours_in_the_bank#show", as: :show_hours
 
-  # Client logging
-  post "/client_log" => "client_log#log"
-
   # Settings
   get "/settings" => 'settings#index'
   
