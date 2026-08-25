@@ -1,8 +1,13 @@
 import { Box, Button } from "@mui/material";
 import { FC, useState } from "react";
-import { Groups, Target } from "../../../components/EditorsCommon/types";
+import {
+  Groups,
+  RolesEditorUser,
+  Target,
+} from "../../../components/EditorsCommon/types";
 import OpenCloseArrow from "../../RolesEditor/UserCard/OpenCloseArrow";
 import GroupsList from "./GroupsList";
+import MembersList from "./MembersList";
 import { RightsGranted } from "../../../components/EditorsCommon";
 import rolesEditorHooks from "../../../hooks/rolesEditorHooks";
 import { RightType } from "../../../components/EditorsCommon/types";
@@ -13,6 +18,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 interface Props {
   group: Groups;
   groups: Array<Groups>;
+  users: Array<RolesEditorUser>;
 }
 
 interface ChangeObjectItem {
@@ -33,7 +39,7 @@ interface ChangeObject {
   myroles?: Array<ChangeRoleObjectItem>;
 }
 
-const GroupsCard: FC<Props> = ({ group, groups }) => {
+const GroupsCard: FC<Props> = ({ group, groups, users }) => {
   const [opened, setOpened] = useState(false);
   const { data: rights } = rolesEditorHooks.useRightTypes();
   const { mutateAsync: sendChanges } = rolesEditorHooks.useSaveGroupChanges();
@@ -50,6 +56,13 @@ const GroupsCard: FC<Props> = ({ group, groups }) => {
   ]);
   const [isChanged, setIsChanged] = useState(false);
   const [groupLabel, setGroupLabel] = useState(group.label);
+
+  // role_ids on a user already carries inherited groups, so this one test
+  // catches both the people placed here by hand and the ones who arrived
+  // through a sub-group. MembersList tells the two apart.
+  const members = users
+    .filter((user) => user.role_ids.includes(group.id))
+    .sort((a, b) => (a.name || a.email).localeCompare(b.name || b.email));
 
   const removeRight = (rightId: number) => {
     setGroupRights((prevRights) =>
@@ -426,6 +439,7 @@ const GroupsCard: FC<Props> = ({ group, groups }) => {
           removeRole={removeRole}
           addGroup={addRole}
         />
+        <MembersList group={group} groups={groups} members={members} />
         {opened && (
           <RightsGranted
             userRights={[...groupRights, ...inDirectGroupRights]}

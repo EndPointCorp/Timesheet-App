@@ -167,6 +167,62 @@ created_users = DEMO_USERS.map do |u|
   user
 end
 
+# Groups. A row in roles_has_roles means "role_id belongs to has_role_id", so
+# pointing a user's own role at a group role makes that user a member of it.
+#
+# The tree is two levels deep on purpose. Nobody has a row placing them in All
+# Staff except Isaac, yet everyone below counts as a member of it, because
+# roles_view walks the hierarchy and folds ancestors into each role's
+# role_ids. That inherited case is the one the Groups editor has to show
+# differently from a direct membership, so the seed has to produce both.
+#
+#   All Staff
+#     |-- Engineering   alice, bob, charlie, george
+#     |-- Management    admin, fiona
+#     |-- Support       diana, evan, hannah
+#     +-- (direct)      isaac
+#
+# Note these are groups, not teams: the teams view only counts roles that
+# belong to a role coded 'operational', which none of these do.
+DEMO_GROUPS = [
+  { code: 'all_staff',   label: 'All Staff',   parent: nil,         members: %w[isaac] },
+  { code: 'engineering', label: 'Engineering', parent: 'all_staff', members: %w[alice bob charlie george] },
+  { code: 'management',  label: 'Management',  parent: 'all_staff', members: %w[admin fiona] },
+  { code: 'support',     label: 'Support',     parent: 'all_staff', members: %w[diana evan hannah] },
+].freeze
+
+puts "[groups] Creating demo groups..."
+
+# roles_has_roles has no primary key and no Rails timestamps, so build the row
+# the way the app's own Users::UpdateGroup interaction does.
+link_role = lambda do |member_id, group_id|
+  next if RoleHasRole.exists?(role_id: member_id, has_role_id: group_id)
+
+  link = RoleHasRole.new
+  link.role_id = member_id
+  link.has_role_id = group_id
+  link.date_created = link.last_modified = NOW
+  link.save!
+end
+
+demo_groups = DEMO_GROUPS.each_with_object({}) do |g, acc|
+  acc[g[:code]] = Role.find_or_create_by!(code: g[:code]) do |r|
+    r.display_label = g[:label]
+    r.description = "Demo group: #{g[:label]}"
+    r.last_modified = NOW
+  end
+end
+
+DEMO_GROUPS.each do |g|
+  group = demo_groups[g[:code]]
+  link_role.call(group.id, demo_groups[g[:parent]].id) if g[:parent]
+
+  g[:members].each do |username|
+    member = created_users.find { |u| u.username == username }
+    link_role.call(member.role_id, group.id)
+  end
+end
+
 # Hours-in-the-bank budgets (created in section 5). Each is a billable client
 # project with a bought/used pair chosen to land in one color band of the
 # "Remaining hours" panel: green (>=16h left), orange (0-16h), red (<=0h).
@@ -282,6 +338,7 @@ puts "=== Seeding complete ==="
 puts "  WorkCharts:     #{WorkChart.count}"
 puts "  Users:          #{User.count}"
 puts "  Roles:          #{Role.count}"
+puts "  Groups:         #{DEMO_GROUPS.count} (#{RoleHasRole.count} memberships)"
 puts "  WorkEntries:    #{WorkEntry.count}"
 puts "  Budgets:        #{Transaction.count}"
 puts "  Login:          admin@example.com / please1234"

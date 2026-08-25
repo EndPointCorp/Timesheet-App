@@ -6,6 +6,7 @@ import List from "../../components/List";
 import GroupsCard from "./GroupsCard";
 import { Groups } from "../../components/EditorsCommon/types";
 import rolesEditorHooks from "../../hooks/rolesEditorHooks";
+import usersHooks from "../../hooks/usersHooks";
 import {
   EditorSearchField,
   EditorToggleButtons,
@@ -13,6 +14,9 @@ import {
 
 const GroupsEditor = () => {
   const { data: details } = rolesEditorHooks.useGroupsDetails();
+  // Group membership is not part of the groups payload. It comes off each
+  // user's own role_ids, which is what /users/details.json already returns.
+  const { data: users } = usersHooks.useDetails();
   const [chosenGroup, setChosenGroup] = useState("all");
   const [searchValue, setSearchValue] = useState("");
 
@@ -56,7 +60,12 @@ const GroupsEditor = () => {
                     )),
               )
               .map((group: Groups) => (
-                <GroupsCard group={group} key={group.code} groups={details} />
+                <GroupsCard
+                  group={group}
+                  key={group.code}
+                  groups={details}
+                  users={users ?? []}
+                />
               ))}
         </Stack>
         <Stack direction={"column"}>
