@@ -17,7 +17,7 @@ WORKDIR /rails
 # Runtime packages:
 # - postgresql-client-16 (PGDG, not Debian's 15): the entrypoint uses
 #   pg_isready/psql, and db:prepare loads db/structure.sql whose pg_dump-16
-#   \restrict meta-commands old psql minors can't parse (see railsts/Rakefile).
+#   \restrict meta-commands old psql minors can't parse (see backend/Rakefile).
 # - zstd: restores the preview seed dump (/seed/*.sql.zst).
 # - libxrender1 libxext6 libfontconfig1 fontconfig fonts-dejavu-core
 #   libjpeg62-turbo: shared libs + fonts wkhtmltopdf-binary needs for the

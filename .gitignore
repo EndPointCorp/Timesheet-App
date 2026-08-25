@@ -6,11 +6,11 @@ CLAUDE.md
 COLLABORATION.md
 Timesheet_Beta_Testing_Results_Claude_DEPLOYED_2026-05-29.xlsx
 resume.md
-railsts/out.txt
+backend/out.txt
 
 # Compose reads an optional .env next to docker-compose.yml, for overriding
-# ports or credentials locally. Root-scoped on purpose: railsts/ and
-# timesheet-frontend/ ignore their own, and a bare ".env" here would match
+# ports or credentials locally. Root-scoped on purpose: backend/ and
+# frontend/ ignore their own, and a bare ".env" here would match
 # theirs too.
 /.env
 

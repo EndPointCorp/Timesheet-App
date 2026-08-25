@@ -5,15 +5,15 @@
 # Project name `timesheet`
 #
 # The published ports are variables so that several checkouts of this repo can
-# each run their own stack at the same time (see bin/wt, which assigns a free
-# set per worktree). Leave them unset and you get the defaults below.
+# each run their own stack at the same time — give each checkout its own set
+# in its .env. Leave them unset and you get the defaults below.
 
 name: timesheet
 
 services:
   frontend:
     build:
-      context: ./timesheet-frontend
+      context: ./frontend
       target: dev
     # Safe for every checkout to share: this image is node_modules and nothing
     # else, and the code it serves arrives through the bind mount below. So a
@@ -26,14 +26,14 @@ services:
       # package.json so the same code works against a container, a laptop, or
       # one of several task stacks.
       API_PROXY_TARGET: http://backend:3000
-      # Wins over a mounted timesheet-frontend/.env.local — bin/wt writes one
-      # for host-run dev servers, and its PORT would otherwise move this one
-      # off the port compose publishes.
+      # Wins over a mounted frontend/.env.local. A dev server run on the host
+      # keeps its own PORT in that file, and that value would otherwise move
+      # this one off the port compose publishes.
       PORT: 3000
       # The file watcher does not see writes through a bind mount without this.
       WATCHPACK_POLLING: "true"
     volumes:
-      - ./timesheet-frontend:/app
+      - ./frontend:/app
       # Keeps the image's node_modules. Without it the bind mount above hides
       # them and nothing starts.
       - /app/node_modules
@@ -54,7 +54,7 @@ services:
 
   backend:
     build:
-      context: ./railsts
+      context: ./backend
       target: dev
     image: timesheet-backend:local
     environment:
@@ -72,7 +72,7 @@ services:
       # demo seeds as before. Never touches a non-empty DB.
       RESTORE_SEED_ON_EMPTY: "true"
     volumes:
-      - ./railsts:/rails
+      - ./backend:/rails
       - ./seeds:/seed:ro
     tmpfs:
       - /rails/tmp
@@ -111,6 +111,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  # Named `postgres_data` under project `timesheet` => the same
-  # `timesheet_postgres_data` volume the old railsts/ compose stack used.
+  # Named `postgres_data` under project `timesheet` => the volume is
+  # `timesheet_postgres_data`, the name earlier stacks already used, so
+  # existing local data survives.
   postgres_data:

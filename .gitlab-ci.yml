@@ -51,8 +51,8 @@ build_backend_mr:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=./railsts \
-        --local dockerfile=./railsts \
+        --local context=./backend \
+        --local dockerfile=./backend \
         --opt build-arg:APP_VERSION=${CI_COMMIT_SHA} \
         --output type=image,\"name=${BACKEND_MR_IMAGE},${BACKEND_SHA_IMAGE}\",push=true \
         --import-cache type=registry,ref=${BACKEND_CACHE_IMAGE} \
@@ -66,8 +66,8 @@ build_frontend_mr:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=./timesheet-frontend \
-        --local dockerfile=./timesheet-frontend \
+        --local context=./frontend \
+        --local dockerfile=./frontend \
         --output type=image,\"name=${FRONTEND_MR_IMAGE},${FRONTEND_SHA_IMAGE}\",push=true \
         --import-cache type=registry,ref=${FRONTEND_CACHE_IMAGE} \
         --export-cache type=registry,ref=${FRONTEND_CACHE_IMAGE},mode=max
@@ -80,8 +80,8 @@ build_backend_main:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=./railsts \
-        --local dockerfile=./railsts \
+        --local context=./backend \
+        --local dockerfile=./backend \
         --opt build-arg:APP_VERSION=${CI_COMMIT_SHA} \
         --output type=image,\"name=${BACKEND_SHA_IMAGE},${CI_REGISTRY_IMAGE}/backend:latest\",push=true \
         --import-cache type=registry,ref=${BACKEND_CACHE_IMAGE} \
@@ -95,8 +95,8 @@ build_frontend_main:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=./timesheet-frontend \
-        --local dockerfile=./timesheet-frontend \
+        --local context=./frontend \
+        --local dockerfile=./frontend \
         --output type=image,\"name=${FRONTEND_SHA_IMAGE},${CI_REGISTRY_IMAGE}/frontend:latest\",push=true \
         --import-cache type=registry,ref=${FRONTEND_CACHE_IMAGE} \
         --export-cache type=registry,ref=${FRONTEND_CACHE_IMAGE},mode=max

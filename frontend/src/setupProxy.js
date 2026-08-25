@@ -15,8 +15,8 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 // Matches the API port that docker-compose.yml publishes by default, for
 // running the dev server outside Docker against a containerised API. Point it
-// somewhere else with API_PROXY_TARGET — bin/wt writes one per worktree so each
-// dev server talks to its own stack instead of whichever one started first.
+// somewhere else with API_PROXY_TARGET when you run more than one stack, so
+// each dev server talks to its own API instead of whichever one started first.
 const DEFAULT_TARGET = "http://localhost:8088";
 
 module.exports = function (app) {

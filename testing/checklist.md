@@ -30,7 +30,7 @@ something you can see, and each result has evidence.
 - App URL: _<fill in per run>_
 - Superuser: `admin@example.com` / `please1234`
 - Demo users (non-super): `alice` through `hannah` @example.com, same password
-- Seed/reset: see `railsts/README.md` (`rails db:seed`)
+- Seed/reset: see `backend/README.md` (`rails db:seed`)
 - **Data safety:** run only against a disposable, seeded DB. Several tests create
   and delete data (users, work charts, transactions, groups). Never point this at
   production or any data you care about.

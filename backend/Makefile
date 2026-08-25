@@ -25,7 +25,7 @@ check_ruby_syntax:
 
 # --- Test suite -------------------------------------------------------
 # The dev/test stack (and its Makefile) moved to the repo root; these targets
-# delegate so `make test` keeps working from railsts/. See ../README.md.
+# delegate so `make test` keeps working from backend/. See ../README.md.
 .PHONY: test test-db coverage coverage-pdf
 
 test-db:

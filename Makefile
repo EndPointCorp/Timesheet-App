@@ -40,4 +40,4 @@ test: check-env
 
 coverage: check-env
 	docker compose run --rm -e RAILS_ENV=test -e CONTAINER_ROLE=task -e COVERAGE=true backend bundle exec rspec
-	@echo "Coverage report generated: open railsts/coverage/index.html in a browser"
+	@echo "Coverage report generated: open backend/coverage/index.html in a browser"

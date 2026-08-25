@@ -1,7 +1,7 @@
 # End Point Timesheet
 
-Time tracking and reporting. A Rails 8 JSON API (`railsts/`) and a React
-frontend (`timesheet-frontend/`).
+Time tracking and reporting. A Rails 8 JSON API (`backend/`) and a React
+frontend (`frontend/`).
 
 ## Run it
 
@@ -37,11 +37,11 @@ database volume), `make dev-config` (print the resolved compose file).
 `docker-compose.yml` at the root defines three services:
 
 - **db** — Postgres 16.
-- **backend** — Rails, at `railsts/`. Built from the `dev` stage of
-  `railsts/Dockerfile`. Loads the database on first run, then serves `/api`.
+- **backend** — Rails, at `backend/`. Built from the `dev` stage of
+  `backend/Dockerfile`. Loads the database on first run, then serves `/api`.
   Your source is bind-mounted, so edits reload.
-- **frontend** — the React dev server, at `timesheet-frontend/`. Built from the
-  `dev` stage of `timesheet-frontend/Dockerfile`. Your source is bind-mounted,
+- **frontend** — the React dev server, at `frontend/`. Built from the
+  `dev` stage of `frontend/Dockerfile`. Your source is bind-mounted,
   so edits reload, and it forwards `/api` to the backend (`src/setupProxy.js`).
 
 Previews and production do not run that dev server. They serve a compiled
@@ -50,8 +50,8 @@ done by `nginx/default.conf`. That is what CI builds and what
 `docker-compose.preview.yml` deploys.
 
 You can also run the dev server on your machine rather than in the stack:
-`npm start` in `timesheet-frontend/` proxies `/api` to port 8088 against the
-same containers. See `timesheet-frontend/README.md`.
+`npm start` in `frontend/` proxies `/api` to port 8088 against the
+same containers. See `frontend/README.md`.
 
 Change a `Gemfile` or `package.json` and you need `make dev-build`.
 
@@ -60,10 +60,10 @@ Change a `Gemfile` or `package.json` and you need `make dev-build`.
 ```sh
 make test-db   # one-time: create the test DB, load the schema, build matviews
 make test      # RSpec
-make coverage  # RSpec with SimpleCov -> railsts/coverage/index.html
+make coverage  # RSpec with SimpleCov -> backend/coverage/index.html
 ```
 
-These work from `railsts/` too — that Makefile delegates here.
+These work from `backend/` too — that Makefile delegates here.
 
 ## Previews and deploys
 
@@ -87,8 +87,8 @@ without a `.env` — so nothing ships with a password that was committed.
 
 ## More
 
-- `railsts/README.md` — backend details, test suite, troubleshooting
-- `timesheet-frontend/README.md` — frontend, Playwright e2e suite, camp deploys
+- `backend/README.md` — backend details, test suite, troubleshooting
+- `frontend/README.md` — frontend, Playwright e2e suite, camp deploys
 - `testing/checklist.md` — the manual test checklist, and how to judge a run
 
 ## License
