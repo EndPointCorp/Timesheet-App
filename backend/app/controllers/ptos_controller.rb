@@ -3,11 +3,8 @@ class PtosController < ApplicationController
 
   # GET /ptos
   def index
-    user = if params[:username]
-      Role.where(code: 'user_' + params[:username]).first.user
-    else
-      effective_user
-    end
+    user = user_from_username_param
+    return return_401 if user.nil?
 
     render json: Pto.rundown_for(user, Date.today)
   end

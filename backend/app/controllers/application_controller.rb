@@ -20,6 +20,35 @@ class ApplicationController < ActionController::Base
     return_401 unless effective_user
   end
 
+  # Resolves the user a request is asking about, for the endpoints that accept
+  # a :username. Resolution and authorisation deliberately happen together: a
+  # caller cannot get the user without also getting the permission check, which
+  # is how three endpoints ended up returning anyone's data to anyone.
+  #
+  # Returns nil when the caller may not see that person, and nil is also what
+  # an unknown username returns. Answering those two cases differently would
+  # tell an attacker which accounts exist.
+  def user_from_username_param
+    return effective_user if params[:username].blank?
+
+    target = Role.find_by(code: "user_#{params[:username]}").try(:user)
+    return nil if target.nil? || !may_view_user?(target)
+
+    target
+  end
+
+  # The app already had two separate ways of saying "this person may see that
+  # person", and both are legitimate. Report rights are what reports_controller
+  # and users_controller use; team management is what hours_in_the_bank uses.
+  # Either one grants access, so neither existing workflow changes.
+  def may_view_user?(target)
+    return false if effective_user.nil? || target.nil? || target.role.nil?
+    return true if target.id == effective_user.id
+    return true if effective_user.role.has_right_to(RightType::REPORT, target.role)
+
+    Team.by_manager(effective_user).any? { |team| team.users.key?(target.role.code) }
+  end
+
   def pick(hash, *keys)
     filtered = {}
     hash.each do |key, value|
