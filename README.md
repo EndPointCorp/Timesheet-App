@@ -14,7 +14,8 @@ Open <http://localhost:8080> and sign in as `admin@example.com` / `please1234`.
 
 **If that first login says your password is wrong, it isn't — just sign in
 again.** The first request after the server starts always fails
-authentication ([#25]). Nothing is misconfigured, and the second attempt works.
+authentication. This is a known issue. Nothing is misconfigured, and the
+second attempt works.
 
 That's the whole setup. The first run takes a few minutes: it builds both
 images, then loads the schema, reference data, and demo seed into an empty
@@ -94,5 +95,3 @@ without a `.env` — so nothing ships with a password that was committed.
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-[#25]: https://bits.endpointdev.com/timesheet/timesheet-oss/-/issues/25
