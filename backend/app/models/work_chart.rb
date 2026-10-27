@@ -149,7 +149,9 @@ class WorkChart < ActiveRecord::Base
        defaults = self.default_kinds
        @duration_kinds = @duration_kinds.sort {|k| defaults.include?(k.code) ? -1 : 1 }
      else
-       self.parent.duration_kinds
+       # A chart with no set of its own uses its parent's. The root has no
+       # parent, so a tree with no set anywhere ends here with no kinds.
+       parent ? parent.duration_kinds : []
      end
     end
   end
@@ -159,9 +161,13 @@ class WorkChart < ActiveRecord::Base
   end
 
   def inherited_from_id
+    # The root has no parent to inherit from, and it is not in chart_labels,
+    # which up_path_ids reads.
+    return nil unless parent
+
     WorkChart.joins(:work_chart_kind_sets).
       where("work_chart_kind_sets.work_chart_id in (:ids)", ids: self.up_path_ids).
-      select(:id).last.id
+      select(:id).last&.id
   end
 
   def default_kinds
