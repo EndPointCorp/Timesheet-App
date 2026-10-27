@@ -10,7 +10,7 @@ class Users::CreateUser < ActiveInteraction::Base
 
   array :teams, default: []
 
-  validate :ensure_email_unique, :ensure_username_unique, :verify_time_zone, :validate_start_date
+  validate :ensure_email_unique, :ensure_username_usable, :ensure_username_unique, :verify_time_zone, :validate_start_date
   
   validates :email, presence: true
   validates :username, presence: true
@@ -73,8 +73,22 @@ class Users::CreateUser < ActiveInteraction::Base
     @is_ensure_email_unique = true
   end
 
+  # The controller takes the username from the part of the email before the @.
+  # The database rejects anything but 2 to 30 letters, and without this check
+  # that surfaces as a 500 with no message.
+  def ensure_username_usable
+    return if username.blank?
+
+    unless username.downcase.match?(User::USERNAME_FORMAT)
+      errors.add(:username, "\"#{username}\" can't be used. It is taken from the part of the " \
+        "email before the @, and must be 2 to 30 letters (a-z) only")
+    end
+  end
+
+  # Usernames are stored in lower case, so compare in lower case. Otherwise
+  # "Bob@..." slips past this check when "bob" exists and fails in the database.
   def ensure_username_unique
-    if User.find_by_username username and !is_ensure_username_unique
+    if User.find_by_username username.downcase and !is_ensure_username_unique
       errors.add(:username, 'already exists')
     end
     @is_ensure_username_unique = true
