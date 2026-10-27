@@ -95,6 +95,64 @@ describe "Users" do
       response.status.should == 200
       User.find_by(email: 'niue@tester.com').time_zone_code.should == 'Pacific/Niue'
     end
+
+    # The username is the part of the email before the @, and the users table
+    # only accepts 2 to 30 letters a-z in it (users_username_check).
+    context "when the username taken from the email is not usable" do
+      before(:each) do
+        FactoryBot.create(:right_type, code: "naggable", display_label: "Naggable")
+        right_type = FactoryBot.create(:right_type, code: "create_users", display_label: "Create Users")
+        right = FactoryBot.create(:right, role_id: @user.role_id, right_type_id: right_type.id)
+        FactoryBot.create(:right_target, right_id: right.id, ref_obj_pk: @user.id)
+        FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
+      end
+
+      def post_new_user(email)
+        post '/api/users.json', params: { email: email, name: 'New Person',
+          time_zone_code: 'US/Eastern', password: 'sweetkitties', start_date: '23-12-2014' }
+      end
+
+      {
+        'a digit'          => 'chk-users-1@tester.com',
+        'a dash'           => 'chk-users@tester.com',
+        'a dot'            => 'first.last@tester.com',
+        'an underscore'    => 'first_last@tester.com',
+        'a plus tag'       => 'first+tag@tester.com',
+        'a single letter'  => 'a@tester.com',
+        'more than 30 letters' => "#{'a' * 31}@tester.com"
+      }.each do |what, email|
+        it "refuses an email name with #{what}, with a message, and creates nothing" do
+          expect { post_new_user(email) }.not_to change { [User.count, Role.count] }
+
+          response.status.should == 400
+          errors = JSON.parse(response.body)['errors']
+          errors.join(' ').should include('Username')
+          errors.join(' ').should include('letters')
+        end
+      end
+
+      it "names the username it took from the email, so the admin knows what to change" do
+        post_new_user('chk-users-1@tester.com')
+
+        JSON.parse(response.body)['errors'].join(' ').should include('chk-users-1')
+      end
+
+      it "refuses a name that differs only in case from an existing username" do
+        FactoryBot.create(:user, username: 'taken')
+
+        expect { post_new_user('Taken@tester.com') }.not_to change { [User.count, Role.count] }
+
+        response.status.should == 400
+        JSON.parse(response.body)['errors'].should include('Username already exists')
+      end
+
+      it "still accepts letters only, and stores them in lower case" do
+        post_new_user('Newbie@tester.com')
+
+        response.status.should == 200
+        User.find_by(username: 'newbie').should be_present
+      end
+    end
   end
 
   describe "PUT /users/:id (edit time zone)" do

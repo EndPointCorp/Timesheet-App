@@ -2,6 +2,10 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
+  # What the users table accepts as a username: users_username_check plus the
+  # varchar(30) column. A spec compares this against the real constraint.
+  USERNAME_FORMAT = /\A[a-z]{2,30}\z/
+
   scope :naggable, -> { joins(role: {rights: :right_type}).where('right_types.code' => RightType::NAGGABLE) }
 
   has_many :transactions
