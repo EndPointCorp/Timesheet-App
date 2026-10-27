@@ -52,6 +52,50 @@ describe "WorkCharts" do
     end
   end
 
+  describe "GET /work_charts/:id/kinds" do
+    # The chart_labels view only holds charts under the root with id 1, so the
+    # specs build the same shape as the real tree: root -> branch -> leaf.
+    before(:each) do
+      @root = FactoryBot.create :work_chart, id: 1, display_label: 'Top node'
+      @branch = FactoryBot.create :work_chart, parent_id: @root.id
+    end
+
+    context "when no chart up the tree has its own kind set" do
+      it "returns an empty list for the root chart" do
+        get "/api/work_charts/#{@root.id}/kinds.json"
+        response.status.should == 200
+        JSON.parse(response.body).should eq []
+      end
+
+      it "returns an empty list for a branch under the root" do
+        get "/api/work_charts/#{@branch.id}/kinds.json"
+        response.status.should == 200
+        JSON.parse(response.body).should eq []
+      end
+
+      it "returns an empty list for a leaf under that branch" do
+        leaf = FactoryBot.create :work_chart, parent_id: @branch.id
+        get "/api/work_charts/#{leaf.id}/kinds.json"
+        response.status.should == 200
+        JSON.parse(response.body).should eq []
+      end
+    end
+
+    context "when the branch has its own kind set" do
+      it "gives the leaf the branch's kinds" do
+        FactoryBot.create :billable_standard_duration_kind
+        FactoryBot.create :work_chart_kind_set, work_chart_id: @branch.id
+        FactoryBot.create :work_chart_kind, work_chart_id: @branch.id
+        leaf = FactoryBot.create :work_chart, parent_id: @branch.id
+        get "/api/work_charts/#{leaf.id}/kinds.json"
+        response.status.should == 200
+        kinds = JSON.parse(response.body)
+        kinds.map { |k| k['code'] }.should eq ['billable_standard']
+        kinds.first['inherited_from_id'].should eq @branch.id
+      end
+    end
+  end
+
   describe "GET /work_charts.json" do
     it "gets list of work_charts" do
       get '/api/work_charts.json'
