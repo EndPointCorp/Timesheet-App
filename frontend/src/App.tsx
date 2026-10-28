@@ -105,16 +105,50 @@ function App() {
         <Route path="/entries/:year/:month/:day/new" element={<NewEntry />} />
       </Route>
 
+      {/* Pages that need a right go in their own group, with the same flag the
+          Settings menu uses to show the link (see useSettingsMenu). A page put
+          in the open group below can be reached by any logged-in user. */}
+      <Route element={<ProtectedLayout requiredPermissions={["is_admin"]} />}>
+        <Route path="/users-editor" element={<RolesEditor />} />
+        <Route path="/groups-editor" element={<GroupsEditor />} />
+      </Route>
+
+      <Route
+        element={<ProtectedLayout requiredPermissions={["can_create_users"]} />}
+      >
+        <Route path="/create_user" element={<NewUser />} />
+        <Route path="/create_group" element={<NewGroup />} />
+      </Route>
+
+      <Route
+        element={<ProtectedLayout requiredPermissions={["can_switch_roles"]} />}
+      >
+        <Route path="/switch-role" element={<SwitchRole />} />
+      </Route>
+
+      <Route
+        element={<ProtectedLayout requiredPermissions={["can_edit_charts"]} />}
+      >
+        <Route path="/work_charts/editor" element={<WorkChartsEditor />} />
+        {/* Angular-style work charts editor routes */}
+        <Route
+          path="/work_charts/editor/:workChartId"
+          element={<WorkChartsEditor />}
+        />
+        <Route
+          path="/work_charts/editor/:workChartId/:tab"
+          element={<WorkChartsEditor />}
+        />
+      </Route>
+
       <Route element={<ProtectedLayout />}>
         <Route path="/" element={<Calendar />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/users-editor" element={<RolesEditor />} />
         <Route
           path="/entries/:paramsYear/:paramsMonth/:paramsDay"
           element={<Entries />}
         />
 
-        <Route path="/switch-role" element={<SwitchRole />} />
         <Route
           path="/calendar-user/:year/:month/:user"
           element={<Calendar />}
@@ -126,20 +160,7 @@ function App() {
           path="/reports/:type/:startDate/:endDate/:workChartId/:roles/:description/:hoursInBank"
           element={<Reports />}
         />
-        <Route path="/work_charts/editor" element={<WorkChartsEditor />} />
-        {/* Angular-style work charts editor routes */}
-        <Route
-          path="/work_charts/editor/:workChartId"
-          element={<WorkChartsEditor />}
-        />
-        <Route
-          path="/work_charts/editor/:workChartId/:tab"
-          element={<WorkChartsEditor />}
-        />
-        <Route path="/create_user" element={<NewUser />} />
-        <Route path="/create_group" element={<NewGroup />} />
         <Route path="/entries/:entryId/edit" element={<EditEntry />} />
-        <Route path="groups-editor" element={<GroupsEditor />} />
         {/* Handle /today route */}
         <Route path="/today" element={<TodayRedirect />} />
         <Route path="/today/new" element={<TodayNewRedirect />} />
