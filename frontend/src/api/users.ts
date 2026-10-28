@@ -78,15 +78,43 @@ export const handleAutoLogout = async () => {
 
 let isLoggingOut = false; // Prevents multiple logouts at once
 
+const logoutOnce = () => {
+  if (!isLoggingOut) {
+    isLoggingOut = true;
+    handleAutoLogout();
+  }
+};
+
+// The server answers 401 both when the session is gone and when a logged-in
+// user is not allowed to do something. Only the first should end the session,
+// so a 401 is checked against the same endpoint getUser uses. If the session is
+// gone that request gets a 401 too, and the interceptor below logs out on it.
+// One check at a time: a page load often gets several 401s together.
+const SESSION_CHECK_URL = "users/current.json";
+let sessionCheck: Promise<unknown> | null = null;
+
+const checkSession = () => {
+  if (sessionCheck || isLoggingOut) return;
+  sessionCheck = axios({
+    method: "GET",
+    url: SESSION_CHECK_URL,
+    baseURL: URL,
+  })
+    .catch(() => undefined)
+    .finally(() => {
+      sessionCheck = null;
+    });
+};
+
 export const setupAxiosInterceptors = () => {
   axios.interceptors.response.use(
     (response) => response, // Return response if successful
     (error) => {
-      // Check if error response status is 401
       if (error.response && error.response.status === 401) {
-        if (!isLoggingOut) {
-          isLoggingOut = true;
-          handleAutoLogout();
+        if (error.config && error.config.url === SESSION_CHECK_URL) {
+          logoutOnce();
+        } else {
+          checkSession();
         }
       }
       return Promise.reject(error);
