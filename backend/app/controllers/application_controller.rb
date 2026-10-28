@@ -61,6 +61,12 @@ class ApplicationController < ActionController::Base
     head 401
   end
 
+  # For a logged-in user who may not do this. 401 means "not logged in", and the
+  # client treats it that way, so a refusal must not use it.
+  def return_403(message = "You are not allowed to do that.")
+    render json: { errors: [message] }, status: 403
+  end
+
   def return_406(message = nil)
     if message.nil?
       head 406

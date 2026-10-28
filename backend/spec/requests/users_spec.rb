@@ -156,6 +156,14 @@ describe "Users" do
   end
 
   describe "PUT /users/:id (edit time zone)" do
+    # Changing a user needs a right (see user_update_authorization_spec). These
+    # examples are about the time zone, so the caller is an admin.
+    before(:each) do
+      create_real_right_types
+      FactoryBot.create :right, role_id: @user.role_id,
+        right_type_id: RightType.find_by!(code: 'superuser').id
+    end
+
     it "updates the zone when it exists in the master table", focus: true do
       FactoryBot.create(:time_zone, code: 'US/Eastern') if TimeZone.where(code: 'US/Eastern').count == 0
       FactoryBot.create(:time_zone, code: 'Europe/Warsaw', utc_offset: 1, is_visible: true)

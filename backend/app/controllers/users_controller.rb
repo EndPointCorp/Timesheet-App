@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :ensure_logged_in
+  before_action :ensure_may_update_user, only: :update
 
   # GET /users/current.json
   #
@@ -159,5 +160,16 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @user.destroy
     render json: ""
+  end
+
+  private
+
+  # Runs before the update, which applies its changes one at a time and cannot
+  # undo them. The user comes from the body, the same as in #update.
+  def ensure_may_update_user
+    policy = UserUpdatePolicy.new(user: effective_user,
+                                  target_id: params[:user_id],
+                                  user_entity: params[:user_entity])
+    return_403("You are not allowed to make these changes.") unless policy.allowed?
   end
 end
