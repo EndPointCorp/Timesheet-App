@@ -131,8 +131,18 @@ FactoryBot.define do
     }
   end
 
+  # The users table only accepts 2 to 30 letters a-z in a username. The number
+  # is written in base 26 with letters (a, b ... z, aa, ab ...), so every call
+  # gives a different name that stays short however many users a run creates.
   sequence :username do |n|
-    "user#{(97 + n % 25).chr * ((n / 25) + 1)}"
+    letters = +""
+    rest = n
+    loop do
+      letters.prepend((97 + rest % 26).chr)
+      rest = rest / 26 - 1
+      break if rest < 0
+    end
+    "user#{letters}"
   end
 
   factory :user do
