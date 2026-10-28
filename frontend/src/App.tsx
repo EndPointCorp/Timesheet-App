@@ -111,13 +111,13 @@ function App() {
       <Route element={<ProtectedLayout requiredPermissions={["is_admin"]} />}>
         <Route path="/users-editor" element={<RolesEditor />} />
         <Route path="/groups-editor" element={<GroupsEditor />} />
+        <Route path="/create_group" element={<NewGroup />} />
       </Route>
 
       <Route
         element={<ProtectedLayout requiredPermissions={["can_create_users"]} />}
       >
         <Route path="/create_user" element={<NewUser />} />
-        <Route path="/create_group" element={<NewGroup />} />
       </Route>
 
       <Route
