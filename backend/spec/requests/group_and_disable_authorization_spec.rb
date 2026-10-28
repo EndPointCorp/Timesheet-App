@@ -6,11 +6,11 @@ require 'spec_helper'
 # - PUT  /groups/:id       renames a group and adds or removes its rights and roles
 # - PUT  /users/:id/disable turns an account on or off
 #
-# The rule, from what the old AngularJS app guarded:
-#
-# - Renaming a group, changing its rights and disabling a user need the
-#   superuser right.
-# - Creating a group needs create_users (superuser also passes).
+# The rule: all three need the superuser right. Creating a group is held to the
+# same right as managing one, because a person who could create a group could
+# not do anything with it. The only way to reach the New Group page is the
+# button inside the Groups editor, which is for admins. create_users still
+# lets someone create a user, just not a group.
 #
 # Anyone else is refused with 403 and nothing changes. The lists that the
 # Reports page reads (GET /groups and friends) stay open to every logged-in
@@ -139,19 +139,17 @@ describe "Who may create groups, change groups and disable users" do
   context "when a user with only the create_users right calls" do
     before(:each) { sign_in_as("maker@endpointdev.com") }
 
-    it "may create a group" do
-      expect { post_new_group }.to change { Role.where(code: 'new_group').count }.by(1)
-
-      response.status.should eq(200)
+    it "is refused when creating a group, because that right is for creating users" do
+      expect_refused("creating a group") { post_new_group }
     end
 
-    it "is still refused every group change" do
+    it "is refused every group change" do
       group_changes.each do |what, changes|
         expect_refused(what) { put_group_changes(changes) }
       end
     end
 
-    it "is still refused when disabling a user" do
+    it "is refused when disabling a user" do
       expect_refused("disabling a user") { put_disable }
     end
   end

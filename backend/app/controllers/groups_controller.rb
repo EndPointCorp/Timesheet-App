@@ -1,7 +1,6 @@
 class GroupsController < ApplicationController
   before_action :ensure_logged_in
-  before_action :ensure_superuser, only: :update
-  before_action :ensure_can_create_users, only: :create
+  before_action :ensure_superuser, only: [:update, :create]
 
   # GET /groups.json
   #
@@ -78,12 +77,9 @@ class GroupsController < ApplicationController
 
   private
 
-  # Changing a group changes who has access, so it is left to admins.
+  # Groups carry rights, so creating and changing them is left to admins. A
+  # person who could create a group could not do anything with it anyway.
   def ensure_superuser
     return_403 unless effective_user.is_admin?
-  end
-
-  def ensure_can_create_users
-    return_403 unless effective_user.can_create_users?
   end
 end
