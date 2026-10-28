@@ -64,6 +64,14 @@ describe "Groups" do
   end
 
   describe "PUT /groups.json" do
+    # Changing a group needs the superuser right (see
+    # group_and_disable_authorization_spec), so the caller is an admin.
+    before(:each) do
+      create_real_right_types
+      FactoryBot.create :right, role_id: @user.role_id,
+        right_type_id: RightType.find_by!(code: 'superuser').id
+    end
+
     it "updates group data" do
       role = FactoryBot.create(:role, display_label: 'Group of gnus', code: 'group3')
 
