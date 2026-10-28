@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :ensure_logged_in
   before_action :ensure_may_update_user, only: :update
+  before_action :ensure_superuser, only: :disable
 
   # GET /users/current.json
   #
@@ -163,6 +164,11 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # Disabling an account decides who can sign in, so it is left to admins.
+  def ensure_superuser
+    return_403 unless effective_user.is_admin?
+  end
 
   # Runs before the update, which applies its changes one at a time and cannot
   # undo them. The user comes from the body, the same as in #update.

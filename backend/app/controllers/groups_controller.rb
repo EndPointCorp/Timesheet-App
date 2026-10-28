@@ -1,5 +1,7 @@
 class GroupsController < ApplicationController
   before_action :ensure_logged_in
+  before_action :ensure_superuser, only: :update
+  before_action :ensure_can_create_users, only: :create
 
   # GET /groups.json
   #
@@ -72,5 +74,16 @@ class GroupsController < ApplicationController
     end
     
     render json: teams_mapped_list
+  end
+
+  private
+
+  # Changing a group changes who has access, so it is left to admins.
+  def ensure_superuser
+    return_403 unless effective_user.is_admin?
+  end
+
+  def ensure_can_create_users
+    return_403 unless effective_user.can_create_users?
   end
 end
