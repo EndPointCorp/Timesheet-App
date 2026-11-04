@@ -50,21 +50,39 @@ const clearAllCookies = () => {
   localStorage.removeItem("user");
 };
 
-const logout = async () => {
+// Ends the session on the server. It is confirmed when the server says OK, or
+// says 401, because a 401 means there is no session left to end. Anything else
+// (a server error, no connection) is not confirmed, and nothing is cleared.
+const logout = async (): Promise<boolean> => {
   try {
-    const res = await axios({
+    await axios({
       method: "DELETE",
       url: `users/sign_out.json`,
       baseURL: URL,
+      validateStatus: (status) =>
+        status === 401 || (status >= 200 && status < 300),
     });
 
     // Clear all cookies after logout
     clearAllCookies();
 
-    return res;
+    return true;
   } catch (error) {
     console.log("🚀 ~ file: users.ts:15 ~ logout ~ error:", error);
+    return false;
   }
+};
+
+// The Logout button. The person stays logged in unless the server confirms,
+// so the browser and the server never disagree about who is signed in.
+// Returns whether it logged out.
+export const signOut = async (): Promise<boolean> => {
+  const confirmed = await logout();
+  if (confirmed) {
+    // Tell other tabs (the value doesn't matter; the change triggers the event)
+    localStorage.setItem("logout", Date.now().toString());
+  }
+  return confirmed;
 };
 
 export const handleAutoLogout = async () => {

@@ -27,6 +27,15 @@ const load = (reply: (config: AxiosRequestConfig) => Reply) => {
           headers: {},
           config,
         };
+        if (status === 0) {
+          reject(
+            Object.assign(new Error("Network Error"), {
+              config,
+              isAxiosError: true,
+            }),
+          );
+          return;
+        }
         const accepted = config.validateStatus
           ? config.validateStatus(status)
           : status >= 200 && status < 300;
@@ -170,5 +179,45 @@ describe("asking the server who is signed in", () => {
     const { getSession } = ask(() => ({ status: 500 }));
 
     expect(await getSession()).toEqual({ state: "unknown" });
+  });
+});
+
+describe("the Logout button", () => {
+  const signOutWith = (reply: (config: AxiosRequestConfig) => Reply) => {
+    const { calls } = load(reply);
+    const users = require("./users");
+    localStorage.setItem("user", JSON.stringify({ id: 7 }));
+    return { calls, signOut: users.signOut };
+  };
+
+  it("logs out when the server confirms", async () => {
+    const { signOut } = signOutWith(() => ({ status: 204 }));
+
+    expect(await signOut()).toBe(true);
+    expect(localStorage.getItem("user")).toBeNull();
+    expect(localStorage.getItem("logout")).not.toBeNull();
+  });
+
+  it("counts a 401 as logged out, because there is no session left", async () => {
+    const { signOut } = signOutWith(() => ({ status: 401 }));
+
+    expect(await signOut()).toBe(true);
+    expect(localStorage.getItem("user")).toBeNull();
+  });
+
+  it("keeps the user logged in when the server fails", async () => {
+    const { signOut } = signOutWith(() => ({ status: 500 }));
+
+    expect(await signOut()).toBe(false);
+    expect(localStorage.getItem("user")).not.toBeNull();
+    expect(localStorage.getItem("logout")).toBeNull();
+  });
+
+  it("keeps the user logged in when the server cannot be reached", async () => {
+    const { signOut } = signOutWith(() => ({ status: 0 }));
+
+    expect(await signOut()).toBe(false);
+    expect(localStorage.getItem("user")).not.toBeNull();
+    expect(localStorage.getItem("logout")).toBeNull();
   });
 });
