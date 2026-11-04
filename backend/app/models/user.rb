@@ -155,7 +155,7 @@ class User < ActiveRecord::Base
 
   # convenience method for working with the rails console
   def self.by_name(name)
-    User.where(email: "#{name}@endpointdev.com").first
+    User.where(email: "#{name}@#{EMAIL_DOMAIN}").first
   end
 
   def clients_represented
