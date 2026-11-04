@@ -8,9 +8,9 @@ describe WorkEntries::DestroyWorkEntry do
     @clients = create_proper_chart
     @clients.update! display_label: 'Clients'
     @perplexus = Role.where(code: "perplexus").first
-    @manager = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{role: @perplexus.id}] }
-    @user = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"]
-    @user_cannot_update = create_correct_user "developer2@endpointdev.com"
+    @manager = create_correct_user "manager1@example.com", roles: ["perplexus", "manager"], rights: { manage_team: [{role: @perplexus.id}] }
+    @user = create_correct_user "developer1@example.com", roles: ["perplexus"]
+    @user_cannot_update = create_correct_user "developer2@example.com"
     @acme = FactoryBot.create :work_chart, parent: @clients, display_label: 'Acme'
     @acme_general = FactoryBot.create :work_chart, parent: @acme, display_label: 'General'
     @chart = @acme_general

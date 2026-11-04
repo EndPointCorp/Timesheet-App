@@ -270,7 +270,7 @@ describe "Users" do
       logout_sucessfully
 
       super_user = FactoryBot.create(:user,
-                                      email: "root@endpointdev.com",
+                                      email: "root@example.com",
                                       password: "correct",
                                       password_confirmation: "correct")
       grant_superuser
@@ -282,7 +282,7 @@ describe "Users" do
 
     it "allows switching back to yourself" do
       super_user    = FactoryBot.create(:user,
-                                         email: "root@endpointdev.com",
+                                         email: "root@example.com",
                                          password: "correct",
                                          password_confirmation: "correct")
       grant_superuser

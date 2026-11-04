@@ -16,7 +16,7 @@ describe WorkMonthsController do
       end.count * 8 * 60
     end
     let(:work_chart) { FactoryBot.create :work_chart }
-    let(:user) { stub(id: 40, email: 'tester@endpointdev.com', time_zone_code: nil) }
+    let(:user) { stub(id: 40, email: 'tester@example.com', time_zone_code: nil) }
     let(:index_result) do
       get 'index', params: { start: month_start, end: month_end }, xhr: true
       JSON.parse response.body

@@ -33,7 +33,7 @@ describe PtosController do
       # Given - an employee that started working 2 years and one month ago...
       test_user = FactoryBot.create(
         :user,
-        email: 'someone@endpointdev.com',
+        email: 'someone@example.com',
         start_date: (DateTime.now - 2.years - 1.month)
       )
 
@@ -70,7 +70,7 @@ describe PtosController do
       # Given - an employee that started working 2 years and one month ago...
       test_user = FactoryBot.create(
         :user,
-        email: 'someone@endpointdev.com',
+        email: 'someone@example.com',
         start_date: (DateTime.now - 2.years - 1.month)
       )
 
@@ -83,7 +83,7 @@ describe PtosController do
       # And - there's another employee...
       test_assumed_user = FactoryBot.create(
         :user,
-        email: 'assumed@endpointdev.com',
+        email: 'assumed@example.com',
         start_date: (DateTime.now - 2.years - 1.month)
       )
 

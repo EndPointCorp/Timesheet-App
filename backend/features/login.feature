@@ -10,16 +10,16 @@ Feature: Login page
      And I should see the "Sign in" button
 
   Scenario: Logging in successfully
-    Given there is a "user@endpointdev.com" user with a "ABCDefgh1234" password
+    Given there is a "user@example.com" user with a "ABCDefgh1234" password
      When I access the login page
-      And I fill in "user@endpointdev.com" in the "Email" field
+      And I fill in "user@example.com" in the "Email" field
       And I fill in "ABCDefgh1234" in the "Password" field
       And I click on the "Sign in" button
      Then I should see "Logging in now, please wait." message
       And I should get redirected to the main calendar page
 
   Scenario Outline: Loggin in unsuccessfully
-    Given there is a "user@endpointdev.com" user with a "ABCDefgh1234" password
+    Given there is a "user@example.com" user with a "ABCDefgh1234" password
      When I access the login page
       And I fill in "<email>" in the "Email" field
       And I fill in "<password>" in the "Password" field
@@ -30,6 +30,6 @@ Feature: Login page
     Examples:
       | email | password |
       | | |
-      | user@endpointdev.com | |
+      | user@example.com | |
       | | ABCDefgh1234 |
-      | user@endpointdev.com | abcdefgh1234 |
+      | user@example.com | abcdefgh1234 |

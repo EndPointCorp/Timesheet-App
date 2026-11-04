@@ -44,14 +44,14 @@ end
 
 Given(/^that I have a normal user$/) do
   FactoryGirl.create :user,
-    email: 'tester@endpointdev.com',
+    email: 'tester@example.com',
     password: 'ABCDefgh1234',
     password_confirmation: 'ABCDefgh1234'
 end
 
 Given(/^that I'm logged in$/) do
   visit "/#/login"
-  fill_in "Email", with: "tester@endpointdev.com"
+  fill_in "Email", with: "tester@example.com"
   fill_in "Password", with: "ABCDefgh1234"
   click_button "Sign in"
   expect_angular_route "/#/"
@@ -59,7 +59,7 @@ Given(/^that I'm logged in$/) do
 end
 
 Given(/^I don't have any entries in the current month$/) do
-  expect(WorkEntry.where(role_id: Role.joins(:user).where("users.email = ?", "tester@endpointdev.com").select(:id)).
+  expect(WorkEntry.where(role_id: Role.joins(:user).where("users.email = ?", "tester@example.com").select(:id)).
     where('extract(month from date_performed) = ? and extract(year from date_performed) = ?', DateTime.now.month, DateTime.now.year).
     count).to eq(0)
 end
@@ -75,12 +75,12 @@ end
 
 Given(/^I'm logged in as a manager$/) do
   u = FactoryGirl.create :user_with_nonimmediate_superuser,
-    email: 'tester@endpointdev.com',
+    email: 'tester@example.com',
     password: 'ABCDefgh1234',
     password_confirmation: 'ABCDefgh1234'
   puts "Is new features tester? #{u.is_new_features_tester?}"
   visit "/#/login"
-  fill_in "Email", with: "tester@endpointdev.com"
+  fill_in "Email", with: "tester@example.com"
   fill_in "Password", with: "ABCDefgh1234"
   click_button "Sign in"
   expect_angular_route "/#/"

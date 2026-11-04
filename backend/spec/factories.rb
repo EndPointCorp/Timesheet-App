@@ -1,7 +1,7 @@
 FactoryBot.define do
 
   sequence :email do |n|
-    "user#{n}@endpointdev.com"
+    "user#{n}@example.com"
   end
 
   sequence :role_id do |n|
