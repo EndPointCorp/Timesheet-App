@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "qs";
 import { URL } from "../constants";
+import type { User } from "../types";
 
 export type LoginParams = {
   email: string | null;
@@ -132,6 +133,34 @@ const getUser = async () => {
     return res;
   } catch (error) {
     console.log("🚀 ~ file: users.ts:43 ~ getUser ~ error:", error);
+  }
+};
+
+export type Session =
+  | { state: "signed-in"; user: User }
+  | { state: "signed-out" }
+  | { state: "unknown" };
+
+// Asks the server who is signed in. The server is the source of truth, not the
+// browser's saved copy. A 401 here is an answer ("nobody"), not a failure, so
+// it is accepted as a normal response. That keeps it away from the interceptor,
+// which would otherwise treat it as an expired session and start a logout.
+// If the server cannot answer at all, the result is "unknown" so the caller
+// does not guess.
+export const getSession = async (): Promise<Session> => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: SESSION_CHECK_URL,
+      baseURL: URL,
+      validateStatus: (status) =>
+        status === 401 || (status >= 200 && status < 300),
+    });
+    return res.status === 401
+      ? { state: "signed-out" }
+      : { state: "signed-in", user: res.data };
+  } catch (error) {
+    return { state: "unknown" };
   }
 };
 

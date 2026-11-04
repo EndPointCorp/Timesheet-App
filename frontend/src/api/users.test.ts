@@ -27,7 +27,10 @@ const load = (reply: (config: AxiosRequestConfig) => Reply) => {
           headers: {},
           config,
         };
-        if (status >= 200 && status < 300) {
+        const accepted = config.validateStatus
+          ? config.validateStatus(status)
+          : status >= 200 && status < 300;
+        if (accepted) {
           resolve(response);
         } else {
           reject(
@@ -133,5 +136,39 @@ describe("a 401 from the server", () => {
 
     expect(probes(calls)).toHaveLength(1);
     expect(calls).toContain("DELETE users/sign_out.json");
+  });
+});
+
+describe("asking the server who is signed in", () => {
+  const ask = (reply: (config: AxiosRequestConfig) => Reply) => {
+    const { calls } = load(reply);
+    // load() resets modules, so take the function from the same fresh copy.
+    const users = require("./users");
+    return { calls, getSession: users.getSession };
+  };
+
+  it("returns the user when the session is alive", async () => {
+    const { getSession } = ask(() => ({ status: 200, data: { id: 7 } }));
+
+    expect(await getSession()).toEqual({
+      state: "signed-in",
+      user: { id: 7 },
+    });
+  });
+
+  it("says signed out on a 401 and does not start a logout", async () => {
+    const { getSession, calls } = ask(() => ({ status: 401 }));
+
+    expect(await getSession()).toEqual({ state: "signed-out" });
+    await settle();
+
+    expect(calls).toEqual(["GET users/current.json"]);
+    expect(localStorage.getItem("logout")).toBeNull();
+  });
+
+  it("says unknown when the server fails, so the page does not guess", async () => {
+    const { getSession } = ask(() => ({ status: 500 }));
+
+    expect(await getSession()).toEqual({ state: "unknown" });
   });
 });
