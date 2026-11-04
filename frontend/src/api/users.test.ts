@@ -276,3 +276,40 @@ describe("an automatic logout, when the session has really ended", () => {
     expect(localStorage.getItem("logout")).toBeNull();
   });
 });
+
+describe("signing in", () => {
+  const params = { email: "a@b.c", password: "x" };
+
+  it("returns the server's answer when the sign in works", async () => {
+    load(() => ({ status: 200, data: { success: true } }), false);
+    const { login } = require("./users");
+    expect(await login(params)).toEqual({ success: true });
+  });
+
+  it("says the password was refused when the server answers 401", async () => {
+    load(() => ({ status: 401, data: { error: "Invalid" } }), false);
+    const { login } = require("./users");
+    expect(await login(params)).toEqual({
+      success: false,
+      problem: "refused",
+    });
+  });
+
+  it("says the server could not be reached when there is no answer", async () => {
+    load(() => ({ status: 0 }), false);
+    const { login } = require("./users");
+    expect(await login(params)).toEqual({
+      success: false,
+      problem: "unreachable",
+    });
+  });
+
+  it("says the server could not be reached on a server error", async () => {
+    load(() => ({ status: 500 }), false);
+    const { login } = require("./users");
+    expect(await login(params)).toEqual({
+      success: false,
+      problem: "unreachable",
+    });
+  });
+});

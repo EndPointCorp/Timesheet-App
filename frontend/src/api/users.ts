@@ -9,7 +9,14 @@ export type LoginParams = {
   password: string | null;
 };
 
-const login = async (params: LoginParams) => {
+// The server answers 401 when the email or password is wrong. Anything else
+// (no answer, a server error) is not about the password, so the caller is told
+// the difference and can say the right thing to the person.
+export type LoginResult =
+  | { success: true }
+  | { success: false; problem: "refused" | "unreachable" };
+
+const login = async (params: LoginParams): Promise<LoginResult> => {
   try {
     const res = await axios({
       method: "POST",
@@ -32,6 +39,8 @@ const login = async (params: LoginParams) => {
     return res.data;
   } catch (error) {
     console.log("🚀 ~ file: users.ts:15 ~ login ~ error:", error);
+    const refused = axios.isAxiosError(error) && error.response?.status === 401;
+    return { success: false, problem: refused ? "refused" : "unreachable" };
   }
 };
 

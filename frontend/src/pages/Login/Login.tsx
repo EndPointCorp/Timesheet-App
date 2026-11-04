@@ -21,7 +21,11 @@ import "./Login.css";
 
 const Login: FC = () => {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
-  const displaySnackbar = (openSnackbar: boolean) => {
+  // What to tell the person when a sign in does not work. A refused password
+  // and a server that cannot be reached need different words.
+  const [failureMessage, setFailureMessage] = useState("");
+  const displaySnackbar = (message: string) => {
+    setFailureMessage(message);
     setOpenSnackbar(true);
   };
   const closeSnackbar = (
@@ -55,7 +59,11 @@ const Login: FC = () => {
     } else {
       setLoginSuccess(false);
       console.log("Authentication failed");
-      displaySnackbar(openSnackbar);
+      displaySnackbar(
+        res?.problem === "unreachable"
+          ? "Could not reach the server. Check your connection and try again."
+          : "Authentication failed. Incorrect username or password.",
+      );
     }
   };
 
@@ -103,7 +111,7 @@ const Login: FC = () => {
   return (
     <Container component="main" maxWidth="xs">
       <Snackbar
-        message="Authentication failed. Incorrect username or password."
+        message={failureMessage}
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={closeSnackbar}
