@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Login from "./Login";
@@ -8,9 +8,11 @@ import { users } from "../../api";
 jest.mock("../../api/users", () => ({
   ...jest.requireActual("../../api/users"),
   getSession: jest.fn(),
+  login: jest.fn(),
 }));
 
 const getSession = users.getSession as jest.Mock;
+const login = users.login as jest.Mock;
 
 const openLoginPage = () => {
   const client = new QueryClient();
@@ -30,6 +32,7 @@ beforeEach(() => {
   localStorage.clear();
   useUserStore.setState({ user: null });
   getSession.mockReset();
+  login.mockReset();
 });
 
 describe("the login page", () => {
@@ -57,5 +60,42 @@ describe("the login page", () => {
     openLoginPage();
 
     expect(await screen.findByPlaceholderText("Email")).toBeInTheDocument();
+  });
+});
+
+describe("a sign in that does not work", () => {
+  const trySigningIn = async () => {
+    getSession.mockResolvedValue({ state: "signed-out" });
+    openLoginPage();
+    fireEvent.change(await screen.findByPlaceholderText("Email"), {
+      target: { value: "a@b.c" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Password"), {
+      target: { value: "x" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Sign In" }));
+  };
+
+  it("blames the password when the server refused it", async () => {
+    login.mockResolvedValue({ success: false, problem: "refused" });
+
+    await trySigningIn();
+
+    expect(
+      await screen.findByText(/Incorrect username or password/),
+    ).toBeInTheDocument();
+  });
+
+  it("says the server could not be reached, and does not blame the password", async () => {
+    login.mockResolvedValue({ success: false, problem: "unreachable" });
+
+    await trySigningIn();
+
+    expect(
+      await screen.findByText(/Could not reach the server/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Incorrect username or password/),
+    ).not.toBeInTheDocument();
   });
 });
