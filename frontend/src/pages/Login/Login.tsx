@@ -40,6 +40,7 @@ const Login: FC = () => {
   const { error: loadUserError, isLoading: isUserLoading } =
     usersHooks.useGetUser(loginSuccess);
   const { user } = useUserStore();
+  const { isLoading: isCheckingSession } = usersHooks.useSession();
 
   const { mutateAsync: login, isLoading, error } = usersHooks.useLogin();
 
@@ -66,7 +67,7 @@ const Login: FC = () => {
     setPassword(e.target.value);
   };
 
-  if (isLoading || isUserLoading) {
+  if (isCheckingSession || isLoading || isUserLoading) {
     return (
       <Box
         sx={{
@@ -77,7 +78,9 @@ const Login: FC = () => {
         }}
       >
         <Box sx={{ margin: "20px", padding: "15px" }}>
-          Logging in now, please wait.
+          {isCheckingSession
+            ? "Checking your session, please wait."
+            : "Logging in now, please wait."}
         </Box>
       </Box>
     );

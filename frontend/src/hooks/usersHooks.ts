@@ -11,6 +11,24 @@ const useLogin = () =>
 
 const useLogout = () => useMutation(() => api.handleAutoLogout(), {});
 
+// Asks the server who is signed in and, if someone is, saves that user. Used
+// by the login page so a session the browser forgot about is picked up instead
+// of the person being stuck at a form the server will refuse.
+const useSession = () => {
+  const { setUser } = useUserStore();
+  return useQuery({
+    queryFn: async () => {
+      const session = await api.getSession();
+      if (session.state === "signed-in") setUser(session.user);
+      return session;
+    },
+    queryKey: [QueryKeys.GetSession],
+    retry: false,
+    refetchOnWindowFocus: false,
+    cacheTime: 0,
+  });
+};
+
 const useGetUser = (loginSuccess: boolean) => {
   const { setUser } = useUserStore();
   return useQuery({
@@ -137,6 +155,7 @@ const usersHooks = {
   useLogin,
   useLogout,
   useGetUser,
+  useSession,
   useGetAllRoles,
   useUsers,
   useDetails,

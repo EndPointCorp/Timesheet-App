@@ -1,4 +1,5 @@
 enum QueryKeys {
+  GetSession = "GetSession",
   Totals = "Totals",
   Teams = "Teams",
   WorkCharts = "WorkCharts",
