@@ -15,14 +15,14 @@ describe "HoursInTheBank" do
     @perplexus = Role.where(code: "perplexus").first
     @vogons = Role.where(code: "vogons").first
 
-    @director = create_correct_user "director@endpointdev.com", roles: ["director"]
+    @director = create_correct_user "director@example.com", roles: ["director"]
 
-    @manager_perplexus = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{ role: @perplexus.id }] }
+    @manager_perplexus = create_correct_user "manager1@example.com", roles: ["perplexus", "manager"], rights: { manage_team: [{ role: @perplexus.id }] }
 
-    @developer_perplexus_acme = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
-    @developer_perplexus_notrep = create_correct_user "developer2@endpointdev.com", roles: ["perplexus"]
-    @developer_vogons_acme_ios_devel = create_correct_user "developer3@endpointdev.com", roles: ["vogons"], rights: { project_manage: [ { work_chart: @acme_ios_devel.id } ] }
-    @developer_vogons_notrep = create_correct_user "developer4@endpointdev.com", roles: ["vogons"]
+    @developer_perplexus_acme = create_correct_user "developer1@example.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
+    @developer_perplexus_notrep = create_correct_user "developer2@example.com", roles: ["perplexus"]
+    @developer_vogons_acme_ios_devel = create_correct_user "developer3@example.com", roles: ["vogons"], rights: { project_manage: [ { work_chart: @acme_ios_devel.id } ] }
+    @developer_vogons_notrep = create_correct_user "developer4@example.com", roles: ["vogons"]
   end
 
   after(:each) do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Transactions::CreateTransaction do
-  let(:user) { create_correct_user "developer1@endpointdev.com" }
+  let(:user) { create_correct_user "developer1@example.com" }
   let(:bar) { FactoryBot.create :client_work_chart, display_label: "Bar" }
   let(:inputs) do
     {

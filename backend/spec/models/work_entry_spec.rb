@@ -36,8 +36,8 @@ describe WorkEntry do
    #   #users
    #   @current_owner = FactoryBot.create(:user)
    #   @user_who_cannot_edit = FactoryBot.create(:user)
-   #   @team_manager = FactoryBot.create(:user, email: "team_manager@endpointdev.com")
-   #   @client_rep = FactoryBot.create(:user, email: 'client_rep@endpointdev.com')
+   #   @team_manager = FactoryBot.create(:user, email: "team_manager@example.com")
+   #   @client_rep = FactoryBot.create(:user, email: 'client_rep@example.com')
    #   @recipient = FactoryBot.create(:user, id: 24)
    #   #roles
    #   @operational_role = FactoryBot.create(:role, code: "operational") 

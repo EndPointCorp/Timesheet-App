@@ -11,15 +11,15 @@ describe "ReviewingSystem" do
     @perplexus = Role.where(code: "perplexus").first
     @vogons = Role.where(code: "vogons").first
 
-    @director = create_correct_user "director@endpointdev.com", roles: ["director"]
-    @global_reviewer = create_correct_user "reviewer@endpointdev.com", roles: [], rights: [ "global_reviewer" ]
+    @director = create_correct_user "director@example.com", roles: ["director"]
+    @global_reviewer = create_correct_user "reviewer@example.com", roles: [], rights: [ "global_reviewer" ]
 
-    @manager_perplexus = create_correct_user "manager1@endpointdev.com", roles: ["perplexus", "manager"], rights: { manage_team: [{ role: @perplexus.id }] }
+    @manager_perplexus = create_correct_user "manager1@example.com", roles: ["perplexus", "manager"], rights: { manage_team: [{ role: @perplexus.id }] }
 
-    @developer_perplexus_acme = create_correct_user "developer1@endpointdev.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
-    @developer_perplexus_notrep = create_correct_user "developer2@endpointdev.com", roles: ["perplexus"]
-    @developer_vogons_acme_ios_devel = create_correct_user "developer3@endpointdev.com", roles: ["vogons"], rights: { project_manage: [ { work_chart: @acme_ios_devel.id } ] }
-    @developer_vogons_notrep = create_correct_user "developer4@endpointdev.com", roles: ["vogons"]
+    @developer_perplexus_acme = create_correct_user "developer1@example.com", roles: ["perplexus"], rights: { project_manage: [ { work_chart: @acme.id } ] }
+    @developer_perplexus_notrep = create_correct_user "developer2@example.com", roles: ["perplexus"]
+    @developer_vogons_acme_ios_devel = create_correct_user "developer3@example.com", roles: ["vogons"], rights: { project_manage: [ { work_chart: @acme_ios_devel.id } ] }
+    @developer_vogons_notrep = create_correct_user "developer4@example.com", roles: ["vogons"]
   end
 
   describe "GET /approvals/stats" do
@@ -309,7 +309,7 @@ describe "ReviewingSystem" do
     it "results in current approval belonging to noone after successfully accepting by a global reviewer if pm doesn't exist" do
       @other = FactoryBot.create :work_chart, parent: @clients, display_label: 'other'
       @other_general = FactoryBot.create :work_chart, parent: @other, display_label: 'General'
-      @director2 = create_correct_user "director2@endpointdev.com", roles: ["director", "perplexus"]
+      @director2 = create_correct_user "director2@example.com", roles: ["director", "perplexus"]
       entry = WorkEntries::CreateWorkEntry.run! work_chart_id: @other_general.id,
         user: @global_reviewer,
         date_performed: 0.days.ago.to_date,
@@ -331,7 +331,7 @@ describe "ReviewingSystem" do
       Approvals::UpdateApproval.run! work_entry: entry, user: @developer_perplexus_acme, approved: :true
       a = Approval.where(work_entry_id: entry.id, approved: nil)
       a.count.should be(1)
-      a.first.reviewers.first.email.should eq("reviewer@endpointdev.com")
+      a.first.reviewers.first.email.should eq("reviewer@example.com")
     end
 
     it "results in no approval left after successfully approving by the project manager" do
@@ -357,7 +357,7 @@ describe "ReviewingSystem" do
       Approvals::UpdateApproval.run! work_entry: entry, user: @developer_perplexus_notrep, approved: :true
       a = Approval.where(work_entry_id: entry.id, approved: nil)
       a.count.should be(1)
-      a.first.reviewers.first.email.should eq("manager1@endpointdev.com")
+      a.first.reviewers.first.email.should eq("manager1@example.com")
     end
   end
 end

@@ -23,12 +23,12 @@ describe "Who may create groups, change groups and disable users" do
     @create_users = RightType.find_by!(code: 'create_users')
     @manage       = RightType.find_by!(code: 'manage', target_kind_code: 'work_chart')
 
-    @plain  = create_correct_user("plain@endpointdev.com")
-    @maker  = create_correct_user("maker@endpointdev.com")
+    @plain  = create_correct_user("plain@example.com")
+    @maker  = create_correct_user("maker@example.com")
     give_right(@maker, @create_users)
-    @editor = create_correct_user("editor@endpointdev.com")
+    @editor = create_correct_user("editor@example.com")
     give_right(@editor, @manage)
-    @admin  = create_correct_user("admin@endpointdev.com")
+    @admin  = create_correct_user("admin@example.com")
     give_right(@admin, @superuser)
 
     @group  = FactoryBot.create(:role, display_label: 'Group of gnus', code: 'group3', gen_user: false)
@@ -112,8 +112,8 @@ describe "Who may create groups, change groups and disable users" do
   # --- no rights, and a right that is not the right one ------------------
 
   {
-    "a user with no rights"            => "plain@endpointdev.com",
-    "a chart editor (manage on charts)" => "editor@endpointdev.com"
+    "a user with no rights"            => "plain@example.com",
+    "a chart editor (manage on charts)" => "editor@example.com"
   }.each do |who, email|
     context "when #{who} calls" do
       before(:each) { sign_in_as(email) }
@@ -137,7 +137,7 @@ describe "Who may create groups, change groups and disable users" do
   # --- create_users only -----------------------------------------------
 
   context "when a user with only the create_users right calls" do
-    before(:each) { sign_in_as("maker@endpointdev.com") }
+    before(:each) { sign_in_as("maker@example.com") }
 
     it "is refused when creating a group, because that right is for creating users" do
       expect_refused("creating a group") { post_new_group }
@@ -157,7 +157,7 @@ describe "Who may create groups, change groups and disable users" do
   # --- admin -----------------------------------------------------------
 
   context "when an admin calls" do
-    before(:each) { sign_in_as("admin@endpointdev.com") }
+    before(:each) { sign_in_as("admin@example.com") }
 
     it "may create a group" do
       expect { post_new_group }.to change { Role.where(code: 'new_group').count }.by(1)
@@ -192,8 +192,8 @@ describe "Who may create groups, change groups and disable users" do
 
   context "when an admin is acting as a user with no rights" do
     before(:each) do
-      sign_in_as("admin@endpointdev.com")
-      post '/api/users/assume.json', params: { email: "plain@endpointdev.com" }
+      sign_in_as("admin@example.com")
+      post '/api/users/assume.json', params: { email: "plain@example.com" }
       session[:assume_role_id].should eq(@plain.role_id)
     end
 

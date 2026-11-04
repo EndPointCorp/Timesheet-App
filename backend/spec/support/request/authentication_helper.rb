@@ -2,7 +2,7 @@ module AuthenticationHelper
 
   # goes through a successful process of logging in to the 
   # system through api
-  def login_sucessfully(email="correct@endpointdev.com")
+  def login_sucessfully(email="correct@example.com")
     post user_session_path, params: { user: { email: email, password: "correct" } }, xhr: true
     ret = %({"success":true,"redirect":"/"})
     response.body.should be_json_eql(ret)
@@ -19,7 +19,7 @@ module AuthenticationHelper
     FactoryBot.create :role, code: "team_#{code}"
   end
 
-  def create_correct_user(email = "correct@endpointdev.com", options = {})
+  def create_correct_user(email = "correct@example.com", options = {})
     @current_user = FactoryBot.create :user, email: email,
       name: email.split('@').first,
       password: 'correct',

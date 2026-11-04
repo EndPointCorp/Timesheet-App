@@ -27,10 +27,10 @@ describe "Who may change a user" do
     @chart       = FactoryBot.create(:work_chart)
     @other_chart = FactoryBot.create(:work_chart)
 
-    @plain  = create_correct_user("plain@endpointdev.com")
-    @editor = create_correct_user("editor@endpointdev.com")
+    @plain  = create_correct_user("plain@example.com")
+    @editor = create_correct_user("editor@example.com")
     give_right(@editor, @manage, [@chart])
-    @admin  = create_correct_user("admin@endpointdev.com")
+    @admin  = create_correct_user("admin@example.com")
     give_right(@admin, @superuser)
 
     @target = FactoryBot.create(:user)
@@ -110,7 +110,7 @@ describe "Who may change a user" do
   # --- a user with no rights ------------------------------------------
 
   context "when the caller has no rights" do
-    before(:each) { login_sucessfully("plain@endpointdev.com") }
+    before(:each) { login_sucessfully("plain@example.com") }
 
     it "refuses every kind of account change, and changes nothing" do
       account_changes.each do |what, changes|
@@ -132,7 +132,7 @@ describe "Who may change a user" do
   # --- a chart editor --------------------------------------------------
 
   context "when the caller is a chart editor" do
-    before(:each) { login_sucessfully("editor@endpointdev.com") }
+    before(:each) { login_sucessfully("editor@example.com") }
 
     let(:pm_row)        { give_right(@target, @project_manage, [@chart]) }
     let(:manage_row)    { give_right(@target, @manage, [@other_chart]) }
@@ -257,7 +257,7 @@ describe "Who may change a user" do
   # --- an admin ---------------------------------------------------------
 
   context "when the caller is an admin" do
-    before(:each) { login_sucessfully("admin@endpointdev.com") }
+    before(:each) { login_sucessfully("admin@example.com") }
 
     it "may change an email" do
       put_changes({ 'isChanged' => true, 'email' => 'changed@example.test' })
@@ -295,8 +295,8 @@ describe "Who may change a user" do
 
   context "when an admin is acting as a user with no rights" do
     it "is judged as that user, the same way the chart editing check is" do
-      login_sucessfully("admin@endpointdev.com")
-      post '/api/users/assume.json', params: { email: "plain@endpointdev.com" }
+      login_sucessfully("admin@example.com")
+      post '/api/users/assume.json', params: { email: "plain@example.com" }
       session[:assume_role_id].should eq(@plain.role_id)
 
       expect_refused({ 'isChanged' => true, 'email' => 'taken-over@example.test' })

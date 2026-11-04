@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Reports::CreateReportsPreset do
   before(:each) do
-    @user = create_correct_user 'developer1@endpointdev.com'
+    @user = create_correct_user 'developer1@example.com'
     FactoryBot.create :duration_kind, code: 'billable_standard'
     @clients = create_proper_chart
     @clients.update! display_label: 'Clients'
