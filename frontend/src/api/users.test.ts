@@ -9,10 +9,17 @@ type Reply = { status: number; data?: unknown; delayMs?: number };
 
 // The module keeps its logout state at module level, so each test loads a fresh
 // copy. The adapter stands in for the server and records every call it gets.
-const load = (reply: (config: AxiosRequestConfig) => Reply) => {
+const load = (
+  reply: (config: AxiosRequestConfig) => Reply,
+  signedIn = true,
+) => {
   jest.resetModules();
   const axios = require("axios").default;
   const users = require("./users");
+  // The app keeps the signed in user here. Most tests are about a person who
+  // is signed in when something goes wrong.
+  const { useUserStore } = require("../stores");
+  useUserStore.setState({ user: signedIn ? { id: 7 } : null });
   const calls: string[] = [];
 
   const adapter: AxiosAdapter = (config: InternalAxiosRequestConfig) =>
@@ -55,7 +62,7 @@ const load = (reply: (config: AxiosRequestConfig) => Reply) => {
 
   axios.defaults.adapter = adapter;
   users.setupAxiosInterceptors();
-  return { axios, calls };
+  return { axios, calls, useUserStore };
 };
 
 // A server where every request is refused with 401, and current.json says
@@ -218,6 +225,54 @@ describe("the Logout button", () => {
 
     expect(await signOut()).toBe(false);
     expect(localStorage.getItem("user")).not.toBeNull();
+    expect(localStorage.getItem("logout")).toBeNull();
+  });
+});
+
+describe("an automatic logout, when the session has really ended", () => {
+  const sessionGone =
+    (signOutStatus: number) =>
+    (config: AxiosRequestConfig): Reply => {
+      if (config.url === "users/sign_out.json")
+        return { status: signOutStatus };
+      if (config.url === "users/current.json") return { status: 401 };
+      return { status: 401 };
+    };
+
+  it("forgets the user even when the sign out call fails", async () => {
+    const { axios, useUserStore } = load(sessionGone(500));
+    localStorage.setItem("user", JSON.stringify({ id: 7 }));
+
+    await refusedRequest(axios, "users");
+    await settle();
+
+    expect(useUserStore.getState().user).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
+  });
+
+  it("logs out again when the session ends a second time in the same page", async () => {
+    const { axios, calls, useUserStore } = load(sessionGone(204));
+
+    await refusedRequest(axios, "users");
+    await settle();
+    // The person signs in again without reloading the page.
+    useUserStore.setState({ user: { id: 7 } });
+    await refusedRequest(axios, "users");
+    await settle();
+
+    expect(
+      calls.filter((call) => call === "DELETE users/sign_out.json"),
+    ).toHaveLength(2);
+    expect(useUserStore.getState().user).toBeNull();
+  });
+
+  it("ignores a 401 when nobody is signed in, like a wrong password", async () => {
+    const { axios, calls } = load(sessionGone(204), false);
+
+    await refusedRequest(axios, "users/sign_in.json");
+    await settle();
+
+    expect(calls).toEqual(["POST users/sign_in.json"]);
     expect(localStorage.getItem("logout")).toBeNull();
   });
 });

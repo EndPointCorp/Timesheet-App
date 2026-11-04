@@ -2,6 +2,7 @@ import axios from "axios";
 import qs from "qs";
 import { URL } from "../constants";
 import type { User } from "../types";
+import useUserStore from "../stores/useUserStore";
 
 export type LoginParams = {
   email: string | null;
@@ -85,8 +86,14 @@ export const signOut = async (): Promise<boolean> => {
   return confirmed;
 };
 
+// The session has ended on the server, so the person is logged out no matter
+// what. The browser forgets the user first, and keeps forgetting even if the
+// sign out call fails, because there is nothing left on the server to protect.
 export const handleAutoLogout = async () => {
+  useUserStore.getState().setUser(null);
+
   await logout();
+  clearAllCookies();
 
   // Broadcast logout to other tabs (the value doesn't matter; using timestamp helps trigger the event)
   localStorage.setItem("logout", Date.now().toString());
@@ -97,12 +104,20 @@ export const handleAutoLogout = async () => {
 
 let isLoggingOut = false; // Prevents multiple logouts at once
 
+// Several requests often fail together when a session ends. Only one logout
+// runs for them. The flag is reset when it finishes, so a session that ends
+// again later in the same page is handled too.
 const logoutOnce = () => {
-  if (!isLoggingOut) {
-    isLoggingOut = true;
-    handleAutoLogout();
-  }
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+  handleAutoLogout().finally(() => {
+    isLoggingOut = false;
+  });
 };
+
+// A 401 only means a session ended if the app thought someone was signed in.
+// With nobody signed in, a 401 is something else, like a wrong password.
+const someoneIsSignedIn = () => useUserStore.getState().user !== null;
 
 // The server answers 401 both when the session is gone and when a logged-in
 // user is not allowed to do something. Only the first should end the session,
@@ -129,7 +144,11 @@ export const setupAxiosInterceptors = () => {
   axios.interceptors.response.use(
     (response) => response, // Return response if successful
     (error) => {
-      if (error.response && error.response.status === 401) {
+      if (
+        error.response &&
+        error.response.status === 401 &&
+        someoneIsSignedIn()
+      ) {
         if (error.config && error.config.url === SESSION_CHECK_URL) {
           logoutOnce();
         } else {
