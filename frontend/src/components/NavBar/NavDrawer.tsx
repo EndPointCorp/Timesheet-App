@@ -11,7 +11,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../stores";
-import { usersHooks } from "../../hooks";
+import useConfirmedLogout from "../../hooks/useConfirmedLogout";
+import LogoutFailedSnackbar from "./LogoutFailedSnackbar";
 import useSettingsMenu from "../../hooks/useSettingsMenu";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -35,13 +36,12 @@ export default function NavDrawer() {
     setOpen(newOpen);
   };
 
-  const { user, setUser } = useUserStore();
-  const { mutateAsync: logout } = usersHooks.useLogout();
-
-  const handleLogout = () => {
-    logout();
-    setUser(null);
-  };
+  const { user } = useUserStore();
+  const {
+    logout: handleLogout,
+    failed: logoutFailed,
+    dismiss: dismissLogoutFailed,
+  } = useConfirmedLogout();
 
   const DrawerList = (
     <Box role="presentation">
@@ -152,6 +152,7 @@ export default function NavDrawer() {
       >
         {DrawerList}
       </Drawer>
+      <LogoutFailedSnackbar open={logoutFailed} onClose={dismissLogoutFailed} />
     </div>
   );
 }
