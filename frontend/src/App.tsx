@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
+import useLogoutInOtherTabs from "./hooks/useLogoutInOtherTabs";
 import ProtectedLayout from "./components/ProtectedLayout";
 import LoginLayout from "./components/LoginLayout";
 import Entries from "./pages/Entries";
@@ -46,24 +47,7 @@ function App() {
   const navigate = useNavigate();
   const loc = useLocation();
 
-  useEffect(() => {
-    interface StorageEvent {
-      key: string | null;
-    }
-
-    const syncLogout = (event: StorageEvent) => {
-      if (event.key === "logout") {
-        // Redirect to login if a logout event is detected from another tab
-        navigate("/login");
-      }
-    };
-
-    window.addEventListener("storage", syncLogout);
-
-    return () => {
-      window.removeEventListener("storage", syncLogout);
-    };
-  }, [navigate]);
+  useLogoutInOtherTabs();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
