@@ -9,7 +9,7 @@ import useLoadingStore from "../stores/useLoadingStore";
 const useLogin = () =>
   useMutation((params: LoginParams) => api.login(params), {});
 
-const useLogout = () => useMutation(() => api.handleAutoLogout(), {});
+const useLogout = () => useMutation(() => api.signOut(), {});
 
 // Asks the server who is signed in and, if someone is, saves that user. Used
 // by the login page so a session the browser forgot about is picked up instead

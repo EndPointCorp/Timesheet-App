@@ -2,6 +2,7 @@ import axios from "axios";
 import qs from "qs";
 import { URL } from "../constants";
 import type { User } from "../types";
+import useUserStore from "../stores/useUserStore";
 
 export type LoginParams = {
   email: string | null;
@@ -50,25 +51,49 @@ const clearAllCookies = () => {
   localStorage.removeItem("user");
 };
 
-const logout = async () => {
+// Ends the session on the server. It is confirmed when the server says OK, or
+// says 401, because a 401 means there is no session left to end. Anything else
+// (a server error, no connection) is not confirmed, and nothing is cleared.
+const logout = async (): Promise<boolean> => {
   try {
-    const res = await axios({
+    await axios({
       method: "DELETE",
       url: `users/sign_out.json`,
       baseURL: URL,
+      validateStatus: (status) =>
+        status === 401 || (status >= 200 && status < 300),
     });
 
     // Clear all cookies after logout
     clearAllCookies();
 
-    return res;
+    return true;
   } catch (error) {
     console.log("🚀 ~ file: users.ts:15 ~ logout ~ error:", error);
+    return false;
   }
 };
 
+// The Logout button. The person stays logged in unless the server confirms,
+// so the browser and the server never disagree about who is signed in.
+// Returns whether it logged out.
+export const signOut = async (): Promise<boolean> => {
+  const confirmed = await logout();
+  if (confirmed) {
+    // Tell other tabs (the value doesn't matter; the change triggers the event)
+    localStorage.setItem("logout", Date.now().toString());
+  }
+  return confirmed;
+};
+
+// The session has ended on the server, so the person is logged out no matter
+// what. The browser forgets the user first, and keeps forgetting even if the
+// sign out call fails, because there is nothing left on the server to protect.
 export const handleAutoLogout = async () => {
+  useUserStore.getState().setUser(null);
+
   await logout();
+  clearAllCookies();
 
   // Broadcast logout to other tabs (the value doesn't matter; using timestamp helps trigger the event)
   localStorage.setItem("logout", Date.now().toString());
@@ -79,12 +104,20 @@ export const handleAutoLogout = async () => {
 
 let isLoggingOut = false; // Prevents multiple logouts at once
 
+// Several requests often fail together when a session ends. Only one logout
+// runs for them. The flag is reset when it finishes, so a session that ends
+// again later in the same page is handled too.
 const logoutOnce = () => {
-  if (!isLoggingOut) {
-    isLoggingOut = true;
-    handleAutoLogout();
-  }
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+  handleAutoLogout().finally(() => {
+    isLoggingOut = false;
+  });
 };
+
+// A 401 only means a session ended if the app thought someone was signed in.
+// With nobody signed in, a 401 is something else, like a wrong password.
+const someoneIsSignedIn = () => useUserStore.getState().user !== null;
 
 // The server answers 401 both when the session is gone and when a logged-in
 // user is not allowed to do something. Only the first should end the session,
@@ -111,7 +144,11 @@ export const setupAxiosInterceptors = () => {
   axios.interceptors.response.use(
     (response) => response, // Return response if successful
     (error) => {
-      if (error.response && error.response.status === 401) {
+      if (
+        error.response &&
+        error.response.status === 401 &&
+        someoneIsSignedIn()
+      ) {
         if (error.config && error.config.url === SESSION_CHECK_URL) {
           logoutOnce();
         } else {

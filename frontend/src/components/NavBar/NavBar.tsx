@@ -15,6 +15,8 @@ import Fade from "@mui/material/Fade";
 import { useUserStore } from "../../stores";
 import Grid from "@mui/material/Unstable_Grid2";
 import { usersHooks } from "../../hooks";
+import useConfirmedLogout from "../../hooks/useConfirmedLogout";
+import LogoutFailedSnackbar from "./LogoutFailedSnackbar";
 import Divider from "@mui/material/Divider";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import IconButton from "@mui/material/IconButton";
@@ -40,8 +42,13 @@ const NavBar = () => {
 
   const { isLoading: globalIsLoading } = useLoadingStore();
 
-  const { user, setUser } = useUserStore();
-  const { mutateAsync: logout } = usersHooks.useLogout();
+  const { user } = useUserStore();
+  const {
+    logout: handleLogout,
+    isLoggingOut,
+    failed: logoutFailed,
+    dismiss: dismissLogoutFailed,
+  } = useConfirmedLogout();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   function handleClick(event: React.MouseEvent<HTMLElement>) {
@@ -86,11 +93,6 @@ const NavBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    setUser(null);
   };
 
   const setSelected = (event: { currentTarget: HTMLElement }) => {
@@ -269,11 +271,13 @@ const NavBar = () => {
           component={Link}
           to={"/"}
           onClick={handleLogout}
+          disabled={isLoggingOut}
         >
           <span className="icon-off"></span>
           Logout
         </Button>
       </Toolbar>
+      <LogoutFailedSnackbar open={logoutFailed} onClose={dismissLogoutFailed} />
     </AppBar>
   );
 };
