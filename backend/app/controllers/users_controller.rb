@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   #
   # Returns all users
   def all
-    @all_users = User.where("email not in (?)", [ "root@domain.com", "timesheet@endpointdev.com" ]).order(:username)
+    @all_users = User.where("email not in (?)", SYSTEM_ACCOUNT_EMAILS).order(:username)
 
     render json: @all_users
   end

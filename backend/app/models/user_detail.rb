@@ -3,6 +3,6 @@ class UserDetail < ActiveRecord::Base
 
   default_scope do
     where "email not in (:emails)",
-      emails: [ 'root@endpointdev.com', 'timesheet@endpointdev.com', 'root@domain.com' ]
+      emails: SYSTEM_ACCOUNT_EMAILS
   end
 end

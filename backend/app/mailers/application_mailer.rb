@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "timesheet@endpointdev.com"
+  default from: MAILER_FROM_EMAIL
   layout 'mailer'
 end
